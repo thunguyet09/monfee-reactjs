@@ -1,0 +1,74 @@
+.footerRow1 {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid rgb(200, 200, 200);
+    padding: 0px;
+}
+
+.footerCol1, .footerCol2, .footerCol3, .footerCol4 {
+    width: 25%;
+}
+
+
+.footerCol1 {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 0px;
+    border-top: 1px solid rgb(200, 200, 200);
+}
+
+#footer {
+    font-family: "Nunito", sans-serif;
+    background-color: #f8f8f8;
+}
+
+.footerCol1 > span {
+    font-size: 17px;
+    width: 300px;
+    text-align: left;
+    padding-left: 40px;
+    margin: 20px 0px;
+    font-weight: 600;
+}
+
+.footerCol1 > div {
+    display: flex;
+    flex-direction: row;
+    gap: 28px;
+    font-size: 19px;
+    padding-left: 40px;
+    margin-top: 10px;
+}
+
+.footerCol2 {
+    border-top: 1px solid rgb(200, 200, 200);
+    border-left: 1px solid rgb(200, 200, 200);
+    padding: 50px 0px;
+    padding-left: 35px;
+    text-align: left;
+}
+
+hr {
+    margin: 0;
+    border: 1px solid black;
+    width: 50px;
+    margin-bottom: 40px;
+}
+
+.footerCol2 > div > p {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.footerRow2 {
+    padding: 10px 0px;
+}
+
+.footerRow2 > p > b {
+    color: grey;
+}
+
+.footerRow2 > p {
+    font-weight: 600;
+    font-size: 17px;
+}
