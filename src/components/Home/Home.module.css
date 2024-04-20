@@ -2,6 +2,10 @@
     position: relative;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 .slide {
     display: none;
 }
@@ -565,9 +569,7 @@
     gap: 10px;
 }
 
-#quickView {
-
-}
+#quickView {}
 
 .carousel {
     display: flex;
@@ -595,14 +597,14 @@
     width: 1%;
 }
 
-.quickViewInfo > h2 {
+.quickViewInfo>h2 {
     font-size: 25px;
     font-family: "Nunito", sans-serif;
     font-weight: 800;
     margin: 0;
 }
 
-.quickViewPrice  > h3{
+.quickViewPrice>h3 {
     font-family: "Nunito", sans-serif;
     font-weight: 600;
     margin: 0;
@@ -611,7 +613,7 @@
     padding-bottom: 30px;
 }
 
-.quickViewInfo > p {
+.quickViewInfo>p {
     margin-top: 30px;
     font-family: "Nunito", sans-serif;
     font-size: 17px;
@@ -642,39 +644,39 @@
     justify-content: center;
     text-align: center;
     font-family: "Nunito", sans-serif;
-    border:none;
+    border: none;
     outline: none;
     border-left: 2px solid black;
     border-bottom: 2px solid black;
     border-top: 2px solid black;
 }
 
-.quantityAction > span {
+.quantityAction>span {
     padding: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.quantityAction > span > span {
+.quantityAction>span>span {
     font-weight: 700;
     font-size: 20px;
     transition: .2s ease;
     cursor: pointer;
 }
 
-.quantityAction > span:hover > span {
-    color:#b8784e;
+.quantityAction>span:hover>span {
+    color: #b8784e;
 }
 
-.quantityAction > span:first-child {
+.quantityAction>span:first-child {
     border-right: 2px solid black;
     border-top: 2px solid black;
     border-left: 1px solid black;
     border-bottom: 1px solid black;
 }
 
-.quantityAction > span:last-child {
+.quantityAction>span:last-child {
     border-right: 2px solid black;
     border-top: 1px solid black;
     border-left: 1px solid black;
@@ -688,11 +690,11 @@
     margin-top: 30px;
 }
 
-.quickViewAction > button {
+.quickViewAction>button {
     background-color: #b8784e;
     color: white;
     font-family: "Nunito", sans-serif;
-    border:none;
+    border: none;
     padding: 0px 50px;
     font-size: 18px;
     letter-spacing: 1.5px;
@@ -700,20 +702,22 @@
     transition: .3s ease;
 }
 
-.quickViewAction > button:hover {
+.quickViewAction>button:hover {
     background-color: black;
     color: white;
     cursor: pointer;
 }
 
-.sizeBox, .colorBox {
+.sizeBox,
+.colorBox {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 30px;
 }
 
-.sizeBtn, .colorBtn {
+.sizeBtn,
+.colorBtn {
     padding: 10px 35px 8px 0px;
     background-color: white;
     outline: none;
@@ -724,7 +728,7 @@
     font-weight: 600;
 }
 
-.sizeBox > div {
+.sizeBox>div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -736,7 +740,7 @@
     color: white;
 }
 
-.sizeBox > div > button {
+.sizeBox>div>button {
     padding: 12px 18px;
     font-size: 16px;
     font-family: "Nunito", sans-serif;
@@ -748,7 +752,7 @@
     transition: .3s ease;
 }
 
-.sizeBox > div > button:hover {
+.sizeBox>div>button:hover {
     background-color: black;
     color: white
 }
@@ -756,6 +760,7 @@
 .colorBox {
     margin-top: 30px;
 }
+
 .colorItems {
     display: flex;
     flex-direction: row;
@@ -763,7 +768,7 @@
     gap: 12px;
 }
 
-.colorItems > button{
+.colorItems>button {
     width: 25px;
     height: 25px;
     border-radius: 50%;
@@ -776,10 +781,232 @@
     box-shadow: rgba(59, 59, 59, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(209, 209, 209, 0.08) 0px 1px 0px inset;
 }
 
-.colorItems > button:hover {
+.colorItems>button:hover {
     box-shadow: rgba(59, 59, 59, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(209, 209, 209, 0.08) 0px 1px 0px inset;
 }
 
-.colorItems > button::placeholder {
+.colorItems>button::placeholder {
     color: transparent;
 }
+
+#countDown {
+    margin-top: 130px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.count_down_v2 {
+    position: relative;
+}
+
+.countDownContent {
+    position: absolute;
+    top: 130px;
+    left: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+}
+
+.countDownTitle>p {
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.countDownTitle>button {
+    font-family: "Nunito", sans-serif;
+    font-size: 42px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.countDownTitle::before {
+    content: "";
+    height: 2px;
+    width: 180px;
+    background: #b8784e;
+    position: absolute;
+    bottom: 350px;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.labelexpired {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    margin-top: 160px;
+    font-family: "Nunito", sans-serif;
+}
+
+.labelexpired>li {
+    font-family: "Nunito", sans-serif;
+    list-style-type: none;
+    background-color: #b8784e;
+    padding: 10px 25px;
+    color: white;
+}
+
+.labelexpired>li>h4 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.labelexpired>li>span {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+}
+
+.labelexpired > div > p > u {
+    text-decoration: none;
+    color:#C5041B;
+    font-weight: 600;
+}
+
+.labelexpired > div > p {
+    font-size: 18px;
+}
+.countDownBtn {
+    font-family: "Nunito", sans-serif;
+    margin-top: 60px;
+    padding: 18px 40px;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    border: none;
+    outline: none;
+    background-color: black;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.countDownBtn:hover {
+    background-color: #b8784e;
+}
+
+#animateExtend {
+    animation: extend 1s linear;
+    animation-fill-mode: forwards;
+}
+.countDownBtn > span {
+    animation: disappear 1s linear;
+    animation-fill-mode: forwards
+}
+
+@keyframes disappear {
+    
+    0% {
+        opacity: 0;
+    } 
+    70% {
+        opacity: 0;
+        
+    } 
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes extend {
+    0% {
+        width: 600px;
+        height: 200px;
+        border-radius: 100px;
+    } 
+    10% {
+        width: 610px;
+        height: 210px;
+        background-color: #fff;
+        margin-left: - 5px;
+        margin-top: - 5px;
+    } 
+    20% {
+        width: 600px;
+        height: 200px;
+        background-color: #6fb07f;
+        margin-left: 0px;
+        margin-top: 0px;
+        
+    } 
+    100% {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-left: 50px;
+        background-color: #6fb07f;
+    }
+}
+
+
+/*bor
+.days,
+.hours,
+.mins,
+.sec {}
+
+.voucherExpired {
+    font-family: "Nunito", sans-serif;
+    background-color: #C5041B;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    border-radius: 2px;
+    position: absolute;
+    top: -50px;
+    left: 20px;
+    animation: wiggle 2s linear infinite;
+}
+
+.voucherExpired>p {
+    margin: 0;
+}
+
+
+/* Keyframes */
+@keyframes wiggle {
+
+    0%,
+    7% {
+        transform: rotateZ(0);
+    }
+
+    15% {
+        transform: rotateZ(-12deg);
+    }
+
+    20% {
+        transform: rotateZ(8deg);
+    }
+
+    25% {
+        transform: rotateZ(-10deg);
+    }
+
+    30% {
+        transform: rotateZ(6deg);
+    }
+
+    35% {
+        transform: rotateZ(-4deg);
+    }
+
+    40%,
+    100% {
+        transform: rotateZ(0);
+    }
+}
+

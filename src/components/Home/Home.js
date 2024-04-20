@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle, faInfoCircle, faLock, faTimesCircle, faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
 import styles from './Home.module.css'
-import { getAllProducts } from '../../api.js';
+import { getAllProducts, getChosedVoucher } from '../../api.js';
 import { daysToWeeks } from 'date-fns';
 import MyLoader from '../Loader/Loader';
 const Home = () => {
@@ -51,6 +51,7 @@ const Home = () => {
     };
   }, []);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,7 +60,7 @@ const Home = () => {
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
         const data = newProducts.slice(0, 8)
-        const productBox = document.querySelector('.' + styles.newProductBox)
+        const productBox = document.querySelector(`.${styles.newProductBox}`)
         productBox.innerHTML = '';
         data.forEach((item) => {
           const productItem = document.createElement('div')
@@ -320,10 +321,74 @@ const Home = () => {
         console.error('Error fetching products:', error);
       }
     };
+
+    const handleCountDown = async () => {
+      const voucher = await getChosedVoucher();
+      const currentDate = new Date();
+      const expiredDate = new Date(voucher.expiredDate);
+      let times = expiredDate - currentDate;
+    
+      if (times > 0) {
+        const updateCountdown = () => {
+          const daysElement = document.querySelector('.days > span');
+          const hoursElement = document.querySelector('.hours > span');
+          const minsElement = document.querySelector('.mins > span');
+          const secElement = document.querySelector('.sec > span');
+    
+          const d = Math.floor(times / (1000 * 60 * 60 * 24));
+          const h = Math.floor((times % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const m = Math.floor((times % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((times % (1000 * 60)) / 1000);
+    
+          daysElement.textContent = (d < 10 ? '0' : '') + d;
+          hoursElement.textContent = (h < 10 ? '0' : '') + h;
+          minsElement.textContent = (m < 10 ? '0' : '') + m;
+          secElement.textContent = (s < 10 ? '0' : '') + s;
+    
+          if(h <= 2 && s > 0){
+            const voucherExpired = document.querySelector(`.${styles.voucherExpired} > p`)
+            voucherExpired.innerHTML = 'Ưu đãi sắp hết hạn'
+          }
+
+          if (times <= 0) {
+            clearInterval(countdownInterval);
+            daysElement.textContent = '00'
+            hoursElement.textContent = '00'
+            minsElement.textContent = '00'
+            secElement.textContent = '00'
+          } else {
+            times -= 1000;
+          }
+        };
+    
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        const getVoucherBtn = document.querySelector(`.${styles.countDownBtn}`)
+          getVoucherBtn.addEventListener('click', () => {
+            clearInterval(countdownInterval)
+            getVoucherBtn.setAttribute('id', 'animateExtend')
+            const textBtn = document.querySelector(`.${styles.countDownBtn} > span`)
+            textBtn.innerHTML = `<span class="material-symbols-outlined">done</span>`
+            console.log('text', textBtn)
+            const labelexpired = document.querySelector(`.${styles.labelexpired}`)
+            labelexpired.style.marginTop = '30px'
+            labelexpired.innerHTML = `
+              <img src='./img/voucher.png' width="200px">
+              <div>
+                <h2>Ưu đãi: ${voucher.discount}% tổng thanh toán</h2>
+                <p>Mã: <u>${voucher.voucher_code}</u> </p>
+              </div>
+            `
+          })
+      }
+    };
   
     fetchData();
     setIsLoading(false);
+    handleCountDown()
   }, [])
+
 
   return (
     <div>
@@ -332,64 +397,105 @@ const Home = () => {
           (
             <>
               <div id={styles.home}>
-              <div className={styles.homeCol1}>
-                <div className={styles.carousel}>
-                  {slides.map((slide, index) => (
-                    <>
-                      <div
-                        key={index}
-                        className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
-                      >
-                        <img
-                          src={slide.imageUrl} alt={slide.alt}
-                        />
-                      </div>
-                      <div key={index}
-                        className={`${styles.slide} ${styles.bgTitle} ${index === currentIndex ? styles.active : ''}`}>
-                        <h3 key={index} className={slide.h3_animate}>{slide.h3}</h3>
-                        <h1 key={index} className={slide.h1_animate}>{slide.h1}</h1>
-                        <h2 className={slide.h2_animate}>{slide.h2}</h2>
-                        <button className={slide.button_animate}>
-                          {slide.button}
-                        </button>
-                      </div>
-                    </>
-                  ))}
+                <div className={styles.homeCol1}>
+                  <div className={styles.carousel}>
+                    {slides.map((slide, index) => (
+                      <>
+                        <div
+                          key={index}
+                          className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
+                        >
+                          <img
+                            src={slide.imageUrl} alt={slide.alt}
+                          />
+                        </div>
+                        <div key={index}
+                          className={`${styles.slide} ${styles.bgTitle} ${index === currentIndex ? styles.active : ''}`}>
+                          <h3 key={index} className={slide.h3_animate}>{slide.h3}</h3>
+                          <h1 key={index} className={slide.h1_animate}>{slide.h1}</h1>
+                          <h2 className={slide.h2_animate}>{slide.h2}</h2>
+                          <button className={slide.button_animate}>
+                            {slide.button}
+                          </button>
+                        </div>
+                      </>
+                    ))}
+                  </div>
+                  <button className={styles.prevBtn} onClick={handlePrevClick}>
+                    <span className="material-symbols-outlined">
+                      chevron_left
+                    </span>
+                  </button>
+                  <button className={styles.nextBtn} onClick={handleNextClick}>
+                    <span className="material-symbols-outlined">
+                      chevron_right
+                    </span>
+                  </button>
                 </div>
-                <button className={styles.prevBtn} onClick={handlePrevClick}>
-                  <span className="material-symbols-outlined">
-                    chevron_left
-                  </span>
-                </button>
-                <button className={styles.nextBtn} onClick={handleNextClick}>
-                  <span className="material-symbols-outlined">
-                    chevron_right
-                  </span>
-                </button>
-              </div>
-              <div className={styles.homeCol2}>
-                <div className={styles.category1}>
-                  <img src="./img/category1.webp" />
-                  <div className={styles.categoryTitle}>
-                    <h1>Espresso Coffee</h1>
-                    <button>SHOP NOW</button>
+                <div className={styles.homeCol2}>
+                  <div className={styles.category1}>
+                    <img src="./img/category1.webp" />
+                    <div className={styles.categoryTitle}>
+                      <h1>Espresso Coffee</h1>
+                      <button>SHOP NOW</button>
+                    </div>
+                  </div>
+                  <div className={styles.category2}>
+                    <img src="./img/category2.webp" />
+                    <div className={styles.categoryTitle}>
+                      <h1>Collection New</h1>
+                      <button>SHOP NOW</button>
+                    </div>
                   </div>
                 </div>
-                <div className={styles.category2}>
-                  <img src="./img/category2.webp" />
-                  <div className={styles.categoryTitle}>
-                    <h1>Collection New</h1>
-                    <button>SHOP NOW</button>
+
+                <div className={styles.newProducts}>
+                  <h1>New Product</h1>
+                  <div className={styles.newProductBox}>
+
                   </div>
                 </div>
-              </div>
 
-              <div className={styles.newProducts}>
-                <h1>New Product</h1>
-                <div className={styles.newProductBox}>
-
+                <div id={styles.countDown}>
+                    <div className={styles.count_down_v1}>
+                        <img src="./img/count-down.webp" width="550px" height="682px"/>
+                    </div>
+                    <div className={styles.count_down_v2}>
+                      <img src="./img/bgcount-downt.webp" height="682px" width="1400px"/>
+                      <div className={styles.countDownContent}>
+                          <div className={styles.countDownTitle}>
+                              <p>A NATURAL COFFEE</p>
+                              <button>
+                                Enjoy The Coffee
+                              </button>
+                          </div>
+                          <div className={styles.labelexpired}>
+                            <li className="days">
+                              <span>00</span>
+                              <h4>Days</h4>
+                            </li>
+                            <li className="hours">
+                              <span>00</span>
+                              <h4>Hours</h4>
+                            </li>
+                            <li className="mins">
+                              <span>00</span>
+                              <h4>Mins</h4>
+                            </li>
+                            <li className="sec">
+                              <span>00</span>
+                              <h4>Sec</h4>
+                            </li>
+                          </div>
+                          <button className={styles.countDownBtn}>
+                            <span>GET VOUCHER</span>
+                          </button>
+                          <div className={styles.voucherExpired}>
+                              <p></p>
+                          </div>
+                      </div>
+                    </div>
                 </div>
-              </div>
             </div>
             </>
           )
