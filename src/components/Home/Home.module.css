@@ -2,10 +2,6 @@
     position: relative;
 }
 
-body {
-    overflow-x: hidden;
-}
-
 .slide {
     display: none;
 }
@@ -319,6 +315,20 @@ body {
     justify-content: space-between;
 }
 
+.products_sale_box {
+    overflow-x: hidden;
+}
+.products_sale {
+    margin: 0px 17px;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    font-family: "Nunito", sans-serif;
+    justify-content: space-between;
+    width: 3318px;
+    transition: transform .9s ease;
+}
+
 .productItem {
     text-align: left;
     position: relative;
@@ -577,6 +587,9 @@ body {
     gap: 10px;
 }
 
+.carousel > img {
+    cursor: pointer;
+}
 .quickViewContent {
     display: flex;
     flex-direction: row;
@@ -794,6 +807,7 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
+    overflow-x: hidden;
 }
 
 .count_down_v2 {
@@ -952,7 +966,7 @@ body {
 }
 
 
-/*bor
+
 .days,
 .hours,
 .mins,
@@ -969,6 +983,7 @@ body {
     top: -50px;
     left: 20px;
     animation: wiggle 2s linear infinite;
+    display: none;
 }
 
 .voucherExpired>p {
@@ -1010,3 +1025,42 @@ body {
     }
 }
 
+.products_sale_box > h2 {
+    font-size: 35px;
+    font-family: "Nunito", sans-serif;
+    margin-top: 70px;
+}
+
+.products_sale_box > p {
+    font-family: "Nunito", sans-serif;
+    font-size: 17px;
+    margin-bottom: 50px;
+    font-weight: 600;
+    color: rgb(100, 100, 100);
+}
+
+.draggable {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 90px;
+    margin-bottom: 50px;
+}
+
+.draggable > button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    height: 5px;
+    width: 15px;
+    background-color: rgb(211, 211, 211);
+    text-indent: -9999px;
+}
+
+#slide_active {
+    background-color: black;
+    height: 5px;
+    width: 40px;
+}
