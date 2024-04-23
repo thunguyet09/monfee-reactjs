@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import { faCheckCircle, faInfoCircle, faLock, faTimesCircle, faUser, faSearch } from '@fortawesome/free-solid-svg-icons';
 import styles from './Home.module.css'
-import { getAllProducts, getChosedVoucher } from '../../api.js';
-import { daysToWeeks } from 'date-fns';
+import { getAllProducts, getCarts, getChosedVoucher, getNewsApproved, getDetail, getProductsByCategoryId } from '../../api.js';
 import MyLoader from '../Loader/Loader';
+import { numsInCart } from '../Header/Header';
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -53,6 +50,8 @@ const Home = () => {
 
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    const userId = localStorage.getItem('userId')
     const fetchData = async () => {
       try {
         const products = await getAllProducts();
@@ -62,7 +61,7 @@ const Home = () => {
         const data = newProducts.slice(0, 8)
         const productBox = document.querySelector(`.${styles.newProductBox}`)
         productBox.innerHTML = '';
-        data.forEach((item) => {
+        data.forEach(async (item) => {
           const productItem = document.createElement('div')
           productItem.className = styles.productItem
           productBox.appendChild(productItem)
@@ -98,6 +97,75 @@ const Home = () => {
           addToCart.className = styles.tooltip
           cart.appendChild(addToCart)
 
+          const cartModal = document.querySelector(`.${styles.cartModal}`)
+          const closeCartModal = document.querySelector(`.${styles.closeCartModal}`)
+          closeCartModal.addEventListener('click', () => {
+            localStorage.removeItem('product_id')
+            cartModal.style.display = 'none'
+          })
+
+          cart.addEventListener('click', async () => {
+            if(token){
+              const carts =  await getCarts()
+              let id = 0;
+              if(carts.length > 0){
+                id = carts[carts.length - 1].id + 1
+              }else{
+                id = 0
+              }
+              const cartObj = {
+                id: id,
+                prod_id: item.id,
+                quantity: 1,
+                user_id: userId,
+                size: '500g'
+              }
+              const existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == item.id)
+        
+              if(existingCart.length > 0){
+               existingCart.forEach(async (val) => {
+                const new_quantity = val.quantity + 1;
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({quantity: new_quantity, prod_id: val.prod_id, user_id: userId})
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', val.prod_id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+               })
+              }else{
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(cartObj)
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', item.id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+              }
+            }else{
+              document.location.href = '/login'
+            }
+          })
           const search = document.createElement('div')
           search.className = styles.searchBtn
           search.innerHTML = `<button><span class="material-symbols-outlined">search</span></button>`
@@ -330,17 +398,18 @@ const Home = () => {
 
       if (times > 0) {
         const updateCountdown = () => {
-          const daysElement = document.querySelector('.days > span');
-          const hoursElement = document.querySelector('.hours > span');
-          const minsElement = document.querySelector('.mins > span');
-          const secElement = document.querySelector('.sec > span');
 
           const d = Math.floor(times / (1000 * 60 * 60 * 24));
           const h = Math.floor((times % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const m = Math.floor((times % (1000 * 60 * 60)) / (1000 * 60));
           const s = Math.floor((times % (1000 * 60)) / 1000);
 
-          daysElement.textContent = (d < 10 ? '0' : '') + d;
+          const daysElement = document.querySelector('.days > span');
+          const hoursElement = document.querySelector('.hours > span');
+          const minsElement = document.querySelector('.mins > span');
+          const secElement = document.querySelector('.sec > span');
+        
+          daysElement.innerHTML = (d < 10 ? '0' : '') + d;
           hoursElement.textContent = (h < 10 ? '0' : '') + h;
           minsElement.textContent = (m < 10 ? '0' : '') + m;
           secElement.textContent = (s < 10 ? '0' : '') + s;
@@ -422,6 +491,75 @@ const Home = () => {
           cart.className = styles.cartBtn
           cart.innerHTML = `<button><span class="material-symbols-outlined">local_mall</span></button>`
           actions.appendChild(cart)
+
+          const cartModal = document.querySelector(`.${styles.cartModal}`)
+          const closeCartModal = document.querySelector(`.${styles.closeCartModal}`)
+          closeCartModal.addEventListener('click', () => {
+            localStorage.removeItem('product_id')
+            cartModal.style.display = 'none'
+          })
+          cart.addEventListener('click', async () => {
+            if(token){
+              const carts =  await getCarts()
+              let id = 0;
+              if(carts.length > 0){
+                id = carts[carts.length - 1].id + 1
+              }else{
+                id = 0
+              }
+              const cartObj = {
+                id: id,
+                prod_id: item.id,
+                quantity: 1,
+                user_id: userId,
+                size: '500g'
+              }
+              const existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == item.id)
+        
+              if(existingCart.length > 0){
+               existingCart.forEach(async (val) => {
+                const new_quantity = val.quantity + 1;
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({quantity: new_quantity, prod_id: val.prod_id, user_id: userId})
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', val.prod_id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+               })
+              }else{
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(cartObj)
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', item.id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+              }
+            }else{
+              document.location.href = '/login'
+            }
+          })
 
           const addToCart = document.createElement('div')
           addToCart.textContent = 'Add to Cart'
@@ -666,6 +804,322 @@ const Home = () => {
       }
     }
 
+    const showNews = async () => {
+        const news = await getNewsApproved()
+        const news_data = news.sort((a,b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt)
+        }).slice(0,8)
+
+        const slider_button = document.querySelector(`.${styles.slider_button}`)
+        const prevButton = document.querySelector(`.${styles.prev_button}`);
+        const nextButton = document.querySelector(`.${styles.next_button}`);
+        const newsBox = document.querySelector(`.${styles.news_box}`)
+       
+        newsBox.addEventListener('mouseenter', () => {
+          prevButton.style.display = 'block'
+          nextButton.style.display = 'block'
+        })
+
+        newsBox.addEventListener('mouseleave', () => {
+          prevButton.style.display = 'none'
+          nextButton.style.display = 'none'
+        })
+        const sliderContainer = document.querySelector(`.${styles.slider_container}`)
+        sliderContainer.innerHTML = ''
+        news_data.forEach((item) => {
+          const slider_slide = document.createElement('div')
+          slider_slide.className = styles.newsItem
+          sliderContainer.appendChild(slider_slide)
+          const imgBox = document.createElement('div')
+          imgBox.className = styles.imgBox
+          slider_slide.appendChild(imgBox)
+          const img = document.createElement('img')
+          img.src = `./img/${item.img_url}`
+          img.width = 560
+          imgBox.appendChild(img)
+
+          const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ];
+
+          const dateBox = document.createElement('div')
+          dateBox.className = styles.dateBox
+          slider_slide.appendChild(dateBox)
+          const day = document.createElement('h4')
+          day.innerHTML = new Date(item.createdAt).getDate()
+          dateBox.appendChild(day)
+          const dateHr = document.createElement('hr')
+          dateBox.appendChild(dateHr)
+          const month = document.createElement('h3')
+          const month_text = monthNames[new Date(item.createdAt).getMonth()]
+          month.innerHTML = month_text
+          dateBox.appendChild(month)
+          const info_blog = document.createElement('div')
+          info_blog.className = styles.info_blog
+          slider_slide.appendChild(info_blog)
+          const category_blog = document.createElement('a')
+          category_blog.className = styles.category_blog
+          category_blog.textContent = 'NEWS'
+          category_blog.href = '/blog'
+          info_blog.appendChild(category_blog)
+          const title_blog = document.createElement('a')
+          title_blog.className = styles.title_blog
+          title_blog.href = `/blog?id=${item.id}`
+          title_blog.innerHTML = `<h4>${item.title}</h4>`
+          info_blog.appendChild(title_blog)
+        })
+
+
+        let slideIndex = 0;
+
+        prevButton.addEventListener('click', () => {
+          if(slideIndex == 0){
+            slideIndex = 2;
+            const slideWidth = sliderContainer.clientWidth;
+            sliderContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+          }else{
+            slideIndex = (slideIndex - 1 + sliderContainer.children.length) % sliderContainer.children.length;
+            updateSliderPosition();
+          }
+        });
+
+        nextButton.addEventListener('click', () => {
+          slideIndex = (slideIndex + 1) % sliderContainer.children.length;
+          
+          if(slideIndex > 2){
+            slideIndex = 0;
+            sliderContainer.style.transform = `translateX(0px)`
+          }else{
+            updateSliderPosition();
+          }
+        });
+
+        function updateSliderPosition() {
+          const slideWidth = sliderContainer.clientWidth;
+          sliderContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+        }
+    }
+
+    const handleCartModal = async () => {
+      const productId = localStorage.getItem('product_id')
+      const cart = await getCarts()
+      const data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
+      const myCart = cart.filter((item) => item.user_id == userId)
+      const product = await getDetail(productId)
+      const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
+      let total = 0 
+      for (const res of myCart) {
+        const product = await getDetail(res.prod_id);
+        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price;
+        total += itemTotal;
+      }
+      data.forEach(async (item) => {
+        const imgCart = document.querySelector(`.${styles.imgCart}`)
+        imgCart.innerHTML = ''
+        const cartInfo = document.querySelector(`.${styles.cartInfo}`)
+        cartInfo.innerHTML = ''
+        const confirm = document.createElement('h2')
+        confirm.innerHTML = `
+        <span class="material-symbols-outlined">
+          done
+        </span>
+        <span>Added to cart successfully!</span>
+        `
+        imgCart.appendChild(confirm)
+        const img = document.createElement('img')
+          img.src = `./img/${product.img_url[0]}`
+          img.width = 200
+          imgCart.appendChild(img)
+        const product_name = document.createElement('h3')
+        product_name.textContent = product.name
+        imgCart.appendChild(product_name)
+        if(item.promo_price){
+          const price = document.createElement('h4')
+          price.className = styles.cart_price
+          price.innerHTML = `PRICE: <b>${product.promo_price.toLocaleString()}&#8363;</b>`
+          imgCart.appendChild(price)
+        }else{
+          const price = document.createElement('h4')
+          price.className = styles.cart_price
+          price.innerHTML = `PRICE: <b>${product.price.toLocaleString()}&#8363;</b>`
+          imgCart.appendChild(price)
+        }
+        const quantity = document.createElement('h4')
+        quantity.className = styles.cart_quantity
+        quantity.innerHTML = `QTY: <b>${item.quantity}</b>`
+        imgCart.appendChild(quantity)
+
+        let cal_subtotal = 0;
+        if(item.promo_price){
+          cal_subtotal = item.quantity * product.promo_price
+        }else{
+          cal_subtotal = item.quantity * product.price
+        }
+        const subtotal = document.createElement('h4')
+        subtotal.className = styles.cart_subtotal
+        subtotal.innerHTML = `SUBTOTAL: <b>${cal_subtotal.toLocaleString()}&#8363;</b>`
+        imgCart.appendChild(subtotal)
+
+        if(myCart.length < 2){
+          const items_count = document.createElement('p')
+          items_count.className = styles.items_count
+          items_count.innerHTML = `There are <span>${myCart.length}</span> item in your cart`
+          cartInfo.appendChild(items_count)
+        }else{
+          const items_count = document.createElement('p')
+          items_count.className = styles.items_count
+          items_count.innerHTML = `There are <span>${myCart.length}</span> items in your cart`
+          cartInfo.appendChild(items_count)
+        }
+        const cartModal = document.querySelector(`.${styles.cartModal}`)
+        const cart_total = document.createElement('p')
+        cart_total.className = styles.total_price
+        cart_total.innerHTML = `CART TOTALS: <span>${total.toLocaleString()}&#8363;</span>`
+        cartInfo.appendChild(cart_total)
+        const continue_shopping = document.createElement('button')
+        continue_shopping.className = styles.continue_shopping
+        continue_shopping.textContent = 'CONTINUE SHOPPING'
+        continue_shopping.addEventListener('click', () => {
+          cartModal.style.display = 'none'
+        })
+        cartInfo.appendChild(continue_shopping)
+
+        const go_to_cart = document.createElement('button')
+        go_to_cart.className = styles.go_to_cart
+        go_to_cart.textContent = 'GO TO CART'
+        cartInfo.appendChild(go_to_cart)
+        const cart_condition = document.createElement('div')
+        cart_condition.className = styles.cart_condition
+        cartInfo.appendChild(cart_condition)
+        const condition_checkbox = document.createElement('input')
+        condition_checkbox.type = 'checkbox'
+        cart_condition.appendChild(condition_checkbox)
+        const condition_label = document.createElement('label')
+        condition_label.textContent = 'Agree with term and conditional.'
+        cart_condition.appendChild(condition_label)
+
+        const checkOutBtn = document.createElement('input')
+        checkOutBtn.type = 'button'
+        checkOutBtn.value = 'PROCEED TO CHECKOUT'
+        checkOutBtn.className = styles.checkOutBtn
+        checkOutBtn.disabled = true
+        checkOutBtn.style.opacity = 0.7
+        cartInfo.appendChild(checkOutBtn)
+
+        condition_checkbox.addEventListener('change', () => {
+          if(condition_checkbox.checked == true){
+            checkOutBtn.disabled = false;
+            checkOutBtn.style.opacity = 1
+          }else{
+            checkOutBtn.disabled = true;
+            checkOutBtn.style.opacity = 0.7
+          }
+        })
+
+        const cartCol2 = document.querySelector(`.${styles.cartCol2}`)
+        cartCol2.innerHTML = ''
+        const suggested_products = document.createElement('div')
+        cartCol2.appendChild(suggested_products)
+        const suggested_products_title = document.createElement('div')
+        suggested_products_title.className = styles.suggested_products_title
+        suggested_products.appendChild(suggested_products_title)
+        const also_like_title = document.createElement('h3')
+        also_like_title.textContent = 'Suggested products:'
+        suggested_products_title.appendChild(also_like_title)
+        const also_like_btns = document.createElement('div')
+        also_like_btns.className = styles.also_like_btns
+        suggested_products_title.appendChild(also_like_btns)
+        const prevBtn = document.createElement('button')
+        prevBtn.className = styles.also_like_prevBtn
+        prevBtn.innerHTML = `<span class="material-symbols-outlined">arrow_back_ios</span>`
+        prevBtn.childNodes[0].setAttribute('id', styles.arrow_active)
+        also_like_btns.appendChild(prevBtn)
+        const nextBtn = document.createElement('button')
+        nextBtn.className = styles.also_like_nextBtn
+        nextBtn.innerHTML = `<span class="material-symbols-outlined">arrow_forward_ios</span>`
+        also_like_btns.appendChild(nextBtn)
+
+        const buttons = document.querySelectorAll(`.${styles.also_like_btns} > button`)
+        buttons.forEach((item) => {
+          item.addEventListener('click', () => {
+            buttons.forEach((val) => {
+              val.childNodes[0].removeAttribute('id')
+            })
+            item.childNodes[0].setAttribute('id', styles.arrow_active)
+          })
+        })
+        const suggected_prod_container = document.createElement('div')
+        suggected_prod_container.className = styles.suggected_prod_container
+        cartCol2.appendChild(suggected_prod_container)
+        products_by_categoryId.forEach((item) => {
+          const suggested_prod_box = document.createElement('div')
+          suggested_prod_box.className = styles.box
+          suggected_prod_container.appendChild(suggested_prod_box)
+          const img = document.createElement('img')
+          img.src = `./img/${item.img_url[0]}`
+          img.width = 200
+          suggested_prod_box.appendChild(img)
+          const name = document.createElement('h4')
+          name.textContent = item.name
+          suggested_prod_box.appendChild(name)
+          if(item.promo_price){
+            const price_box = document.createElement('div')
+            price_box.className = styles.price_box
+            suggested_prod_box.appendChild(price_box)
+            const promo_price = document.createElement('h4')
+            promo_price.innerHTML = `${item.promo_price.toLocaleString()}`
+            price_box.appendChild(promo_price)
+            const price = document.createElement('span')
+            price.innerHTML = `<del>${item.price.toLocaleString()}</del>`
+            price_box.appendChild(price)
+
+            const discount = document.createElement('div')
+            discount.className = styles.discount
+            const percent = 100 - Math.floor(((item.promo_price * 100)/item.price))
+            discount.textContent = '-' + percent + '%'
+            suggested_prod_box.appendChild(discount)
+          }else{
+            const price = document.createElement('h3')
+            price.className = styles.suggested_price
+            price.innerHTML = `${item.price.toLocaleString()}`
+            suggested_prod_box.appendChild(price)
+          }
+        })
+
+        let slideIndex = 0;
+
+        prevBtn.addEventListener('click', () => {
+          if(slideIndex == 0){
+            slideIndex = 2;
+            const slideWidth = suggected_prod_container.clientWidth;
+            suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+          }else{
+            slideIndex = (slideIndex - 1 + suggected_prod_container.children.length) % suggected_prod_container.children.length;
+            updateSliderPosition();
+          }
+        });
+
+        nextBtn.addEventListener('click', () => {
+          slideIndex = (slideIndex + 1) % suggected_prod_container.children.length;
+          
+          if(slideIndex > 2){
+            slideIndex = 0;
+            suggected_prod_container.style.transform = `translateX(0px)`
+          }else{
+            updateSliderPosition();
+          }
+        });
+
+        function updateSliderPosition() {
+          const slideWidth = (suggected_prod_container.clientWidth - 205);
+          suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+        }
+      })
+    }
+
+    handleCartModal()
+    showNews()
     productsSale()
     fetchData();
     setIsLoading(false);
@@ -792,7 +1246,9 @@ const Home = () => {
                 </div>
 
                 <div className={styles.news_box}>
-
+                    <div className={styles.slider_container}></div>
+                    <button className={`${styles.slider_button} ${styles.prev_button}`}><span className="material-symbols-outlined">arrow_back_ios</span></button>
+                    <button className={`${styles.slider_button} ${styles.next_button}`}><span className="material-symbols-outlined">arrow_forward_ios</span></button>
                 </div>
               </div>
             </>
@@ -809,6 +1265,26 @@ const Home = () => {
                 <div className={styles.quickViewInfo}>
                 </div>
                 <span className={styles.close}>&times;</span>
+              </div>
+            </div>
+          )
+      }
+
+{
+        isLoading ? <MyLoader /> :
+          (
+            <div id={styles.cartModal} className={styles.cartModal}>
+              <div className={styles.cartContent}>
+                <div className={styles.cartCol1}>
+                  <div className={styles.imgCart}>
+                  </div>
+                  <div className={styles.cartInfo}>
+                  </div>
+                  <span className={styles.closeCartModal}>&times;</span>
+                </div>
+                <div className={styles.cartCol2}>
+
+                </div>
               </div>
             </div>
           )

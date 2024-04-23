@@ -58,6 +58,7 @@
 }
 
 .registerBtn {
+    font-family: "Nunito", sans-serif;
     margin-top: 40px;
     padding: 15px 40px;
     font-size: 15px;
@@ -140,6 +141,7 @@
 
 .btnAction > p > a {
     font-weight: 600;
+    cursor: pointer;
 }
 
 /* dialog */
@@ -165,7 +167,7 @@
 
 #dialogContent >p {
     margin: 0;
-    font-size: 16px;
+    font-size: 17px;
     font-family: 'Roboto', sans-serif;
 }
 

@@ -9,3 +9,27 @@ export const getChosedVoucher = async () => {
     const data = await res.json()
     return data
 }
+
+export const getNewsApproved = async () => {
+    const res = await fetch('http://localhost:3000/news')
+    const data = await res.json()
+    return data
+}
+
+export const getCarts= async () => {
+    const res = await fetch('http://localhost:3000/cart')
+    const data = await res.json()
+    return data
+}
+
+export const getDetail = async (id) => {
+    const res = await fetch(`http://localhost:3000/products/${id}`)
+    const data = await res.json()
+    return data
+}
+
+export const getProductsByCategoryId = async (id) => {
+    const res = await fetch(`http://localhost:3000/products/category/${id}`)
+    const data = await res.json()
+    return data
+}
