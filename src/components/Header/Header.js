@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faInfoCircle, faLock, faTimesCircle, faUser, faSearch, faHeart, faUserCheck } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
 import { getCarts } from '../../api';
+import Search from '../Search/Search';
+import { SearchContext, useSearch } from '../../contexts/SearchContext/SearchContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
   const carts = await getCarts()
@@ -10,14 +12,12 @@ const numsInCart = async () => {
   const filteredCarts = carts.filter(((item) => item.user_id == userId))
   numsInCart.innerHTML = `${filteredCarts.length}`
 }
+
 export {numsInCart}
-
 const Header = () => {
-
   const url = new URL(document.location.href);
   const path = url.pathname.split('/').filter(Boolean);
   const value = path[path.length - 1];
-
   numsInCart()
   useEffect(() => {
     const handleScroll = () => {
@@ -48,7 +48,7 @@ const Header = () => {
         shoppingIcon.style.color = 'black'
       } else {
         if (typeof (value) == 'undefined') {
-          header.style.position = 'static'
+          header.style.position = 'fixed'
           header.style.backgroundColor = 'rgba(0, 0, 0, 0)'
           menuItems.forEach((node) => {
             node.style.color = 'white'
@@ -135,14 +135,30 @@ const Header = () => {
         })
       }
     }
-
     handleHeader()
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+
+  const { open, setSearchOpen } = useSearch()
+
+  useEffect(() => { 
+    const searchItemElement = document.querySelector(`.${styles.searchItem}`);
+    const handleClick = () => {
+      setSearchOpen(true)
+    };
+    searchItemElement.addEventListener('click', handleClick);
+
+    return () => {
+      searchItemElement.removeEventListener('click', handleClick);
+    };
+  }, []);
+
   return (
-    <div id={styles.header}>
+    <>
+      <div id={styles.header}>
       <div className={styles.leftHeader}>
         <ul>
           <li><a href="/">HOME</a></li>
@@ -157,7 +173,7 @@ const Header = () => {
       </div>
       <div className={styles.rightHeader}>
         <span>
-          <span>
+          <span className={styles.searchItem}>
             <FontAwesomeIcon icon={faSearch} style={{ fontSize: '24px' }} />
           </span>
           <span className={styles.user}>
@@ -179,6 +195,7 @@ const Header = () => {
         </span>
       </div>
     </div>
+    </>
   )
 }
 

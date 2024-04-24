@@ -9,10 +9,12 @@ import Register from './components/Register/Register';
 import NotFound from './components/NotFound/NotFound';
 import Login from './components/Login/Login';
 import Account from './components/Account/Account';
+import { SearchContextProvider } from './contexts/SearchContext/SearchContext';
 import Search from './components/Search/Search';
 function App() {
   return (
     <div className={styles.App}>
+       <SearchContextProvider>
        <Routes>
             <Route
                 path="/register"
@@ -66,6 +68,7 @@ function App() {
                 }
             />
         </Routes>
+       </SearchContextProvider>
     </div>
   );
 }

@@ -1,14 +1,56 @@
 .search_input {}
 
 .search_eveland {
-    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9;
+    display: none;
     background-color: white;
 }
 
 .search_results {}
 
+.searchItem {}
+
+#search_box_closed {
+    animation: close_search_box 1s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes close_search_box {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateY(-600px);
+        display: none;
+        opacity: 0;
+    }
+}
+
+#search_box_opened {
+    animation: open_search_box 1s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes open_search_box {
+    0% {
+        opacity: 0;
+        transform: translateY(-600px);
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
 .close_search {
     float: right;
+    margin-top: 10px;
     margin-right: 20px;
 }
 
@@ -46,6 +88,8 @@
     height: 310px;
     text-align: left;
     padding: 25px 0px 50px 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .search_drawer {
@@ -53,9 +97,41 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-bottom: 20px;
 }
 
 .search_msg {
     font-size: 18px;
     font-weight: 600;
+}
+
+.product_info > img{
+    border: 1px solid rgb(207, 207, 207);
+}
+
+.product_search_results {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 30px;
+}
+
+.product_info {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    border-bottom: 1px solid rgb(230, 230, 230);
+    padding-bottom: 20px;
+}
+
+.product_info_row2 {}
+.product_info_row2 > h4 {
+    font-family: "Nunito", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.product_info_row2 > h3 {
+    font-family: "Nunito", sans-serif;
+    font-size: 17px;
+    color:#b8784e;
 }
