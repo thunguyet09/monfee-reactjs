@@ -11,6 +11,7 @@ import Login from './components/Login/Login';
 import Account from './components/Account/Account';
 import { SearchContextProvider } from './contexts/SearchContext/SearchContext';
 import Search from './components/Search/Search';
+import Product from './components/Product/Product';
 function App() {
   return (
     <div className={styles.App}>
@@ -53,6 +54,20 @@ function App() {
                 }
             />
             <Route element={<NotFound />} />
+            <Route
+                exact
+                path="/shop"
+                element={
+                    <div className={styles.main}>
+                      <Search />
+                      <Header />
+                      <div className={styles.homePage}>
+                        <Product />
+                        <Footer />
+                      </div>
+                    </div>
+                }
+            />
             <Route
                 exact
                 path="/"

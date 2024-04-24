@@ -57,7 +57,10 @@ const Header = () => {
             node.style.color = 'white'
           })
           shoppingIcon.style.color = 'white'
-        } else {
+        }else if(value == 'shop'){
+          header.style.backgroundColor = 'white'
+          header.style.position = 'static'
+        }else {
           header.style.position = 'static'
           header.style.backgroundColor = 'rgba(0, 0, 0, 0)'
           menuItems.forEach((node) => {
