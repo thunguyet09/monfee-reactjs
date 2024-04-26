@@ -33,3 +33,10 @@ export const getProductsByCategoryId = async (id) => {
     const data = await res.json()
     return data
 }
+
+
+export const product_pagination = async (page, limit) => {
+    const res = await fetch(`http://localhost:3000/products/page/${page}/limit/${limit}`)
+    const data = await res.json()
+    return data
+}

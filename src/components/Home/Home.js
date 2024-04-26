@@ -228,21 +228,22 @@ const Home = () => {
             const sizeItems = document.createElement('div')
             sizeItems.className = styles.sizeItems
             sizeBox.appendChild(sizeItems)
-            const smallSize = document.createElement('button')
-            smallSize.id = styles.sizeActive
-            smallSize.textContent = '500G'
-            sizeItems.appendChild(smallSize)
-            const largeSize = document.createElement('button')
-            largeSize.textContent = '1000G'
-            sizeItems.appendChild(largeSize)
+            
+            item.sizes.forEach((val) => {
+              const size = document.createElement('button')
+              size.textContent = val
+              sizeItems.appendChild(size)
+            })
 
             const sizes = document.querySelectorAll(`.${styles.sizeItems} > button`)
             sizes.forEach((val) => {
               val.addEventListener('click', () => {
-                sizes.forEach(node => {
-                  node.removeAttribute('id')
+                sizes.forEach((node) => {
+                  node.style.backgroundColor = 'white'
+                  node.style.color = 'black'
                 })
-                val.setAttribute('id', styles.sizeActive)
+                val.style.backgroundColor = 'black'
+                val.style.color = 'white'
                 if (val.textContent == '1000G') {
                   if (item.promo_price) {
                     const _price = item.promo_price * 2;
@@ -624,21 +625,21 @@ const Home = () => {
             const sizeItems = document.createElement('div')
             sizeItems.className = styles.sizeItems
             sizeBox.appendChild(sizeItems)
-            const smallSize = document.createElement('button')
-            smallSize.id = styles.sizeActive
-            smallSize.textContent = '500G'
-            sizeItems.appendChild(smallSize)
-            const largeSize = document.createElement('button')
-            largeSize.textContent = '1000G'
-            sizeItems.appendChild(largeSize)
+            item.sizes.forEach((val) => {
+              const size = document.createElement('button')
+              size.textContent = val
+              sizeItems.appendChild(size)
+            })
 
             const sizes = document.querySelectorAll(`.${styles.sizeItems} > button`)
             sizes.forEach((val) => {
               val.addEventListener('click', () => {
-                sizes.forEach(node => {
-                  node.removeAttribute('id')
+                sizes.forEach((node) => {
+                  node.style.backgroundColor = 'white'
+                  node.style.color = 'black'
                 })
-                val.setAttribute('id', styles.sizeActive)
+                val.style.backgroundColor = 'black'
+                val.style.color = 'white'
                 if (val.textContent == '1000G') {
                   if (item.promo_price) {
                     const _price = item.promo_price * 2;

@@ -966,7 +966,7 @@
     gap: 10px;
 }
 
-#sizeActive {
+.sizeItems > button:first-child {
     background-color: black;
     color: white;
 }

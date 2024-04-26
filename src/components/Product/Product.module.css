@@ -15,7 +15,7 @@
     font-family: "Nunito", sans-serif;
 }
 
-.bread_crumb > h1 {
+.bread_crumb>h1 {
     font-size: 45px;
     font-weight: 600;
     letter-spacing: 2.5px;
@@ -23,7 +23,7 @@
     margin-bottom: 10px;
 }
 
-.bread_crumb > div {
+.bread_crumb>div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -31,7 +31,7 @@
     justify-content: center;
 }
 
-.bread_crumb > div > h4 {
+.bread_crumb>div>h4 {
     font-family: "Nunito", sans-serif;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -40,7 +40,7 @@
 }
 
 
-.bread_crumb > div > span {
+.bread_crumb>div>span {
     font-size: 18px;
 }
 
@@ -68,11 +68,11 @@
     transition: transform 2s ease;
 }
 
-.slider_item > img {
+.slider_item>img {
     border-radius: 50%;
 }
 
-.slider_item:hover > img {
+.slider_item:hover>img {
     animation: border_animate 1s ease;
     animation-fill-mode: forwards;
     cursor: pointer;
@@ -90,12 +90,13 @@
     75% {
         border: 2px solid #b8784e;
     }
+
     100% {
         border: 3px solid #b8784e;
     }
 }
 
-.slider_item > h3{
+.slider_item>h3 {
     font-size: 14px;
     font-family: "Nunito", sans-serif;
     letter-spacing: 1.3px;
@@ -129,7 +130,8 @@
         transform: translateX(0);
     }
 }
-.prevBtn > span {
+
+.prevBtn>span {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -138,6 +140,7 @@
     font-size: 12px;
     font-weight: bold;
 }
+
 .nextBtn {
     display: none;
     position: absolute;
@@ -157,7 +160,8 @@
 }
 
 
-.nextBtn:hover, .prevBtn:hover {
+.nextBtn:hover,
+.prevBtn:hover {
     background-color: #b8784e;
     color: white;
 }
@@ -192,7 +196,7 @@
     }
 }
 
-.nextBtn > span {
+.nextBtn>span {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -225,6 +229,7 @@
     justify-content: space-between;
     align-items: flex-start;
 }
+
 .filterBtn {
     font-family: "Nunito", sans-serif;
     display: flex;
@@ -244,21 +249,22 @@
     color: white;
     border: 1px solid #b8784e;
 }
-.filterBtn > h3 {
+
+.filterBtn>h3 {
     margin: 0;
     font-size: 19px;
     font-weight: 600;
     letter-spacing: 2px;
 }
 
-.filterBtn > span {
+.filterBtn>span {
     font-size: 21px;
 }
 
 .icon_change {
     border: 1px solid black;
     background-color: white;
-    padding:5px;
+    padding: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -288,11 +294,11 @@
 
 .featuredBtn:hover {
     background-color: #b8784e;
-    color:white;
+    color: white;
     border: 1px solid #b8784e;
 }
 
-.featuredBtn > h3 {
+.featuredBtn>h3 {
     margin: 0;
     font-size: 17px;
     font-weight: 600;
@@ -314,7 +320,7 @@
     transition: opacity .5s ease, visibility .5s ease;
 }
 
-.prod_per > button {
+.prod_per>button {
     font-family: "Nunito", sans-serif;
     font-size: 17px;
     padding: 11px 19px;
@@ -326,13 +332,13 @@
 
 #size_active {
     background-color: black;
-    color: white; 
+    color: white;
 }
 
-.prod_per > button:hover {
+.prod_per>button:hover {
     cursor: pointer;
     background-color: black;
-    color: white; 
+    color: white;
 }
 
 .featured {
@@ -350,9 +356,10 @@
     opacity: 0;
     z-index: 19;
     transition: opacity .3s ease;
+    background-color: white;
 }
 
-.dropdown > li {
+.dropdown>li {
     list-style-type: none;
     padding: 10px 0px 10px 8px;
     font-family: "Nunito", sans-serif;
@@ -360,12 +367,12 @@
     cursor: pointer;
 }
 
-.dropdown > li:hover {
+.dropdown>li:hover {
     background-color: #b8784e;
     color: white;
 }
 
-.widget_title > h3::after {
+.widget_title>h3::after {
     content: "";
     border-bottom: 1px solid #e6e6e6;
     width: 60%;
@@ -381,7 +388,7 @@
     position: relative;
 }
 
-.widget_title > h3 {
+.widget_title>h3 {
     font-family: "Nunito", sans-serif;
     font-size: 22px;
     letter-spacing: 0.2px;
@@ -391,17 +398,17 @@
     color: rgb(54, 54, 54);
 }
 
-.widget_content > ul {
+.widget_content>ul {
     padding: 0;
     text-align: left;
 }
 
-.widget_content > ul > li {
+.widget_content>ul>li {
     list-style-type: none;
     padding: 9px 0px;
 }
 
-.widget_content > ul > li > a{
+.widget_content>ul>li>a {
     text-decoration: none;
     font-family: "Nunito", sans-serif;
     color: rgb(54, 54, 54);
@@ -411,7 +418,7 @@
     cursor: pointer;
 }
 
-.widget_content > ul > li > a:hover {
+.widget_content>ul>li>a:hover {
     color: rgb(133, 255, 62);
 }
 
@@ -424,7 +431,7 @@
     margin-top: 20px;
 }
 
-.list_color > li {
+.list_color>li {
     list-style-type: none;
     padding: 5px;
     border-radius: 50%;
@@ -432,10 +439,11 @@
     cursor: pointer;
 }
 
-.list_color > li:hover {
+.list_color>li:hover {
     border: 1px solid #A5805B;
 }
-.list_color > li > a {
+
+.list_color>li>a {
     display: block;
     width: 30px;
     height: 30px;
@@ -443,7 +451,7 @@
     position: relative;
 }
 
-.list_color > li > a::before {
+.list_color>li>a::before {
     content: "";
     border: 1px solid #ccc;
     width: 34px;
@@ -457,11 +465,12 @@
     opacity: 0;
 }
 
-.color_option, .size_option {
+.color_option,
+.size_option {
     margin-top: 40px;
 }
 
-.list_size > li {
+.list_size>li {
     list-style-type: none;
 }
 
@@ -475,7 +484,7 @@
     margin-top: 40px;
 }
 
-.list_size > li > a {
+.list_size>li>a {
     font-family: "Nunito", sans-serif;
     font-size: 17px;
     padding: 10px 15px;
@@ -492,15 +501,22 @@
     text-align: left;
     list-style-type: none;
 }
-.list_price > li {
+
+.list_price>li {
     list-style-type: none;
     padding: 10px 0px;
+    font-family: "Nunito", sans-serif;
 }
 
-.list_price > li > a {
-    font-family: "Nunito", sans-serif;
+.list_price>li>a {
     font-weight: 600;
     font-size: 16px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.list_price>li>a:hover {
+    color: #b8784e;
 }
 
 .banner_sidebar {
@@ -511,11 +527,11 @@
     height: 350px;
 }
 
-.banner_sidebar > a {
+.banner_sidebar>a {
     position: relative;
 }
 
-.banner_sidebar > a::before {
+.banner_sidebar>a::before {
     content: "";
     position: absolute;
     top: 0;
@@ -526,11 +542,11 @@
     z-index: 1;
 }
 
-.banner_sidebar > a > img {
+.banner_sidebar>a>img {
     transition: transform 1s ease;
 }
 
-.banner_sidebar > a::after {
+.banner_sidebar>a::after {
     content: "";
     position: absolute;
     top: 0;
@@ -541,7 +557,7 @@
     z-index: 1;
 }
 
-.banner_sidebar > a:hover > img {
+.banner_sidebar>a:hover>img {
     cursor: pointer;
     transform: scale(1.1);
 }
@@ -560,4 +576,353 @@
     display: flex;
     flex-direction: column;
     width: 280px;
+    position: relative;
+}
+
+.img_product {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.row>.title_product {
+    font-family: "Nunito", sans-serif;
+    font-size: 17px;
+    height: 23px;
+}
+
+.product_icon_action {
+    position: absolute;
+    left: 15px;
+    bottom: 30%;
+    display: none;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    z-index: 1;
+    animation: slideUp 1.5s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(50px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.product_icon_action>button {
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .3s ease;
+}
+
+.product_icon_action>button:first-child>span {
+    font-weight: 700;
+}
+
+.product_icon_action>button:nth-child(2)>span {
+    font-weight: 600;
+}
+
+.img_product::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition: opacity .4s linear;
+    background-color: #23252999;
+    height: 347px;
+    cursor: pointer;
+}
+
+#img_product_after:hover::after {
+    opacity: 1;
+}
+
+
+.price_box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-family: "Nunito", sans-serif;
+}
+
+.price_box>h4 {
+    color: #b8784e;
+    font-size: 17px;
+}
+
+.price_item {
+    font-family: "Nunito", sans-serif;
+    color: #b8784e;
+    font-size: 17px;
+}
+
+.price_box>h5 {
+    font-size: 16px;
+    color: rgb(122, 122, 122);
+}
+
+.product_colors {
+    position: absolute;
+    bottom: 43%;
+    left: 38%;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+}
+
+#animate_color {
+    animation: colorSlideUp .5s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes colorSlideUp {
+    0% {
+        transform: translateY(20px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.product_colors>button {
+    border: 1px solid white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.product_icon_action>button:hover {
+    background-color: #b8784e;
+    color: white;
+}
+
+.product_colors>button:hover {
+    transform: scale(1.1);
+}
+
+.discount {
+    animation: none;
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: "Nunito", sans-serif;
+    background-color: #ed1f1f;
+    font-size: 12px;
+    color: white;
+    padding: 6px 16px;
+}
+
+.filter_colors {}
+
+.filter_price {}
+
+.filter_v2 {
+    margin-top: 25px;
+    transition: all .3s ease;
+    overflow: hidden;
+}
+
+.filter_box {
+    display: none;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 1px solid #e6e6e6;
+    padding: 15px 35px 40px 35px;
+}
+
+.show {
+    display: flex;
+    animation: showFilterBox .5s ease;
+    animation-fill-mode: forwards;
+}
+
+@keyframes showFilterBox {
+    0% {
+        height: 0;
+    }
+
+    100% {
+        height: 82%;
+    }
+}
+
+.collapse {
+    display: none;
+    animation: hiddenFilterBox .5s linear;
+    animation-fill-mode: forwards;
+}
+
+.col_title>h2 {
+    font-family: "Nunito", sans-serif;
+    font-size: 21px;
+    font-weight: 650;
+    letter-spacing: 0.5px;
+    position: relative;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.col_title>h2::before {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 65px;
+    background: #b8784e;
+    bottom: -10px;
+}
+
+.col_content>ul {
+    padding: 0;
+    text-align: left;
+}
+
+.col_content>ul>li {
+    list-style-type: none;
+    padding: 5px 0px;
+}
+
+.col_content>ul>li>a {
+    text-decoration: none;
+    color: black;
+    font-family: "Nunito", sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.col_content>ul>li>a:hover {
+    color: #b8784e;
+}
+
+.filter_colors {
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.filter_colors>button>input {
+    width: 23px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.filter_colors>button {
+    border: none;
+    outline: none;
+    padding: 5px 5px 2px 5px;
+    border-radius: 50%;
+    background-color: white;
+    transition: all .3s ease;
+}
+
+.filter_colors>button:hover {
+    border: 1px solid black;
+}
+
+.filter_size {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter_size>button {
+    background-color: white;
+    border: 1px solid black;
+    font-family: "Nunito", sans-serif;
+    font-size: 16px;
+    padding: 10px 15px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.filter_size>button:hover {
+    background-color: #b8784e;
+    color: white;
+    border: 1px solid #b8784e;
+}
+
+.pagination, .total_pages {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination > a, .total_pages > a{
+    font-family: "Nunito", sans-serif;
+    border: 1px solid rgb(216, 216, 216);
+    width: 45px;
+    height: 45px;
+    padding: 3px 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: .3s ease;
+    font-weight: 600;
+}
+
+.prev_page > span, .next_page > span {
+    font-size: 17px;
+    color: rgb(133, 133, 133);
+    font-weight: 700;
+    transition: .3s ease;
+}
+
+.first_page > span, .last_page > span {
+    font-size: 25px;
+    color: rgb(97, 97, 97);
+    font-weight: 700;
+    transition: .3s ease;
+}
+
+.pagination > a:hover {
+    background-color: black;
+}
+
+.pagination > a:hover > span {
+    color: white;
+}
+
+.total_pages {}
+
+
+#page_active {
+    background-color: black;
+    color: white;
 }
