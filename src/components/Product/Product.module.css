@@ -355,7 +355,7 @@
     left: 0;
     width: 99%;
     opacity: 0;
-    z-index: 19;
+    z-index: -1;
     transition: opacity .3s ease;
     background-color: white;
 }
@@ -746,8 +746,14 @@
 
 .filter_colors {}
 
-.filter_price {}
+.filter_price > li{
+    transition: .3s ease;
+}
 
+.filter_price > li:hover {
+    color:#b8784e;
+    cursor: pointer;
+}
 .filter_v2 {
     margin-top: 25px;
     transition: all .3s ease;

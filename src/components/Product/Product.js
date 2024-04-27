@@ -76,6 +76,7 @@ const Product = () => {
             flag = !flag
             if (flag) {
                 dropdown.style.opacity = 1
+                dropdown.style.zIndex = 19
                 featured_icon.innerHTML = `<span class="material-symbols-outlined">arrow_drop_up</span>`
             } else {
                 dropdown.style.opacity = 0
@@ -91,6 +92,9 @@ const Product = () => {
     }, []);
 
     useEffect(() => {
+        const product_items = document.querySelector(`.${styles.product_grid_parent}`)
+        const items_per_page = localStorage.getItem('items_per_page')
+        let page = 1;
         const colors = async () => {
             const products = await getAllProducts()
             const uniqueColors = products.reduce((colorSet, item) => {
@@ -116,7 +120,9 @@ const Product = () => {
                     const products_filtered = products.filter((val) => {
                       return val.colors.includes(color_choose);
                     });
-                    console.log(products_filtered);
+                    showProductGrid(products_filtered)
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '30px'
                 });
                 const color_item = document.createElement('input')
                 color_item.style.backgroundColor = item
@@ -140,25 +146,95 @@ const Product = () => {
             price_list_v1.innerHTML = `<a>${minPrice.toLocaleString()} - ${price_v1.toLocaleString()}</a>`
             price_list.appendChild(price_list_v1)
             filter_price.appendChild(price_list_v1)
+            price_list_v1.addEventListener('click', async () => {
+                let data = await product_pagination(page, items_per_page)
+                const filter_products = products.filter((val) => {
+                    if (val.promo_price) {
+                      return val.promo_price >= minPrice && val.promo_price <= price_v1;
+                    } else {
+                      return val.price >= minPrice && val.price <= price_v1;
+                    }
+                  });
+                product_items.style.justifyContent = 'flex-start'
+                product_items.style.columnGap = '25px'
+                data.products = filter_products
+                showProductGrid(data.products)
+            })
             const price_list_v2 = document.createElement('li')
             const price_v2 = price_v1 + 80000
             price_list_v2.innerHTML = `<a>${price_v1.toLocaleString()} - ${price_v2.toLocaleString()}</a>`
             price_list.appendChild(price_list_v2)
             filter_price.appendChild(price_list_v2)
+            price_list_v2.addEventListener('click', async () => {
+                let data = await product_pagination(page, items_per_page)
+                const filter_products = products.filter((val) => {
+                    if (val.promo_price) {
+                      return val.promo_price >= price_v1 && val.promo_price <= price_v2;
+                    } else {
+                      return val.price >= price_v1 && val.price <= price_v2;
+                    }
+                  });
+                product_items.style.justifyContent = 'flex-start'
+                product_items.style.columnGap = '25px'
+                data.products = filter_products
+                showProductGrid(data.products)
+            })
             const price_list_v3 = document.createElement('li')
             const price_v3 = price_v2 + 80000
             price_list_v3.innerHTML = `<a>${price_v2.toLocaleString()} - ${price_v3.toLocaleString()}</a>`
             price_list.appendChild(price_list_v3)
             filter_price.appendChild(price_list_v3)
+            price_list_v3.addEventListener('click', async () => {
+                let data = await product_pagination(page, items_per_page)
+                const filter_products = products.filter((val) => {
+                    if (val.promo_price) {
+                      return val.promo_price >= price_v2 && val.promo_price <= price_v3;
+                    } else {
+                      return val.price >= price_v2 && val.price <= price_v3;
+                    }
+                  });
+                product_items.style.justifyContent = 'flex-start'
+                product_items.style.columnGap = '25px'
+                data.products = filter_products
+                showProductGrid(data.products)
+            })
             const price_list_v4 = document.createElement('li')
             const price_v4 = price_v3 + 80000
             price_list_v4.innerHTML = `<a>${price_v3.toLocaleString()} - ${price_v4.toLocaleString()}</a>`
             price_list.appendChild(price_list_v4)
             filter_price.appendChild(price_list_v4)
+            price_list_v4.addEventListener('click', async () => {
+                let data = await product_pagination(page, items_per_page)
+                const filter_products = products.filter((val) => {
+                    if (val.promo_price) {
+                      return val.promo_price >= price_v3 && val.promo_price <= price_v4;
+                    } else {
+                      return val.price >= price_v3 && val.price <= price_v4;
+                    }
+                  });
+                product_items.style.justifyContent = 'flex-start'
+                product_items.style.columnGap = '25px'
+                data.products = filter_products
+                showProductGrid(data.products)
+            })
             const price_list_v5 = document.createElement('li')
             price_list_v5.innerHTML = `<a>Over ${price_v4.toLocaleString()}</a>`
             price_list.appendChild(price_list_v5)
             filter_price.appendChild(price_list_v5)
+            price_list_v5.addEventListener('click', async () => {
+                let data = await product_pagination(page, items_per_page)
+                const filter_products = products.filter((val) => {
+                    if (val.promo_price) {
+                      return val.promo_price > price_v4;
+                    } else {
+                      return val.price > price_v4;
+                    }
+                  });
+                product_items.style.justifyContent = 'flex-start'
+                product_items.style.columnGap = '25px'
+                data.products = filter_products
+                showProductGrid(data.products)
+            })
         }
 
 
@@ -175,7 +251,6 @@ const Product = () => {
 
         const showProductGrid = async (products) => {
             const prod_per = document.querySelectorAll(`.${styles.prod_per} > button`)
-            const product_items = document.querySelector(`.${styles.product_grid_parent}`)
             product_items.innerHTML = ''
             const product_item_arr = []
             products.forEach((item) => {
@@ -438,7 +513,6 @@ const Product = () => {
             })
         }
 
-        let page = 1;
         const prev_page = document.querySelector(`.${styles.prev_page}`)
         const first_page = document.querySelector(`.${styles.first_page}`)
         if (page == 1) {
@@ -454,11 +528,22 @@ const Product = () => {
             const next_page = document.querySelector(`.${styles.next_page}`)
             const first_page = document.querySelector(`.${styles.first_page}`)
             const prev_page = document.querySelector(`.${styles.prev_page}`)
-            const items_per_page = localStorage.getItem('items_per_page')
             let last_page_data = await product_pagination(totalPages, items_per_page)
             let first_page_data = await product_pagination(1, items_per_page)
             const total_pages = document.querySelector(`.${styles.total_pages}`)
             total_pages.innerHTML = ''
+            const filter_size = document.querySelectorAll(`.${styles.filter_size} > button`)
+            filter_size.forEach((item) => {
+                item.addEventListener('click', async () => {
+                    let data = await product_pagination(page, items_per_page)
+                    const filteredData = data.products.filter((val) => {
+                        return val.sizes.includes(item.textContent)
+                    })
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '25px'
+                    showProductGrid(filteredData)
+                })
+            })
             next_page.addEventListener('click', async () => {
                 const next_page_number = parseInt(page) + 1
                 page = next_page_number;
