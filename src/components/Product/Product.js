@@ -111,9 +111,17 @@ const Product = () => {
             filter_colors.innerHTML = ''
             uniqueColors.forEach((item) => {
                 const button = document.createElement('button')
+                button.addEventListener('click', () => {
+                    const color_choose = button.childNodes[0].placeholder;
+                    const products_filtered = products.filter((val) => {
+                      return val.colors.includes(color_choose);
+                    });
+                    console.log(products_filtered);
+                });
                 const color_item = document.createElement('input')
                 color_item.style.backgroundColor = item
                 color_item.type = 'button'
+                color_item.placeholder = item
                 filter_colors.appendChild(button)
                 button.appendChild(color_item)
             })
@@ -153,12 +161,20 @@ const Product = () => {
             filter_price.appendChild(price_list_v5)
         }
 
-        const getApi = async () => {
-            const data = await product_pagination(1, 12)
-            pages(data.totalPages, data.page)
+
+        const getApi = async (page, items_per_page) => {
+            let data;
+            if (localStorage.getItem('items_per_page')) {
+                data = await product_pagination(page, localStorage.getItem('items_per_page'))
+            } else {
+                data = await product_pagination(page, items_per_page)
+            }
+            pages(data.totalPages)
             showProductGrid(data.products)
         }
+
         const showProductGrid = async (products) => {
+            const prod_per = document.querySelectorAll(`.${styles.prod_per} > button`)
             const product_items = document.querySelector(`.${styles.product_grid_parent}`)
             product_items.innerHTML = ''
             const product_item_arr = []
@@ -194,6 +210,7 @@ const Product = () => {
                 img_link.width = 280
                 img_link.src = `./img/${item.img_url[0]}`
                 img_product.appendChild(img_link)
+
                 const product_icon_action = document.createElement('ul')
                 product_icon_action.className = styles.product_icon_action
                 img_product.appendChild(product_icon_action)
@@ -237,20 +254,17 @@ const Product = () => {
                     row.appendChild(price)
                 }
 
+
+                const product_colors = document.createElement('div')
+                row.appendChild(product_colors)
                 if (item.colors.length > 0) {
-                    const product_colors = document.createElement('div')
                     product_colors.className = styles.product_colors
-                    row.appendChild(product_colors)
                     item.colors.forEach((val) => {
                         const color_btn = document.createElement('button')
                         color_btn.style.backgroundColor = val
                         product_colors.appendChild(color_btn)
                     })
-                } else {
-                    const product_colors = document.createElement('div')
-                    row.appendChild(product_colors)
                 }
-
                 if (item.promo_price) {
                     const discount = document.createElement('div')
                     discount.className = styles.discount
@@ -258,26 +272,296 @@ const Product = () => {
                     discount.innerHTML = `-${percent}%`
                     row.appendChild(discount)
                 }
-            })
 
+                if (localStorage.getItem('column')) {
+                    const column = localStorage.getItem('column')
+                    if (column == '4') {
+                        const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                        const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                        icon_action.forEach((icon) => {
+                            icon.style.fontSize = '20px'
+                        })
+
+                        icon_action_btn.forEach((btn) => {
+                            btn.style.width = '48px'
+                            btn.style.height = '48px'
+                        })
+                        product_items.style.gridTemplateColumns = 'auto auto auto auto'
+                        img_link.width = 280
+                        row.style.width = '280px'
+                        product_icon_action.style.left = '15px'
+                        product_icon_action.style.bottom = '30%'
+                        product_colors.style.left = '38%'
+                        title_product.style.fontSize = '17px'
+                    } else if (column == '3') {
+                        const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                        const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                        icon_action.forEach((icon) => {
+                            icon.style.fontSize = '22px'
+                        })
+
+                        icon_action_btn.forEach((btn) => {
+                            btn.style.width = '55px'
+                            btn.style.height = '55px'
+                        })
+                        product_items.style.gridTemplateColumns = 'auto auto auto'
+                        img_link.width = 385
+                        row.style.width = '385px'
+                        product_icon_action.style.left = '55px'
+                        product_icon_action.style.bottom = '40%'
+                        product_colors.style.left = '42%'
+                        title_product.style.fontSize = '18px'
+                    } else if (column == '2') {
+                        const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                        const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                        icon_action.forEach((icon) => {
+                            icon.style.fontSize = '26px'
+                        })
+
+                        icon_action_btn.forEach((btn) => {
+                            btn.style.width = '60px'
+                            btn.style.height = '60px'
+                        })
+                        product_items.style.gridTemplateColumns = 'auto auto'
+                        img_link.width = 590
+                        row.style.width = '590px'
+                        product_icon_action.style.left = '140px'
+                        product_icon_action.style.bottom = '40%'
+                        product_colors.style.left = '42%'
+                        title_product.style.fontSize = '20px'
+                    } else if (column == '5') {
+                        const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                        const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                        icon_action.forEach((icon) => {
+                            icon.style.fontSize = '17px'
+                        })
+
+                        icon_action_btn.forEach((btn) => {
+                            btn.style.width = '35px'
+                            btn.style.height = '35px'
+                        })
+                        product_items.style.gridTemplateColumns = 'auto auto auto auto auto'
+                        img_link.width = 225
+                        row.style.width = '225px'
+                        product_icon_action.style.left = '7px'
+                        product_icon_action.style.bottom = '30%'
+                        product_colors.style.left = '38%'
+                        title_product.style.fontSize = '15px'
+                    }
+                }
+                prod_per.forEach((item) => {
+                    item.addEventListener('click', () => {
+                        prod_per.forEach((val) => {
+                            val.removeAttribute('id')
+                        })
+                        item.setAttribute('id', styles.size_active)
+                        const column = item.textContent
+                        localStorage.setItem('column', column)
+                        if (localStorage.getItem('column')) {
+                            const column = localStorage.getItem('column')
+                            if (column == '2') {
+                                const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                                const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                                icon_action.forEach((icon) => {
+                                    icon.style.fontSize = '26px'
+                                })
+
+                                icon_action_btn.forEach((btn) => {
+                                    btn.style.width = '60px'
+                                    btn.style.height = '60px'
+                                })
+                                product_items.style.gridTemplateColumns = 'auto auto'
+                                img_link.width = 590
+                                row.style.width = '590px'
+                                product_icon_action.style.left = '140px'
+                                product_icon_action.style.bottom = '40%'
+                                product_colors.style.left = '42%'
+                                title_product.style.fontSize = '20px'
+                            } else if (column == '3') {
+                                const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                                const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                                icon_action.forEach((icon) => {
+                                    icon.style.fontSize = '22px'
+                                })
+
+                                icon_action_btn.forEach((btn) => {
+                                    btn.style.width = '55px'
+                                    btn.style.height = '55px'
+                                })
+                                product_items.style.gridTemplateColumns = 'auto auto auto'
+                                img_link.width = 385
+                                row.style.width = '385px'
+                                product_icon_action.style.left = '55px'
+                                product_icon_action.style.bottom = '40%'
+                                product_colors.style.left = '42%'
+                                title_product.style.fontSize = '18px'
+                            } else if (column == '5') {
+                                const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                                const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                                icon_action.forEach((icon) => {
+                                    icon.style.fontSize = '17px'
+                                })
+
+                                icon_action_btn.forEach((btn) => {
+                                    btn.style.width = '35px'
+                                    btn.style.height = '35px'
+                                })
+                                product_items.style.gridTemplateColumns = 'auto auto auto auto auto'
+                                img_link.width = 225
+                                row.style.width = '225px'
+                                product_icon_action.style.left = '7px'
+                                product_icon_action.style.bottom = '30%'
+                                product_colors.style.left = '38%'
+                                title_product.style.fontSize = '15px'
+                            } else if (column == '4') {
+                                const icon_action = document.querySelectorAll(`.${styles.product_icon_action} > button > span`)
+                                const icon_action_btn = document.querySelectorAll(`.${styles.product_icon_action} > button`)
+                                icon_action.forEach((icon) => {
+                                    icon.style.fontSize = '20px'
+                                })
+
+                                icon_action_btn.forEach((btn) => {
+                                    btn.style.width = '48px'
+                                    btn.style.height = '48px'
+                                })
+                                product_items.style.gridTemplateColumns = 'auto auto auto auto'
+                                img_link.width = 280
+                                row.style.width = '280px'
+                                product_icon_action.style.left = '15px'
+                                product_icon_action.style.bottom = '30%'
+                                product_colors.style.left = '38%'
+                                title_product.style.fontSize = '17px'
+                            }
+                        }
+                    })
+                })
+            })
         }
 
-        const pages = (totalPages, page) => {
+        let page = 1;
+        const prev_page = document.querySelector(`.${styles.prev_page}`)
+        const first_page = document.querySelector(`.${styles.first_page}`)
+        if (page == 1) {
+            first_page.style.display = 'none'
+            prev_page.style.display = 'none'
+        }else{
+            first_page.style.display = 'flex'
+            prev_page.style.display = 'flex'
+        }
+        const pages = async (totalPages) => {
             const pagination = document.querySelector(`.${styles.pagination}`)
+            const last_page = document.querySelector(`.${styles.last_page}`)
+            const next_page = document.querySelector(`.${styles.next_page}`)
+            const first_page = document.querySelector(`.${styles.first_page}`)
+            const prev_page = document.querySelector(`.${styles.prev_page}`)
+            const items_per_page = localStorage.getItem('items_per_page')
+            let last_page_data = await product_pagination(totalPages, items_per_page)
+            let first_page_data = await product_pagination(1, items_per_page)
             const total_pages = document.querySelector(`.${styles.total_pages}`)
             total_pages.innerHTML = ''
-            const prev_page = document.querySelector(`.${styles.prev_page}`)
-            const first_page = document.querySelector(`.${styles.first_page}`)
-            if(page == '1'){
+            next_page.addEventListener('click', async () => {
+                const next_page_number = parseInt(page) + 1
+                page = next_page_number;
+               if(next_page_number > totalPages){
+                    page = totalPages
+                    showProductGrid(last_page_data.products)
+               }else{
+                    total_pages.childNodes.forEach((p) => {
+                        p.removeAttribute('id');
+                    });
+
+                    const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == next_page_number);
+                    if (currentPage) {
+                        currentPage.setAttribute('id', styles.page_active);
+                        let data = await product_pagination(next_page_number, items_per_page)
+                        showProductGrid(data.products)
+                    }
+                    if (page == 1) {
+                        first_page.style.display = 'none'
+                        prev_page.style.display = 'none'
+                    }else{
+                        first_page.style.display = 'flex'
+                        prev_page.style.display = 'flex'
+                    }
+               }
+            })
+            last_page.addEventListener('click', () => {
+                showProductGrid(last_page_data.products)
+                total_pages.childNodes.forEach((p) => {
+                    p.removeAttribute('id');
+                });
+
+                const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == totalPages);
+                if (currentPage) {
+                    currentPage.setAttribute('id', styles.page_active);
+                }
+                first_page.style.display = 'flex'
+                prev_page.style.display = 'flex'
+            })
+
+            prev_page.addEventListener('click', async () => {
+                const prev_page_number = parseInt(page) - 1
+                page = prev_page_number;
+                if(prev_page_number <= 1){
+                    page = 1;
+                    total_pages.childNodes.forEach((p) => {
+                        p.removeAttribute('id');
+                    });
+
+                    const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == 1);
+                    if (currentPage) {
+                        currentPage.setAttribute('id', styles.page_active);
+                    }
+                    showProductGrid(first_page_data.products)
+               }else{
+                    total_pages.childNodes.forEach((p) => {
+                        p.removeAttribute('id');
+                    });
+
+                    const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == prev_page_number);
+                    if (currentPage) {
+                        currentPage.setAttribute('id', styles.page_active);
+                        let data = await product_pagination(prev_page_number, items_per_page)
+                        showProductGrid(data.products)
+                    }
+                    if (page == 1) {
+                        first_page.style.display = 'none'
+                        prev_page.style.display = 'none'
+                    }else{
+                        first_page.style.display = 'flex'
+                        prev_page.style.display = 'flex'
+                    }
+               }
+            })
+
+            first_page.addEventListener('click', () => {
+                showProductGrid(first_page_data.products)
+                total_pages.childNodes.forEach((p) => {
+                    p.removeAttribute('id');
+                });
+
+                const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == 1);
+                if (currentPage) {
+                    currentPage.setAttribute('id', styles.page_active);
+                }
+                first_page.style.display = 'flex'
+                prev_page.style.display = 'flex'
+            })
+
+            if (page == 1) {
                 first_page.style.display = 'none'
                 prev_page.style.display = 'none'
+            }else{
+                first_page.style.display = 'flex'
+                prev_page.style.display = 'flex'
             }
-            for(let i = 1; i <= totalPages; i++){
+
+            for (let i = 1; i <= totalPages; i++) {
                 const page_link = document.createElement('a')
-                page_link.title = `page${i}`
+                page_link.title = `${i}`
                 page_link.innerHTML = `0${i}`
                 total_pages.appendChild(page_link)
-                if(i == 1){
+                if (i == 1) {
                     page_link.setAttribute('id', styles.page_active)
                 }
 
@@ -285,10 +569,24 @@ const Product = () => {
                     total_pages.childNodes.forEach((item) => {
                         item.removeAttribute('id')
                     })
+                    page = page_link.title
+                    if (page == 1) {
+                        first_page.style.display = 'none'
+                        prev_page.style.display = 'none'
+                    }else{
+                        first_page.style.display = 'flex'
+                        prev_page.style.display = 'flex'
+                    }
                     page_link.setAttribute('id', styles.page_active)
                     setTimeout(async () => {
-                        const data = await product_pagination(i, 12)
-                        showProductGrid(data.products)
+                        if (items_per_page) {
+                            let data = await product_pagination(i, items_per_page)
+                            showProductGrid(data.products)
+
+                        } else {
+                            let data = await product_pagination(i, 12)
+                            showProductGrid(data.products)
+                        }
                     }, 200)
                 })
             }
@@ -313,8 +611,42 @@ const Product = () => {
             })
         }
 
+        const rowsPerPage = () => {
+            const row_active = document.querySelector(`.${styles.row_active}`)
+            const active = document.querySelector(`.${styles.row_active} > span:first-child`)
+            const rows_icon = document.querySelector(`.${styles.row_active} > span:last-child`)
+            const row_list = document.querySelector(`.${styles.row_list} > ul`)
+            const rows = document.querySelectorAll(`.${styles.row_list} > ul > li > a`)
+            if (localStorage.getItem('items_per_page')) {
+                active.textContent = localStorage.getItem('items_per_page')
+            }
+            let flag = false;
+            row_active.addEventListener('click', () => {
+                flag = !flag;
+                if (flag) {
+                    row_list.style.opacity = 1
+                    rows_icon.innerHTML = `<span class="material-symbols-outlined">arrow_drop_up</span>`
+                } else {
+                    row_list.style.opacity = 0
+                    rows_icon.innerHTML = `<span class="material-symbols-outlined">arrow_drop_down</span>`
+                }
+            })
+            rows.forEach((item) => {
+                item.addEventListener('click', async () => {
+                    active.textContent = item.textContent
+                    const page = localStorage.getItem('page')
+                    const items_per_page = item.textContent
+                    localStorage.setItem('items_per_page', items_per_page)
+                    const data = await product_pagination(page, items_per_page)
+                    showProductGrid(data.products)
+                    pages(data.totalPages, page)
+                })
+            })
+        }
+
+        rowsPerPage()
         handleData()
-        getApi()
+        getApi(1, 12)
         colors()
     }, [])
     return (
@@ -510,28 +842,47 @@ const Product = () => {
                                     <div className={styles.product_grid_parent}></div>
                                 </div>
                             </div>
-                            <div className={styles.pagination}>
-                                <a className={styles.first_page}>
-                                    <span class="material-symbols-outlined">
-                                    keyboard_double_arrow_left
-                                    </span>
-                                </a>
-                                <a className={styles.prev_page}>
-                                <span class="material-symbols-outlined">
-                                arrow_back_ios_new
-                                </span>
-                                </a>
-                                <div className={styles.total_pages}></div>
-                                <a className={styles.next_page}>
-                                    <span class="material-symbols-outlined">
-                                        arrow_forward_ios
-                                    </span>
-                                </a>
-                                <a className={styles.last_page}>
-                                    <span class="material-symbols-outlined">
-                                    keyboard_double_arrow_right
-                                    </span>
-                                </a>
+                            <div className={styles.pagi_nav}>
+                                <div className={styles.pagination}>
+                                    <a className={styles.first_page}>
+                                        <span class="material-symbols-outlined">
+                                            keyboard_double_arrow_left
+                                        </span>
+                                    </a>
+                                    <a className={styles.prev_page}>
+                                        <span class="material-symbols-outlined">
+                                            arrow_back_ios_new
+                                        </span>
+                                    </a>
+                                    <div className={styles.total_pages}></div>
+                                    <a className={styles.next_page}>
+                                        <span class="material-symbols-outlined">
+                                            arrow_forward_ios
+                                        </span>
+                                    </a>
+                                    <a className={styles.last_page}>
+                                        <span class="material-symbols-outlined">
+                                            keyboard_double_arrow_right
+                                        </span>
+                                    </a>
+                                </div>
+                                <div className={styles.rows_per_page}>
+                                    <h4>Items per page:</h4>
+                                    <div className={styles.row_list}>
+                                        <button className={styles.row_active}>
+                                            <span>12</span>
+                                            <span class="material-symbols-outlined">
+                                                arrow_drop_down
+                                            </span>
+                                        </button>
+                                        <ul>
+                                            <li><a>6</a></li>
+                                            <li><a>8</a></li>
+                                            <li><a>10</a></li>
+                                            <li><a>12</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
