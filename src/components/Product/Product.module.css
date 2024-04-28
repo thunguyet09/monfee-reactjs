@@ -475,6 +475,12 @@
     list-style-type: none;
 }
 
+.list_size > li:hover > a {
+    background-color: #b8784e;
+    color: white;
+    cursor: pointer;
+    border: 1px solid #b8784e;
+}
 .list_size {
     padding: 0;
     text-align: left;
@@ -491,6 +497,7 @@
     padding: 10px 15px;
     border: 1px solid black;
     font-weight: 600;
+    transition: .3s ease;
 }
 
 .price_filter_option {
@@ -745,7 +752,7 @@
 }
 
 .filter_colors {}
-
+.filter_price {}
 .filter_price > li{
     transition: .3s ease;
 }
@@ -817,7 +824,7 @@
 
 .col_content>ul>li {
     list-style-type: none;
-    padding: 5px 0px;
+    padding: 6px 0px;
 }
 
 .col_content>ul>li>a {
