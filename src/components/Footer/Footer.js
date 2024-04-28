@@ -9,7 +9,7 @@ const Footer = () => {
     <div id={styles.footer}>
         <div className={styles.footerRow1}>
             <div className={styles.footerCol1}>
-                <img src="./img/monfee-logo.png" width="320px"/>
+                <img src="../img/monfee-logo.png" width="320px"/>
                 <span>Subscribe our newsletter and get discount 30% off</span>
                 <div>
                     <FontAwesomeIcon icon={faTwitter} />

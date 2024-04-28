@@ -18,6 +18,7 @@ const Header = () => {
   const url = new URL(document.location.href);
   const path = url.pathname.split('/').filter(Boolean);
   const value = path[path.length - 1];
+  const detail = path[path.length - 2]
   numsInCart()
   useEffect(() => {
     const handleScroll = () => {
@@ -57,7 +58,7 @@ const Header = () => {
             node.style.color = 'white'
           })
           shoppingIcon.style.color = 'white'
-        }else if(value == 'shop'){
+        }else if(value == 'shop' || detail){
           header.style.backgroundColor = 'white'
           header.style.position = 'static'
         }else {
@@ -172,7 +173,7 @@ const Header = () => {
         </ul>
       </div>
       <div className={styles.logo}>
-        <img src="./img/monfee-logo.png" width={250} />
+        <img src="../img/monfee-logo.png" width={250} />
       </div>
       <div className={styles.rightHeader}>
         <span>

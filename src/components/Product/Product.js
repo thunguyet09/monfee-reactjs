@@ -364,6 +364,9 @@ const Product = () => {
             products.forEach((item) => {
                 const row = document.createElement('div')
                 row.className = styles.row
+                row.addEventListener('click', () => {
+                    document.location.href = `/products/${item.id}`
+                })
                 product_items.appendChild(row)
                 const img_product = document.createElement('div')
                 img_product.className = styles.img_product
@@ -842,6 +845,51 @@ const Product = () => {
             })
         }
 
+        const sortProducts = () => {
+            const dropdown = document.querySelectorAll(`.${styles.dropdown} > li`)
+            dropdown.forEach((item) => {
+                item.addEventListener('click', async () => {
+                    const products = await getAllProducts()
+                    if(item.value == '1'){
+                        const sorted = products.sort((a,b) => b.sales - a.sales)
+                        const data = await product_pagination(page, items_per_page)
+                        data.products = sorted
+                        showProductGrid(data.products)
+                    }else if(item.value == '2'){
+                        const sorted = products.sort((a,b) => a.name - b.name)
+                        const data = await product_pagination(page, items_per_page)
+                        data.products = sorted
+                        showProductGrid(data.products)
+                    }else if(item.value == '3'){
+                        const sorted = products.sort((a, b) => b.price - a.price);
+                        const data = await product_pagination(page, items_per_page);
+                        data.products = sorted;
+                        showProductGrid(data.products);
+                    }else if(item.value == '4'){
+                        const sorted = products.sort((a, b) => a.price - b.price);
+                        const data = await product_pagination(page, items_per_page);
+                        data.products = sorted;
+                        showProductGrid(data.products);
+                    }else if(item.value == '5'){
+                        const sorted = products.sort((a,b) => {
+                            return new Date(b.createdAt) - new Date(a.createdAt)
+                        })
+                        const data = await product_pagination(page, items_per_page);
+                        data.products = sorted;
+                        showProductGrid(data.products);
+                    }else if(item.value == '6'){
+                        const sorted = products.sort((a,b) => {
+                            return new Date(a.createdAt) - new Date(b.createdAt)
+                        })
+                        const data = await product_pagination(page, items_per_page);
+                        data.products = sorted;
+                        showProductGrid(data.products);
+                    }
+                })
+            })
+        }
+
+        sortProducts()
         rowsPerPage()
         handleData()
         getApi(1, 12)
@@ -974,13 +1022,13 @@ const Product = () => {
                                         <span class="material-symbols-outlined">arrow_drop_down</span>
                                     </button>
                                     <ul className={styles.dropdown}>
-                                        <li>Featured</li>
-                                        <li>Best Selling</li>
-                                        <li>Alphabetically, A-Z</li>
-                                        <li>Price, high to low</li>
-                                        <li>Price, low to high</li>
-                                        <li>Date, old to new</li>
-                                        <li>Date, new to old</li>
+                                        <li value="0">Featured</li>
+                                        <li value="1">Best Selling</li>
+                                        <li value="2">Alphabetically, A-Z</li>
+                                        <li value="3">Price, high to low</li>
+                                        <li value="4">Price, low to high</li>
+                                        <li value="5">Date, old to new</li>
+                                        <li value="6">Date, new to old</li>
                                     </ul>
                                 </div>
                             </div>

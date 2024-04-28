@@ -12,6 +12,7 @@ import Account from './components/Account/Account';
 import { SearchContextProvider } from './contexts/SearchContext/SearchContext';
 import Search from './components/Search/Search';
 import Product from './components/Product/Product';
+import Detail from './components/Detail/Detail';
 function App() {
   return (
     <div className={styles.App}>
@@ -63,6 +64,20 @@ function App() {
                       <Header />
                       <div className={styles.homePage}>
                         <Product />
+                        <Footer />
+                      </div>
+                    </div>
+                }
+            />
+            <Route
+                exact
+                path="/products/:id"
+                element={
+                    <div className={styles.main}>
+                      <Search />
+                      <Header />
+                      <div className={styles.homePage}>
+                        <Detail />
                         <Footer />
                       </div>
                     </div>

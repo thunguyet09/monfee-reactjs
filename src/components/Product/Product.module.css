@@ -1013,3 +1013,12 @@
     background-color: black;
     color: white;
 }
+
+.title_product {
+    transition: .2s ease;
+}
+
+.title_product:hover {
+    color: #b8784e;
+    cursor: pointer;
+}
