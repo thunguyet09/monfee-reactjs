@@ -3,9 +3,12 @@ import styles from './Detail.module.css'
 import { getAllProducts, getDetail, getProductsByCategoryId } from '../../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { getCarts } from '../../api';
 const Detail = () => {
     useEffect(() => {
         const fetchData = async () => {
+            const token = localStorage.getItem('token')
+            const carts = await getCarts()
             const products = await getAllProducts()
             const url = new URL(document.location.href);
             const path = url.pathname.split('/').filter(Boolean);
@@ -23,7 +26,6 @@ const Detail = () => {
             } else {
                 next_prod = await getDetail(id + 1);
             }
-
             try {
                 const detail = await getDetail(id);
                 const product_title = document.querySelector(`.${styles.product_title} > h1`)
@@ -177,6 +179,7 @@ const Detail = () => {
                 `
                 main_detail.appendChild(size_guide)
 
+                let sizeItem = ''
                 const size_box = document.createElement('div')
                 size_box.className = styles.size_box
                 main_detail.appendChild(size_box)
@@ -196,13 +199,47 @@ const Detail = () => {
                             val.style.backgroundColor = 'white'
                             val.style.color = 'grey'
                         })
+                        sizeItem = size.textContent
                         size.style.backgroundColor = 'black'
                         size.style.color = 'white'
                     })
                 })
+                if(detail.colors.length > 0){
+                    const color_box = document.createElement('div')
+                    color_box.className = styles.color_box
+                    main_detail.appendChild(color_box)
+                    const color_btn = document.createElement('button')
+                    color_btn.className = styles.color_btn
+                    color_btn.textContent = 'COLOR'
+                    color_box.appendChild(color_btn)
+                    const color_items = document.createElement('div')
+                    color_items.className = styles.color_items
+                    color_box.appendChild(color_items)
+                    let colorItem = ''
+                    detail.colors.forEach((val) => {
+                        const color_block = document.createElement('div')
+                        color_block.className = styles.color_block
+                        color_items.appendChild(color_block)
+                        color_block.addEventListener('click', () => {
+                            color_items.childNodes.forEach((res) => {
+                                res.style.border = 'none'
+                            })
+                            const selectedColorIndex  = detail.colors.indexOf(color_block.childNodes[0].value)
+                            img_featured.src = `../../img/${detail.img_url[selectedColorIndex]}`
+                            colorItem = color_block.childNodes[0].value
+                            color_block.style.border = '1px solid rgb(195, 195, 195)'
+                        })
+                        const color = document.createElement('button')
+                        color.value = val
+                        color.style.backgroundColor = val
+                        color.type = 'button'
+                        color_block.appendChild(color)
+                    })
+                }
                 const detail_actions = document.createElement('div')
                 detail_actions.className = styles.detail_actions
                 main_detail.appendChild(detail_actions)
+                let quantityValue = 0;
                 const quantity_box = document.createElement('div')
                 quantity_box.className = styles.quantity_box
                 detail_actions.appendChild(quantity_box)
@@ -213,16 +250,69 @@ const Detail = () => {
                 quantity_btns.className = styles.quantity_btns
                 quantity_box.appendChild(quantity_btns)
                 const increase = document.createElement('button')
+
+                increase.addEventListener('click', () => {
+                    if(quantity_input.value >= detail.quantity){
+                        quantity_input.value = detail.quantity
+                        quantityValue = detail.quantity
+                    }else{
+                        quantityValue = parseInt(quantity_input.value) + 1;
+                        quantity_input.value = quantityValue
+                    }
+                })
                 increase.innerHTML = `<span class="material-symbols-outlined">add</span>`
                 quantity_btns.appendChild(increase)
                 const decrease = document.createElement('button')
+                decrease.addEventListener('click', () => {
+                    if(quantity_input.value <= 1){
+                        quantity_input.value = 1;
+                        quantityValue = 1;
+                    }else{
+                        quantityValue = parseInt(quantity_input.value) - 1;
+                        quantity_input.value = quantityValue
+                    }
+                })
                 decrease.innerHTML = `<span class="material-symbols-outlined">remove</span>`
                 quantity_btns.appendChild(decrease)
+
+                quantity_input.addEventListener('change', (e) => {
+                    quantityValue = e.target.value
+                })
+                
                 const addToCart = document.createElement('button')
                 addToCart.textContent = 'ADD TO CART'
                 addToCart.className = styles.addToCart
                 detail_actions.appendChild(addToCart)
-            
+                const cartId = carts[carts.length - 1].id + 1
+                addToCart.addEventListener('click', async () => {
+                   if(token){
+                    if(detail.colors.length > 0){
+                        const cart = {
+                            id: cartId,
+                            prod_id: detail.id,
+                            quantity: quantityValue,
+                            size: sizeItem,
+                            color: colorItem,
+                            user_id: localStorage.getItem('userId')
+                        }
+                       }else{
+                        const cart = {
+                            id: cartId,
+                            prod_id: detail.id,
+                            quantity: quantityValue,
+                            size: sizeItem,
+                            user_id: localStorage.getItem('userId')
+                        }
+                        // await fetch(`http://localhost:3000/cart`, {
+                        //     method: 'POST',
+                        //     headers: {
+                        //         'Content-Type': 'application/json'
+                        //     },
+                        //     body: JSON.stringify(cart)
+                        // })
+                       }
+                   }
+                })
                 const buy_now = document.createElement('button')
                 buy_now.className = styles.buy_now
                 buy_now.textContent = 'BUY IT NOW'
@@ -272,14 +362,28 @@ const Detail = () => {
                     const relate_funcs = document.createElement('div')
                     relate_funcs.className = styles.relate_funcs
                     img_box.appendChild(relate_funcs)
+                    const wishlist_box = document.createElement('div')
+                    wishlist_box.className = styles.wishlist_box
+                    relate_funcs.appendChild(wishlist_box)
                     const wishlist = document.createElement('button')
                     wishlist.innerHTML = `<span class="material-symbols-outlined">favorite</span>`
-                    relate_funcs.appendChild(wishlist)
+                    wishlist_box.appendChild(wishlist)
+                    const wishlist_tooltip = document.createElement('div')
+                    wishlist_tooltip.className = styles.wishlist_tooltip
+                    wishlist_tooltip.textContent = 'Add to Wishlist'
+                    wishlist_box.appendChild(wishlist_tooltip)
+                    const quick_view_box = document.createElement('div')
+                    quick_view_box.className = styles.quick_view_box
+                    relate_funcs.appendChild(quick_view_box)
                     const quick_view = document.createElement('button')
                     quick_view.innerHTML = `<span class="material-symbols-outlined">search</span>`
-                    relate_funcs.appendChild(quick_view)
+                    quick_view_box.appendChild(quick_view)
+                    const quickview_tooltip = document.createElement('div')
+                    quickview_tooltip.className = styles.quickview_tooltip
+                    quickview_tooltip.textContent = 'Quickview'
+                    quick_view_box.appendChild(quickview_tooltip)
                     const relate_title = document.createElement('h3')
-                    relate_title.className = styles.relate_title
+                    relate_title.className = styles.relate_prod_name
                     relate_title.textContent = item.name
                     relate_item.appendChild(relate_title)
                     if(item.promo_price){
@@ -306,6 +410,39 @@ const Detail = () => {
                     add_to_cart.className = styles.add_to_cart
                     add_to_cart.textContent = 'ADD TO CART'
                     add_to_cart_box.appendChild(add_to_cart)
+                    const addtocart_tooltip = document.createElement('div')
+                    addtocart_tooltip.className = styles.addtocart_tooltip
+                    addtocart_tooltip.textContent = 'Add to Cart'
+                    add_to_cart_box.appendChild(addtocart_tooltip)
+
+                    const slider_btns = document.querySelector(`.${styles.slider_btns}`)
+                    const relate_container = document.querySelector(`.${styles.relate_container}`)
+                    slider_btns.innerHTML = ''
+                    const slider_num = Math.ceil(related_products_data.length / 5)
+                    for(let i = 1; i <= slider_num; i++){
+                        const slider_nav = document.createElement('button')
+                        slider_nav.className = styles.slider_nav
+                        slider_btns.appendChild(slider_nav)
+                        slider_nav.addEventListener('click', () => {
+                            if(i == 1){
+                                slider_btns.childNodes.forEach((res) => {
+                                    res.style.backgroundColor = 'white'
+                                    relate_slider.style.transform = `translateX(0)`
+                                })
+                                slider_nav.style.backgroundColor = 'rgb(79, 79, 79)'
+                            }else{
+                                let width = relate_slider.clientWidth - 270
+                                slider_btns.childNodes.forEach((res) => {
+                                    res.style.backgroundColor = 'white'
+                                    relate_slider.style.transform = `translateX(-${width}px)`
+                                })
+                                slider_nav.style.backgroundColor = 'rgb(79, 79, 79)'
+                            }
+                        })
+
+                    }
+                    
+
                 })
             } catch (error) {
                 console.error("Error fetching detail:", error);
