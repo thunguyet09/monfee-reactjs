@@ -146,7 +146,7 @@ const Product = () => {
             price_list.innerHTML = ''
             filter_price.innerHTML = ''
             const minPrice = products.reduce((min, product) => {
-                const price = product.price
+                const price = product.price[0]
                 return price < min ? price : min;
             }, Infinity);
 
@@ -160,7 +160,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= minPrice && val.promo_price <= price_v1;
                     } else {
-                      return val.price >= minPrice && val.price <= price_v1;
+                      return val.price[0] >= minPrice && val.price[0] <= price_v1;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -179,7 +179,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v1 && val.promo_price <= price_v2;
                     } else {
-                      return val.price >= price_v1 && val.price <= price_v2;
+                      return val.price[0] >= price_v1 && val.price[0] <= price_v2;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -198,7 +198,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v2 && val.promo_price <= price_v3;
                     } else {
-                      return val.price >= price_v2 && val.price <= price_v3;
+                      return val.price[0] >= price_v2 && val.price[0] <= price_v3;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -217,7 +217,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v3 && val.promo_price <= price_v4;
                     } else {
-                      return val.price >= price_v3 && val.price <= price_v4;
+                      return val.price[0] >= price_v3 && val.price[0] <= price_v4;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -235,7 +235,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price > price_v4;
                     } else {
-                      return val.price > price_v4;
+                      return val.price[0] > price_v4;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -250,7 +250,7 @@ const Product = () => {
             const products = await getAllProducts()
             const filter = document.querySelector(`.${styles.col_content} > .${styles.filter_price}`)
             const minPrice = products.reduce((min, product) => {
-                const price = product.price
+                const price = product.price[0]
                 return price < min ? price : min;
             }, Infinity);
             const price_node_v1 = document.createElement('li')
@@ -262,7 +262,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= minPrice && val.promo_price <= price_v1;
                     } else {
-                      return val.price >= minPrice && val.price <= price_v1;
+                      return val.price[0] >= minPrice && val.price[0] <= price_v1;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -281,7 +281,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v1 && val.promo_price <= price_v2;
                     } else {
-                      return val.price >= price_v1 && val.price <= price_v2;
+                      return val.price[0] >= price_v1 && val.price[0] <= price_v2;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -300,7 +300,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v2 && val.promo_price <= price_v3;
                     } else {
-                      return val.price >= price_v2 && val.price <= price_v3;
+                      return val.price[0] >= price_v2 && val.price[0] <= price_v3;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -318,7 +318,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price >= price_v3 && val.promo_price <= price_v4;
                     } else {
-                      return val.price >= price_v3 && val.price <= price_v4;
+                      return val.price[0] >= price_v3 && val.price[0] <= price_v4;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -336,7 +336,7 @@ const Product = () => {
                     if (val.promo_price) {
                       return val.promo_price > price_v4;
                     } else {
-                      return val.price > price_v4;
+                      return val.price[0] > price_v4;
                     }
                   });
                 product_items.style.justifyContent = 'flex-start'
@@ -428,7 +428,7 @@ const Product = () => {
                     price_box.className = styles.price_box
                     row.appendChild(price_box)
                     const price = document.createElement('h5')
-                    price.innerHTML = `<del>${item.price.toLocaleString()}</del>`
+                    price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
                     price_box.appendChild(price)
                     const promo_price = document.createElement('h4')
                     promo_price.textContent = item.promo_price.toLocaleString()
@@ -436,7 +436,7 @@ const Product = () => {
                 } else {
                     const price = document.createElement('h4')
                     price.className = styles.price_item
-                    price.innerHTML = `${item.price.toLocaleString()}`
+                    price.innerHTML = `${item.price[0].toLocaleString()}`
                     row.appendChild(price)
                 }
 
@@ -454,7 +454,7 @@ const Product = () => {
                 if (item.promo_price) {
                     const discount = document.createElement('div')
                     discount.className = styles.discount
-                    const percent = 100 - Math.floor(((item.promo_price * 100) / item.price))
+                    const percent = 100 - Math.floor(((item.promo_price * 100) / item.price[0]))
                     discount.innerHTML = `-${percent}%`
                     row.appendChild(discount)
                 }
@@ -861,12 +861,12 @@ const Product = () => {
                         data.products = sorted
                         showProductGrid(data.products)
                     }else if(item.value == '3'){
-                        const sorted = products.sort((a, b) => b.price - a.price);
+                        const sorted = products.sort((a, b) => b.price[0] - a.price[0]);
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
                         showProductGrid(data.products);
                     }else if(item.value == '4'){
-                        const sorted = products.sort((a, b) => a.price - b.price);
+                        const sorted = products.sort((a, b) => a.price[0] - b.price[0]);
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
                         showProductGrid(data.products);

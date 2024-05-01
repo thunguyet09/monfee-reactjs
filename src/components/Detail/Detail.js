@@ -4,10 +4,12 @@ import { getAllProducts, getDetail, getProductsByCategoryId } from '../../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { getCarts } from '../../api';
+import { numsInCart } from '../Header/Header';
 const Detail = () => {
     useEffect(() => {
+        const token = localStorage.getItem('token')
+        const userId = localStorage.getItem('userId')
         const fetchData = async () => {
-            const token = localStorage.getItem('token')
             const carts = await getCarts()
             const products = await getAllProducts()
             const url = new URL(document.location.href);
@@ -39,7 +41,7 @@ const Detail = () => {
                 </a>
                 <div class="${styles.info_prod}">
                     <a href="/products/${prev_prod.id}">${prev_prod.name}</a>
-                    <p>${prev_prod.promo_price ? prev_prod.promo_price.toLocaleString() : prev_prod.price.toLocaleString()}</p>
+                    <p>${prev_prod.promo_price ? prev_prod.promo_price.toLocaleString() : prev_prod.price[0].toLocaleString()}</p>
                 </div>
             `
                 const prev_prod_btn = document.querySelector(`.${styles.prev_prod}`)
@@ -62,7 +64,7 @@ const Detail = () => {
                 </a>
                 <div class="${styles.info_prod}">
                     <a href="/products/${next_prod.id}">${next_prod.name}</a>
-                    <p>${next_prod.promo_price ? next_prod.promo_price.toLocaleString() : next_prod.price.toLocaleString()}</p>
+                    <p>${next_prod.promo_price ? next_prod.promo_price.toLocaleString() : next_prod.price[0].toLocaleString()}</p>
                 </div>
             `
 
@@ -106,7 +108,7 @@ const Detail = () => {
                 const topSelling = products.filter(item => item.sales === maxSales);
                 const top_product = document.querySelector(`.${styles.top_product}`)
                 topSelling.forEach((top) => {
-                    if(top.id == id){
+                    if (top.id == id) {
                         top_product.innerHTML = 'HOT'
                         top_product.style.backgroundColor = '#e62e05'
                     }
@@ -116,20 +118,20 @@ const Detail = () => {
                 sales.className = styles.sales
                 sales.innerHTML = `Lượt bán: ${detail.sales}`
                 main_detail.appendChild(sales)
-                if(detail.promo_price > 0){
+                if (detail.promo_price > 0) {
                     const prices = document.createElement('div')
                     prices.className = styles.prices
                     main_detail.appendChild(prices)
                     const price = document.createElement('h3')
-                    price.innerHTML = `<del>${detail.price.toLocaleString()}&#8363;</del>`
+                    price.innerHTML = `<del>${detail.price[0].toLocaleString()}&#8363;</del>`
                     prices.appendChild(price)
                     const promo_price = document.createElement('h2')
                     promo_price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
                     prices.appendChild(promo_price)
-                }else{
+                } else {
                     const price = document.createElement('h2')
                     price.className = styles.price
-                    price.innerHTML = `${detail.price.toLocaleString()}&#8363;`
+                    price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
                     main_detail.appendChild(price)
                 }
 
@@ -190,11 +192,33 @@ const Detail = () => {
                 const size_items = document.createElement('div')
                 size_items.className = styles.size_items
                 size_box.appendChild(size_items)
+                let size_1000g = '';
                 detail.sizes.forEach((item) => {
                     const size = document.createElement('button')
                     size.textContent = item
                     size_items.appendChild(size)
                     size.addEventListener('click', () => {
+                        if(item = '1000g'){
+                            const sizeIndex = detail.sizes.indexOf(size.textContent)
+                            size_1000g = detail.price[sizeIndex]
+                            if (detail.promo_price > 0) {
+                                const price = document.querySelector(`.${styles.prices} > h2`)
+                                price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
+                            } else {
+                                const price = document.querySelector(`.${styles.price}`)
+                                price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
+                            }
+                        }else{
+                            if (detail.promo_price > 0) {
+                                const price = document.querySelector(`.${styles.prices} > h3`)
+                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
+                                const promo_price = document.querySelector(`.${styles.prices} > h2`)
+                                promo_price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
+                            } else {
+                                const price = document.querySelector(`.${styles.price}`)
+                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
+                            }
+                        }
                         size_items.childNodes.forEach((val) => {
                             val.style.backgroundColor = 'white'
                             val.style.color = 'grey'
@@ -204,7 +228,8 @@ const Detail = () => {
                         size.style.color = 'white'
                     })
                 })
-                if(detail.colors.length > 0){
+                let colorItem = ''
+                if (detail.colors.length > 0) {
                     const color_box = document.createElement('div')
                     color_box.className = styles.color_box
                     main_detail.appendChild(color_box)
@@ -215,7 +240,6 @@ const Detail = () => {
                     const color_items = document.createElement('div')
                     color_items.className = styles.color_items
                     color_box.appendChild(color_items)
-                    let colorItem = ''
                     detail.colors.forEach((val) => {
                         const color_block = document.createElement('div')
                         color_block.className = styles.color_block
@@ -224,7 +248,7 @@ const Detail = () => {
                             color_items.childNodes.forEach((res) => {
                                 res.style.border = 'none'
                             })
-                            const selectedColorIndex  = detail.colors.indexOf(color_block.childNodes[0].value)
+                            const selectedColorIndex = detail.colors.indexOf(color_block.childNodes[0].value)
                             img_featured.src = `../../img/${detail.img_url[selectedColorIndex]}`
                             colorItem = color_block.childNodes[0].value
                             color_block.style.border = '1px solid rgb(195, 195, 195)'
@@ -239,7 +263,7 @@ const Detail = () => {
                 const detail_actions = document.createElement('div')
                 detail_actions.className = styles.detail_actions
                 main_detail.appendChild(detail_actions)
-                let quantityValue = 0;
+                let quantityValue = 1;
                 const quantity_box = document.createElement('div')
                 quantity_box.className = styles.quantity_box
                 detail_actions.appendChild(quantity_box)
@@ -252,10 +276,10 @@ const Detail = () => {
                 const increase = document.createElement('button')
 
                 increase.addEventListener('click', () => {
-                    if(quantity_input.value >= detail.quantity){
+                    if (quantity_input.value >= detail.quantity) {
                         quantity_input.value = detail.quantity
                         quantityValue = detail.quantity
-                    }else{
+                    } else {
                         quantityValue = parseInt(quantity_input.value) + 1;
                         quantity_input.value = quantityValue
                     }
@@ -264,10 +288,10 @@ const Detail = () => {
                 quantity_btns.appendChild(increase)
                 const decrease = document.createElement('button')
                 decrease.addEventListener('click', () => {
-                    if(quantity_input.value <= 1){
+                    if (quantity_input.value <= 1) {
                         quantity_input.value = 1;
                         quantityValue = 1;
-                    }else{
+                    } else {
                         quantityValue = parseInt(quantity_input.value) - 1;
                         quantity_input.value = quantityValue
                     }
@@ -278,49 +302,101 @@ const Detail = () => {
                 quantity_input.addEventListener('change', (e) => {
                     quantityValue = e.target.value
                 })
-                
+
+                const cartModal = document.querySelector(`.${styles.cartModal}`)
+                const closeCartModal = document.querySelector(`.${styles.closeCartModal}`)
+                closeCartModal.addEventListener('click', () => {
+                    localStorage.removeItem('product_id')
+                    cartModal.style.display = 'none'
+                })
                 const addToCart = document.createElement('button')
                 addToCart.textContent = 'ADD TO CART'
                 addToCart.className = styles.addToCart
                 detail_actions.appendChild(addToCart)
                 const cartId = carts[carts.length - 1].id + 1
                 addToCart.addEventListener('click', async () => {
-                   if(token){
-                    if(detail.colors.length > 0){
-                        const cart = {
-                            id: cartId,
-                            prod_id: detail.id,
-                            quantity: quantityValue,
-                            size: sizeItem,
-                            color: colorItem,
-                            user_id: localStorage.getItem('userId')
+                    if (token) {
+                        const existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id)
+                        if (existingCart.length > 0) {
+                            existingCart.forEach(async (val) => {
+                                const new_quantity = val.quantity + 1;
+                                await fetch(`http://localhost:3000/cart`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
+                                })
+                                    .then(() => {
+                                        localStorage.setItem('product_id', val.prod_id)
+                                        setTimeout(() => {
+                                            cartModal.style.display = 'block'
+                                            handleCartModal()
+                                            numsInCart()
+                                        }, 2000)
+                                    })
+                            })
+                        } else {
+                            if (detail.colors.length > 0) {
+                                const cart = {
+                                    id: cartId,
+                                    prod_id: detail.id,
+                                    quantity: quantityValue,
+                                    size: sizeItem,
+                                    color: colorItem,
+                                    user_id: localStorage.getItem('userId')
+                                }
+                                await fetch(`http://localhost:3000/cart`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(cart)
+                                })
+                                .then(() => {
+                                    localStorage.setItem('product_id', detail.id)
+                                    setTimeout(() => {
+                                        cartModal.style.display = 'block'
+                                        handleCartModal()
+                                        numsInCart()
+                                    }, 2000)
+                                })
+                            } else {
+                                const cart = {
+                                    id: cartId,
+                                    prod_id: detail.id,
+                                    quantity: quantityValue,
+                                    size: sizeItem,
+                                    user_id: localStorage.getItem('userId')
+                                }
+                                await fetch(`http://localhost:3000/cart`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(cart)
+                                })
+                                .then(() => {
+                                    localStorage.setItem('product_id', detail.id)
+                                    setTimeout(() => {
+                                        cartModal.style.display = 'block'
+                                        handleCartModal()
+                                        numsInCart()
+                                    }, 2000)
+                                })
+                            }
                         }
-                       }else{
-                        const cart = {
-                            id: cartId,
-                            prod_id: detail.id,
-                            quantity: quantityValue,
-                            size: sizeItem,
-                            user_id: localStorage.getItem('userId')
-                        }
-                        // await fetch(`http://localhost:3000/cart`, {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/json'
-                        //     },
-                        //     body: JSON.stringify(cart)
-                        // })
-                       }
-                   }
+                    }
                 })
                 const buy_now = document.createElement('button')
                 buy_now.className = styles.buy_now
                 buy_now.textContent = 'BUY IT NOW'
                 main_detail.appendChild(buy_now)
-                
+
                 const nav_tabs = document.querySelectorAll(`.${styles.nav_tab} > li`);
                 const first_nav_tab = document.querySelector(`.${styles.nav_tab} > li:first-child`)
                 first_nav_tab.setAttribute('id', styles.nav_tab_after)
+                first_nav_tab.style.borderBottom = '2px solid #b8784e'
                 nav_tabs.forEach((item) => {
                     item.addEventListener('mouseenter', () => {
                         item.setAttribute('id', styles.nav_tab_after)
@@ -339,11 +415,11 @@ const Detail = () => {
                     relate_slider.appendChild(relate_block)
                     const relate_item = document.createElement('div')
                     relate_item.addEventListener('mouseenter', () => {
-                       relate_item.childNodes[3].style.transform = 'translateY(-50px)'
+                        relate_item.childNodes[3].style.transform = 'translateY(-50px)'
                     })
                     relate_item.addEventListener('mouseleave', () => {
                         relate_item.childNodes[3].style.transform = 'translateY(0)'
-                     })
+                    })
                     relate_item.className = styles.relate_item
                     relate_block.appendChild(relate_item)
                     const img_box = document.createElement('div')
@@ -386,20 +462,20 @@ const Detail = () => {
                     relate_title.className = styles.relate_prod_name
                     relate_title.textContent = item.name
                     relate_item.appendChild(relate_title)
-                    if(item.promo_price){
+                    if (item.promo_price) {
                         const price_box = document.createElement('div')
-                        price_box.className = styles.price_box
+                        price_box.className = styles.relate_price_box
                         relate_item.appendChild(price_box)
                         const promo_price = document.createElement('h3')
                         promo_price.innerHTML = `${item.promo_price.toLocaleString()}&#8363;`
                         price_box.appendChild(promo_price)
                         const price = document.createElement('h4')
-                        price.innerHTML = `<del>${item.price.toLocaleString()}&#8363;</del>`
+                        price.innerHTML = `<del>${item.price[0].toLocaleString()}&#8363;</del>`
                         price_box.appendChild(price)
-                    }else{
+                    } else {
                         const price = document.createElement('h3')
                         price.className = styles.price
-                        price.innerHTML = `${item.price.toLocaleString()}&#8363;`
+                        price.innerHTML = `${item.price[0].toLocaleString()}&#8363;`
                         relate_item.appendChild(price)
                     }
 
@@ -419,18 +495,18 @@ const Detail = () => {
                     const relate_container = document.querySelector(`.${styles.relate_container}`)
                     slider_btns.innerHTML = ''
                     const slider_num = Math.ceil(related_products_data.length / 5)
-                    for(let i = 1; i <= slider_num; i++){
+                    for (let i = 1; i <= slider_num; i++) {
                         const slider_nav = document.createElement('button')
                         slider_nav.className = styles.slider_nav
                         slider_btns.appendChild(slider_nav)
                         slider_nav.addEventListener('click', () => {
-                            if(i == 1){
+                            if (i == 1) {
                                 slider_btns.childNodes.forEach((res) => {
                                     res.style.backgroundColor = 'white'
                                     relate_slider.style.transform = `translateX(0)`
                                 })
                                 slider_nav.style.backgroundColor = 'rgb(79, 79, 79)'
-                            }else{
+                            } else {
                                 let width = relate_slider.clientWidth - 270
                                 slider_btns.childNodes.forEach((res) => {
                                     res.style.backgroundColor = 'white'
@@ -441,7 +517,7 @@ const Detail = () => {
                         })
 
                     }
-                    
+
 
                 })
             } catch (error) {
@@ -449,8 +525,257 @@ const Detail = () => {
             }
         };
 
+        const handleCartModal = async () => {
+            const productId = localStorage.getItem('product_id')
+            const cart = await getCarts()
+            const data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
+            const myCart = cart.filter((item) => item.user_id == userId)
+            const product = await getDetail(productId)
+            const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
+            data.forEach(async (item) => {
+                const imgCart = document.querySelector(`.${styles.imgCart}`)
+                imgCart.innerHTML = ''
+                const cartInfo = document.querySelector(`.${styles.cartInfo}`)
+                cartInfo.innerHTML = ''
+                const confirm = document.createElement('h2')
+                confirm.innerHTML = `
+              <span class="material-symbols-outlined">
+                done
+              </span>
+              <span>Added to cart successfully!</span>
+              `
+                imgCart.appendChild(confirm)
+                const img = document.createElement('img')
+                img.src = `../../img/${product.img_url[0]}`
+                img.width = 200
+                imgCart.appendChild(img)
+                const product_name = document.createElement('h3')
+                product_name.textContent = product.name
+                imgCart.appendChild(product_name)
+                let sizeIndex = 0;
+                cart.forEach((val) => {
+                    sizeIndex = product.sizes.indexOf(val.size)
+                })
+                console.log(sizeIndex)
+                if (item.promo_price && sizeIndex == 0) {
+                    const price = document.createElement('h4')
+                    price.className = styles.cart_price
+                    price.innerHTML = `PRICE: <b>${product.promo_price.toLocaleString()}&#8363;</b>`
+                    imgCart.appendChild(price)
+                } else {
+                    const price = document.createElement('h4')
+                    price.className = styles.cart_price
+                    price.innerHTML = `PRICE: <b>${product.price[sizeIndex].toLocaleString()}&#8363;</b>`
+                    imgCart.appendChild(price)
+                }
 
+                let total = 0
+                for (const res of myCart) {
+                    const product = await getDetail(res.prod_id);
+                    if(product.sizes.indexOf(res.size) > 0){
+                        const sizeIndex = product.sizes.indexOf(res.size)
+                        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[sizeIndex];
+                        total += itemTotal;
+                    }else{
+                        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[0];
+                        total += itemTotal;
+                    }
+                }
+                const quantity = document.createElement('h4')
+                quantity.className = styles.cart_quantity
+                quantity.innerHTML = `QTY: <b>${item.quantity}</b>`
+                imgCart.appendChild(quantity)
 
+                let cal_subtotal = 0;
+                if (item.promo_price && sizeIndex == 0) {
+                    cal_subtotal = item.quantity * product.promo_price
+                } else {
+                    cal_subtotal = item.quantity * product.price[sizeIndex]
+                }
+                const subtotal = document.createElement('h4')
+                subtotal.className = styles.cart_subtotal
+                subtotal.innerHTML = `SUBTOTAL: <b>${cal_subtotal.toLocaleString()}&#8363;</b>`
+                imgCart.appendChild(subtotal)
+
+                if (myCart.length < 2) {
+                    const items_count = document.createElement('p')
+                    items_count.className = styles.items_count
+                    items_count.innerHTML = `There are <span>${myCart.length}</span> item in your cart`
+                    cartInfo.appendChild(items_count)
+                } else {
+                    const items_count = document.createElement('p')
+                    items_count.className = styles.items_count
+                    items_count.innerHTML = `There are <span>${myCart.length}</span> items in your cart`
+                    cartInfo.appendChild(items_count)
+                }
+                const cartModal = document.querySelector(`.${styles.cartModal}`)
+                const cart_total = document.createElement('p')
+                cart_total.className = styles.total_price
+                cart_total.innerHTML = `CART TOTALS: <span>${total.toLocaleString()}&#8363;</span>`
+                cartInfo.appendChild(cart_total)
+                const continue_shopping = document.createElement('button')
+                continue_shopping.className = styles.continue_shopping
+                continue_shopping.textContent = 'CONTINUE SHOPPING'
+                continue_shopping.addEventListener('click', () => {
+                    cartModal.style.display = 'none'
+                })
+                cartInfo.appendChild(continue_shopping)
+
+                const go_to_cart = document.createElement('button')
+                go_to_cart.className = styles.go_to_cart
+                go_to_cart.textContent = 'GO TO CART'
+                cartInfo.appendChild(go_to_cart)
+                const cart_condition = document.createElement('div')
+                cart_condition.className = styles.cart_condition
+                cartInfo.appendChild(cart_condition)
+                const condition_checkbox = document.createElement('input')
+                condition_checkbox.type = 'checkbox'
+                cart_condition.appendChild(condition_checkbox)
+                const condition_label = document.createElement('label')
+                condition_label.textContent = 'Agree with term and conditional.'
+                cart_condition.appendChild(condition_label)
+
+                const checkOutBtn = document.createElement('input')
+                checkOutBtn.type = 'button'
+                checkOutBtn.value = 'PROCEED TO CHECKOUT'
+                checkOutBtn.className = styles.checkOutBtn
+                checkOutBtn.disabled = true
+                checkOutBtn.style.opacity = 0.7
+                cartInfo.appendChild(checkOutBtn)
+
+                condition_checkbox.addEventListener('change', () => {
+                    if (condition_checkbox.checked == true) {
+                        checkOutBtn.disabled = false;
+                        checkOutBtn.style.opacity = 1
+                    } else {
+                        checkOutBtn.disabled = true;
+                        checkOutBtn.style.opacity = 0.7
+                    }
+                })
+
+                const cartCol2 = document.querySelector(`.${styles.cartCol2}`)
+                cartCol2.innerHTML = ''
+                const suggested_products = document.createElement('div')
+                cartCol2.appendChild(suggested_products)
+                const suggested_products_title = document.createElement('div')
+                suggested_products_title.className = styles.suggested_products_title
+                suggested_products.appendChild(suggested_products_title)
+                const also_like_title = document.createElement('h3')
+                also_like_title.textContent = 'Suggested products:'
+                suggested_products_title.appendChild(also_like_title)
+                const also_like_btns = document.createElement('div')
+                also_like_btns.className = styles.also_like_btns
+                suggested_products_title.appendChild(also_like_btns)
+                const prevBtn = document.createElement('button')
+                prevBtn.className = styles.also_like_prevBtn
+                prevBtn.innerHTML = `<span class="material-symbols-outlined">arrow_back_ios</span>`
+                prevBtn.childNodes[0].setAttribute('id', styles.arrow_active)
+                also_like_btns.appendChild(prevBtn)
+                const nextBtn = document.createElement('button')
+                nextBtn.className = styles.also_like_nextBtn
+                nextBtn.innerHTML = `<span class="material-symbols-outlined">arrow_forward_ios</span>`
+                also_like_btns.appendChild(nextBtn)
+
+                const buttons = document.querySelectorAll(`.${styles.also_like_btns} > button`)
+                buttons.forEach((item) => {
+                    item.addEventListener('click', () => {
+                        buttons.forEach((val) => {
+                            val.childNodes[0].removeAttribute('id')
+                        })
+                        item.childNodes[0].setAttribute('id', styles.arrow_active)
+                    })
+                })
+                const suggected_prod_container = document.createElement('div')
+                suggected_prod_container.className = styles.suggected_prod_container
+                cartCol2.appendChild(suggected_prod_container)
+                products_by_categoryId.forEach((item) => {
+                    const suggested_prod_box = document.createElement('div')
+                    suggested_prod_box.className = styles.box
+                    suggected_prod_container.appendChild(suggested_prod_box)
+                    const img = document.createElement('img')
+                    img.src = `../../img/${item.img_url[0]}`
+                    img.width = 200
+                    suggested_prod_box.appendChild(img)
+                    const name = document.createElement('h4')
+                    name.textContent = item.name
+                    suggested_prod_box.appendChild(name)
+                    if (item.promo_price) {
+                        const price_box = document.createElement('div')
+                        price_box.className = styles.price_box
+                        suggested_prod_box.appendChild(price_box)
+                        const promo_price = document.createElement('h4')
+                        promo_price.innerHTML = `${item.promo_price.toLocaleString()}`
+                        price_box.appendChild(promo_price)
+                        const price = document.createElement('span')
+                        price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
+                        price_box.appendChild(price)
+
+                        const discount = document.createElement('div')
+                        discount.className = styles.discount
+                        const percent = 100 - Math.floor(((item.promo_price * 100) / item.price[0]))
+                        discount.textContent = '-' + percent + '%'
+                        suggested_prod_box.appendChild(discount)
+                    } else {
+                        const price = document.createElement('h3')
+                        price.className = styles.suggested_price
+                        price.innerHTML = `${item.price[0].toLocaleString()}`
+                        suggested_prod_box.appendChild(price)
+                    }
+                })
+
+                let slideIndex = 0;
+
+                prevBtn.addEventListener('click', () => {
+                    if (slideIndex == 0) {
+                        slideIndex = 2;
+                        const slideWidth = suggected_prod_container.clientWidth;
+                        suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+                    } else {
+                        slideIndex = (slideIndex - 1 + suggected_prod_container.children.length) % suggected_prod_container.children.length;
+                        updateSliderPosition();
+                    }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    slideIndex = (slideIndex + 1) % suggected_prod_container.children.length;
+
+                    if (slideIndex > 2) {
+                        slideIndex = 0;
+                        suggected_prod_container.style.transform = `translateX(0px)`
+                    } else {
+                        updateSliderPosition();
+                    }
+                });
+                function updateSliderPosition() {
+                    const slideWidth = (suggected_prod_container.clientWidth - 205);
+                    suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+                }
+            })
+        }
+
+        const additional_information = () => {
+            const tab_container = document.querySelector(`.${styles.tab_container}`)
+            const nav_tabs = document.querySelectorAll(`.${styles.nav_tab} > li`)
+            const desc_prod = document.querySelector(`.${styles.desc_prod}`)
+            nav_tabs.forEach((item) => {
+                item.addEventListener('click', () => {
+                    if(item.value == '0'){
+                        desc_prod.style.display = 'block'
+                    }else{
+                        desc_prod.style.display = 'none'
+                    }
+                    nav_tabs.forEach((val) => {
+                        val.removeAttribute('id')
+                        val.style.borderBottom = 'none'
+                    })
+                    item.setAttribute('id', styles.nav_tab_after)
+                    item.style.borderBottom = '2px solid #b8784e'
+                })
+            })
+        }
+
+        additional_information()
+        handleCartModal()
         fetchData()
 
         return () => {
@@ -527,8 +852,8 @@ const Detail = () => {
                             <div className={styles.content_text}>
                                 <h3 className={styles.content_title}>Hoàn trả</h3>
                                 <div className={styles.text}>
-                                Hoàn trả sản phẩm trong vòng 100 ngày nếu bạn thay đổi ý định. 
-                                Nhận tiền hoàn lại/thay thế sản phẩm khác và miễn phí vận chuyển hoàn trả hàng nếu sản phẩm bị hư hỏng hoặc không như mô tả
+                                    Hoàn trả sản phẩm trong vòng 100 ngày nếu bạn thay đổi ý định.
+                                    Nhận tiền hoàn lại/thay thế sản phẩm khác và miễn phí vận chuyển hoàn trả hàng nếu sản phẩm bị hư hỏng hoặc không như mô tả
                                 </div>
                             </div>
                         </div>
@@ -546,20 +871,20 @@ const Detail = () => {
 
                 <div className={styles.tab_details}>
                     <div className={styles.nav_tab}>
-                        <li><a>Description</a></li>
-                        <li><a>Additional Information</a></li>
-                        <li><a>Review</a></li>
+                        <li value="0"><a>Description</a></li>
+                        <li value="1"><a>Additional Information</a></li>
+                        <li value="2"><a>Review</a></li>
                     </div>
                     <div className={styles.tab_container}>
                         <div className={styles.desc_prod}>
                             <div className={styles.row1}>
                                 <div className={styles.desc_col1}>
-                                    <img src="../../img/des1.webp"/>
+                                    <img src="../../img/des1.webp" />
                                 </div>
                                 <div className={styles.desc_col2}>
                                     <h1>Calf-Length Dress In Airy, Textured Cotton Fabric With A Printed Pattern</h1>
                                     <p>Sed hendrerit. Cras risus ipsum, faucibus ut, ullamcorper id, varius estibulum ante ipsum primis in faucibus</p>
-                                    <img src="../../img/des2.jpg"/>
+                                    <img src="../../img/des2.jpg" />
                                 </div>
                             </div>
                             <div className={styles.desc_info}>
@@ -567,14 +892,14 @@ const Detail = () => {
                                 <p>Inspired by traditional blockprinting techniques in India, our own in-house design is the vibrant pattern that every closet needs. That's why we crafted our party standout tiered maxi dress in this royal blue-and-yellow print: It's lightweight, lined and will look great at all your most festive summer events.</p>
                             </div>
                             <div className={styles.img_block}>
-                                <img src="../../img/des3.webp"/>
+                                <img src="../../img/des3.webp" />
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
 
                 <div className={styles.relate_products}>
-                    <div className={styles.relate_title}> 
+                    <div className={styles.relate_title}>
                         <h1>Relate Products</h1>
                     </div>
                     <div className={styles.relate_container}>
@@ -585,9 +910,28 @@ const Detail = () => {
                     <div className={styles.slider_btns}>
 
                     </div>
-                </div>  
+                </div>
             </div>
+
+            <>
+            <div id={styles.cartModal} className={styles.cartModal}>
+              <div className={styles.cartContent}>
+                <div className={styles.cartCol1}>
+                  <div className={styles.imgCart}>
+                  </div>
+                  <div className={styles.cartInfo}>
+                  </div>
+                  <span className={styles.closeCartModal}>&times;</span>
+                </div>
+                <div className={styles.cartCol2}>
+
+                </div>
+              </div>
+            </div>
+            </>
         </>
+
+
     )
 }
 

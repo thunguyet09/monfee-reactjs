@@ -211,7 +211,7 @@ const Home = () => {
             if (item.promo_price) {
               price.innerHTML = `<h3>${item.promo_price.toLocaleString()}&#8363;</h3>`
             } else {
-              price.innerHTML = `<h3>${item.price.toLocaleString()}&#8363;</h3>`
+              price.innerHTML = `<h3>${item.price[0].toLocaleString()}&#8363;</h3>`
             }
 
             const mo_ta = document.createElement('p')
@@ -249,14 +249,14 @@ const Home = () => {
                     const _price = item.promo_price * 2;
                     price.innerHTML = `<h3>${_price.toLocaleString()}&#8363;</h3>`
                   } else {
-                    const _price = item.price * 2;
+                    const _price = item.price[0] * 2;
                     price.innerHTML = `<h3>${_price.toLocaleString()}&#8363;</h3>`
                   }
                 } else {
                   if (item.promo_price) {
                     price.innerHTML = `<h3>${item.promo_price.toLocaleString()}&#8363;</h3>`
                   } else {
-                    price.innerHTML = `<h3>${item.price.toLocaleString()}&#8363;</h3>`
+                    price.innerHTML = `<h3>${item.price[0].toLocaleString()}&#8363;</h3>`
                   }
                 }
               })
@@ -355,12 +355,12 @@ const Home = () => {
             promo_price.innerHTML = `${item.promo_price.toLocaleString()}&#8363;`
             priceBox.appendChild(promo_price)
             const price = document.createElement('h4')
-            price.innerHTML = `<del>${item.price.toLocaleString()}&#8363;</del>`
+            price.innerHTML = `<del>${item.price[0].toLocaleString()}&#8363;</del>`
             priceBox.appendChild(price)
           } else {
             const price = document.createElement('h4')
             price.className = styles.price
-            price.innerHTML = `${item.price.toLocaleString()}&#8363;`
+            price.innerHTML = `${item.price[0].toLocaleString()}&#8363;`
             productItem.appendChild(price)
           }
           const imgThumbnail = document.createElement('div')
@@ -645,14 +645,14 @@ const Home = () => {
                     const _price = item.promo_price * 2;
                     price.innerHTML = `<h3>${_price.toLocaleString()}&#8363;</h3>`
                   } else {
-                    const _price = item.price * 2;
+                    const _price = item.price[0] * 2;
                     price.innerHTML = `<h3>${_price.toLocaleString()}&#8363;</h3>`
                   }
                 } else {
                   if (item.promo_price) {
                     price.innerHTML = `<h3>${item.promo_price.toLocaleString()}&#8363;</h3>`
                   } else {
-                    price.innerHTML = `<h3>${item.price.toLocaleString()}&#8363;</h3>`
+                    price.innerHTML = `<h3>${item.price[0].toLocaleString()}&#8363;</h3>`
                   }
                 }
               })
@@ -751,12 +751,12 @@ const Home = () => {
             promo_price.innerHTML = `${item.promo_price.toLocaleString()}&#8363;`
             priceBox.appendChild(promo_price)
             const price = document.createElement('h4')
-            price.innerHTML = `<del>${item.price.toLocaleString()}&#8363;</del>`
+            price.innerHTML = `<del>${item.price[0].toLocaleString()}&#8363;</del>`
             priceBox.appendChild(price)
           } else {
             const price = document.createElement('h4')
             price.className = styles.price
-            price.innerHTML = `${item.price.toLocaleString()}&#8363;`
+            price.innerHTML = `${item.price[0].toLocaleString()}&#8363;`
             productItem.appendChild(price)
           }
           const imgThumbnail = document.createElement('div')
@@ -912,8 +912,14 @@ const Home = () => {
       let total = 0 
       for (const res of myCart) {
         const product = await getDetail(res.prod_id);
-        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price;
-        total += itemTotal;
+        if(product.sizes.indexOf(res.size) > 0){
+            const sizeIndex = product.sizes.indexOf(res.size)
+            const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[sizeIndex];
+            total += itemTotal;
+        }else{
+            const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[0];
+            total += itemTotal;
+        }
       }
       data.forEach(async (item) => {
         const imgCart = document.querySelector(`.${styles.imgCart}`)
@@ -935,7 +941,13 @@ const Home = () => {
         const product_name = document.createElement('h3')
         product_name.textContent = product.name
         imgCart.appendChild(product_name)
-        if(item.promo_price){
+
+        let sizeIndex = 0;
+        cart.forEach((val) => {
+            sizeIndex = product.sizes.indexOf(val.size)
+        })
+
+        if(item.promo_price && sizeIndex == 0){
           const price = document.createElement('h4')
           price.className = styles.cart_price
           price.innerHTML = `PRICE: <b>${product.promo_price.toLocaleString()}&#8363;</b>`
@@ -943,7 +955,7 @@ const Home = () => {
         }else{
           const price = document.createElement('h4')
           price.className = styles.cart_price
-          price.innerHTML = `PRICE: <b>${product.price.toLocaleString()}&#8363;</b>`
+          price.innerHTML = `PRICE: <b>${product.price[sizeIndex].toLocaleString()}&#8363;</b>`
           imgCart.appendChild(price)
         }
         const quantity = document.createElement('h4')
@@ -955,7 +967,7 @@ const Home = () => {
         if(item.promo_price){
           cal_subtotal = item.quantity * product.promo_price
         }else{
-          cal_subtotal = item.quantity * product.price
+          cal_subtotal = item.quantity * product.price[0]
         }
         const subtotal = document.createElement('h4')
         subtotal.className = styles.cart_subtotal
@@ -1072,18 +1084,18 @@ const Home = () => {
             promo_price.innerHTML = `${item.promo_price.toLocaleString()}`
             price_box.appendChild(promo_price)
             const price = document.createElement('span')
-            price.innerHTML = `<del>${item.price.toLocaleString()}</del>`
+            price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
             price_box.appendChild(price)
 
             const discount = document.createElement('div')
             discount.className = styles.discount
-            const percent = 100 - Math.floor(((item.promo_price * 100)/item.price))
+            const percent = 100 - Math.floor(((item.promo_price * 100)/item.price[0]))
             discount.textContent = '-' + percent + '%'
             suggested_prod_box.appendChild(discount)
           }else{
             const price = document.createElement('h3')
             price.className = styles.suggested_price
-            price.innerHTML = `${item.price.toLocaleString()}`
+            price.innerHTML = `${item.price[0].toLocaleString()}`
             suggested_prod_box.appendChild(price)
           }
         })
