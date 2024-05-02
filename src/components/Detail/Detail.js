@@ -9,12 +9,13 @@ const Detail = () => {
     useEffect(() => {
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userId')
+        const url = new URL(document.location.href);
+        const path = url.pathname.split('/').filter(Boolean);
+        const id = parseInt(path[path.length - 1])
         const fetchData = async () => {
+            const detail = await getDetail(id);
             const carts = await getCarts()
             const products = await getAllProducts()
-            const url = new URL(document.location.href);
-            const path = url.pathname.split('/').filter(Boolean);
-            const id = parseInt(path[path.length - 1])
             const lastId = products[products.length - 1].id
             let prev_prod;
             if (id == 0) {
@@ -29,7 +30,6 @@ const Detail = () => {
                 next_prod = await getDetail(id + 1);
             }
             try {
-                const detail = await getDetail(id);
                 const product_title = document.querySelector(`.${styles.product_title} > h1`)
                 product_title.textContent = detail.name
                 const product_name = document.querySelector(`.${styles.product_name}`)
@@ -753,16 +753,25 @@ const Detail = () => {
             })
         }
 
-        const additional_information = () => {
+        const additional_information = async () => {
+            const detail = await getDetail(id);
             const tab_container = document.querySelector(`.${styles.tab_container}`)
             const nav_tabs = document.querySelectorAll(`.${styles.nav_tab} > li`)
             const desc_prod = document.querySelector(`.${styles.desc_prod}`)
+            const more_info = document.querySelector(`.${styles.more_info}`)
+            const more_info_col2 = document.querySelector(`.${styles.more_info_col2}`)
+            more_info_col2.innerHTML = `<img src="../../img/${detail.img_url[0]}" />`
             nav_tabs.forEach((item) => {
                 item.addEventListener('click', () => {
                     if(item.value == '0'){
                         desc_prod.style.display = 'block'
-                    }else{
+                        more_info.style.display = 'none'
+                    }else if(item.value == '1'){
+                       more_info.style.display = 'flex'
+                       desc_prod.style.display = 'none'
+                    }else {
                         desc_prod.style.display = 'none'
+                        more_info.style.display = 'none'
                     }
                     nav_tabs.forEach((val) => {
                         val.removeAttribute('id')
@@ -893,6 +902,46 @@ const Detail = () => {
                             </div>
                             <div className={styles.img_block}>
                                 <img src="../../img/des3.webp" />
+                            </div>
+                        </div>
+                        <div className={styles.more_info}>
+                            <div className={styles.more_info_col1}>
+                                 <p>MORE INFORMATION TO YOU</p>
+                                 <h3>Things You Need To Know</h3>
+                                 <div className={styles.row}>
+                                    <div className={styles.more_info_content1}>
+                                        <p>We use industry standard SSL encryption to protect your details. Potentially sensitive information such as your name, address and card details are encoded so they can only be read on the secure server.</p>
+                                        <ul>
+                                            <li>Safe Payments</li>
+                                            <li>Accept Credit Card</li>
+                                            <li>Different Payment Method</li>
+                                            <li>Price include VAT</li>
+                                            <li>Easy To Order</li>
+                                        </ul>
+                                    </div>
+                                    <div className={styles.more_info_content2}>
+                                        <div className={styles.info2}>
+                                            <h3>Express Delivery</h3>
+                                            <ul>
+                                                <li>Europe & USA within 2-4 days</li>
+                                                <li>Rest of the world within 3-7 days</li>
+                                                <li>Selected locations</li>
+                                            </ul>
+                                        </div>
+                                        <div className={styles.info2}>
+                                            <h3>Need More Information</h3>
+                                            <ul>
+                                                <li>Orders & Shipping</li>
+                                                <li>Returns & Refunds</li>
+                                                <li>Payments</li>
+                                                <li>Your Orders</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+                            <div className={styles.more_info_col2}>
+                                 
                             </div>
                         </div>
                     </div>

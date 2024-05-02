@@ -39,7 +39,7 @@ const Search = () => {
                         product_info.className = styles.product_info
                         product_search_results.appendChild(product_info)
                         const product_img = document.createElement('img')
-                        product_img.src = `./img/${item.img_url[0]}`
+                        product_img.src = `../../img/${item.img_url[0]}`
                         product_img.width = 100
                         product_info.appendChild(product_img)
                         const product_info_row2 = document.createElement('div')
@@ -49,7 +49,7 @@ const Search = () => {
                         product_title.textContent = item.name
                         product_info_row2.appendChild(product_title)
                         const product_price = document.createElement('h3')
-                        product_price.innerHTML = `${item.price.toLocaleString()}`
+                        product_price.innerHTML = `${item.price[0].toLocaleString()}`
                         product_info_row2.appendChild(product_price)
                     })
                 }

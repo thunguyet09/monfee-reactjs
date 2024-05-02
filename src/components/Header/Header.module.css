@@ -2,6 +2,7 @@
 .rightHeader > span {
     font-size: 28px;
     color: white;
+    cursor: pointer;
 }
 
 #header {
