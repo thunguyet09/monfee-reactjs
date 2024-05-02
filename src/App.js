@@ -14,10 +14,12 @@ import Search from './components/Search/Search';
 import Product from './components/Product/Product';
 import Detail from './components/Detail/Detail';
 import MiniCart from './components/MiniCart/MiniCart';
+import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContext';
 function App() {
   return (
     <div className={styles.App}>
        <SearchContextProvider>
+        <MiniCartContextProvider>
        <Routes>
             <Route
                 path="/register"
@@ -99,6 +101,7 @@ function App() {
                 }
             />
         </Routes>
+        </MiniCartContextProvider>
        </SearchContextProvider>
     </div>
   );

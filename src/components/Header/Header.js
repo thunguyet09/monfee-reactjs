@@ -5,6 +5,7 @@ import styles from './Header.module.css'
 import { getCarts } from '../../api';
 import Search from '../Search/Search';
 import { SearchContext, useSearch } from '../../contexts/SearchContext/SearchContext';
+import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
   const carts = await getCarts()
@@ -20,12 +21,13 @@ const Header = () => {
   const value = path[path.length - 1];
   const detail = path[path.length - 2]
   numsInCart()
+  const {openMiniCart, setMiniCartOpen} = useMiniCart()
   useEffect(() => {
+    const menuItems = document.querySelectorAll(`.${styles.leftHeader} > ul > li > a`)
+    const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
+    const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
+    const header = document.getElementById(styles.header);
     const handleScroll = () => {
-      const menuItems = document.querySelectorAll(`.${styles.leftHeader} > ul > li > a`)
-      const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
-      const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
-      const header = document.getElementById(styles.header);
       if (window.scrollY > 66) {
         header.style.animation = 'slideDown 2s linear'
         if (value == '') {
@@ -34,7 +36,7 @@ const Header = () => {
           header.style.backgroundColor = 'white'
         }
         header.style.position = 'absolute'
-        header.style.zIndex = -1
+        header.style.zIndex = -2
         header.style.top = 0
         header.style.left = 0
         header.style.right = 0
@@ -78,9 +80,10 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
 
     const handleHeader = async () => {
-      const menuItems = document.querySelectorAll(`.${styles.leftHeader} > ul > li > a`)
-      const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
-      const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
+      shoppingIcon.addEventListener('click', () => {
+        setMiniCartOpen(true)
+      })
+
       if (typeof (value) == 'undefined') {
         menuItems.forEach((node) => {
           node.style.color = 'white'
@@ -89,7 +92,7 @@ const Header = () => {
           node.style.color = 'white'
         })
         shoppingIcon.style.color = 'white'
-      } else {
+      }else {
         menuItems.forEach((node) => {
           node.style.color = 'black'
         })
@@ -139,11 +142,30 @@ const Header = () => {
         })
       }
     }
+
+    const detail_page = () => {
+      if(openMiniCart == true){
+        header.style.zIndex = -3
+      }else{
+        header.style.zIndex = -2
+      }
+      if(detail){
+        menuItems.forEach((node) => {
+          node.style.color = 'black'
+        })
+        icons.forEach((node) => {
+          node.style.color = 'black'
+        })
+        shoppingIcon.style.color = 'black'
+      }
+    }
+ 
+    detail_page()
     handleHeader()
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [openMiniCart]);
 
 
   const { open, setSearchOpen } = useSearch()
@@ -154,7 +176,6 @@ const Header = () => {
       setSearchOpen(true)
     };
     searchItemElement.addEventListener('click', handleClick);
-
     return () => {
       searchItemElement.removeEventListener('click', handleClick);
     };
