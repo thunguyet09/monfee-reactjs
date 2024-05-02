@@ -2,10 +2,12 @@ import React from 'react'
 import { useEffect } from 'react'
 import styles from './MiniCart.module.css'
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext'
+import { getCarts } from '../../api'
 const MiniCart = () => {
     const {openMiniCart, setMiniCartOpen} = useMiniCart()
+    const userId = localStorage.getItem('userId')
     useEffect(() => {
-        const handleMiniCart = () => {
+        const handleMiniCart = async () => {
             const relative = document.querySelector(`.${styles.relative}`)
             const mini_content = document.querySelector(`.${styles.mini_content}`)
             const mini_cart_close = document.querySelector(`.${styles.mini_cart_close}`)
@@ -23,6 +25,11 @@ const MiniCart = () => {
                     relative.style.display = 'none'
                 }, 200)
             })
+
+            const carts = await getCarts()
+            const numsInCart = document.querySelector(`.${styles.mini_cart_counter} > span`)
+            const filteredCarts = carts.filter(((item) => item.user_id == userId))
+            numsInCart.innerHTML = `${filteredCarts.length}`
         }
         handleMiniCart()
         return () => {}

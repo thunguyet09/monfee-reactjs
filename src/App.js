@@ -82,6 +82,7 @@ function App() {
                       <div className={styles.homePage}>
                       <Detail />
                       <MiniCart />
+                      <Footer />
                       </div>
                     </div>
                 }
