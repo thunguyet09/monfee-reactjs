@@ -33,8 +33,8 @@ const Header = () => {
         } else {
           header.style.backgroundColor = 'white'
         }
-        header.style.position = 'fixed'
-        header.style.zIndex = '2'
+        header.style.position = 'absolute'
+        header.style.zIndex = -1
         header.style.top = 0
         header.style.left = 0
         header.style.right = 0
@@ -60,9 +60,9 @@ const Header = () => {
           shoppingIcon.style.color = 'white'
         }else if(value == 'shop' || detail){
           header.style.backgroundColor = 'white'
-          header.style.position = 'static'
+          header.style.position = 'absolute'
         }else {
-          header.style.position = 'static'
+          header.style.position = 'absolute'
           header.style.backgroundColor = 'rgba(0, 0, 0, 0)'
           menuItems.forEach((node) => {
             node.style.color = 'black'

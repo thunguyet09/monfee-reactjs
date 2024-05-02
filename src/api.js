@@ -40,3 +40,9 @@ export const product_pagination = async (page, limit) => {
     const data = await res.json()
     return data
 }
+
+export const getUser = async (id) => {
+    const res = await fetch(`http://localhost:3000/users/${id}`)
+    const data = await res.json()
+    return data
+}

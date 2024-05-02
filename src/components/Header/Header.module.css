@@ -151,7 +151,7 @@
     position: absolute;
     top: 160%;
     left: -50px;
-    z-index: 99;
+    z-index: 19;
     box-shadow: 0 0 20px rgba(89, 102, 122, 0.431);
     font-family: "Nunito", sans-serif;
     padding: 0 20px;

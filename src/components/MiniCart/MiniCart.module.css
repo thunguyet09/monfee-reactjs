@@ -1,0 +1,28 @@
+
+.relative {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 998;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.337);
+}
+.mini_content {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+    width: 380px;
+    background-color: hsl(0, 0%, 97%);
+    transition: all .3s ease;
+}
+
+.relative {}
+.mini_content {}
+.mini_cart_close {}
+.title {}
+.mini_cart_counter {}
+.mini_cart_bottom {}

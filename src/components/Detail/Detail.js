@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Detail.module.css'
-import { getAllProducts, getDetail, getProductsByCategoryId } from '../../api';
+import { getAllProducts, getDetail, getProductsByCategoryId, getUser } from '../../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { getCarts } from '../../api';
@@ -16,6 +16,8 @@ const Detail = () => {
             const detail = await getDetail(id);
             const carts = await getCarts()
             const products = await getAllProducts()
+            const user = await getUser(userId)
+            const existingLikes = user.products_fav.includes(id)
             const lastId = products[products.length - 1].id
             let prev_prod;
             if (id == 0) {
@@ -30,6 +32,51 @@ const Detail = () => {
                 next_prod = await getDetail(id + 1);
             }
             try {
+                const wishlist_icon = document.querySelector(`.${styles.wishlist_icon} > span`)
+                wishlist_icon.addEventListener('click', async () => {
+                    const dialog_content = document.querySelector(`#${styles.dialog_content}`)
+                    const dialog_icon = document.querySelector(`#${styles.dialog_content} > span`)
+                    const dialog_text = document.querySelector(`.${styles.dialog_text}`)
+                    let fav_arr = [];
+                    user.products_fav.forEach((item) => {
+                        fav_arr.push(item);
+                    });
+                    fav_arr.push(detail.id);
+                    const obj = {
+                        prod_id: detail.id,
+                        user_id: userId,
+                        favorites: fav_arr
+                    };
+                
+                    if(!existingLikes){
+                        await fetch(`http://localhost:3000/products/wishlist`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(obj)
+                        })
+                        .then(() => {
+                            dialog_content.style.display = 'flex'
+                            dialog_content.style.backgroundColor = '#6B8A47'
+                            dialog_icon.innerHTML = `<span class="material-symbols-outlined">done</span>`
+                            dialog_text.textContent = 'Product is added to wishlist successfully!'
+                            setTimeout(() => {
+                                dialog_content.style.display = 'none'
+                                wishlist()
+                            }, 2000)
+                        })
+                    }else{
+                        dialog_content.style.display = 'flex'
+                        dialog_content.style.backgroundColor = '#6B8A47'
+                        dialog_icon.innerHTML = `<span class="material-symbols-outlined">done</span>`
+                        dialog_text.textContent = 'Product has been added to wishlist'
+                        setTimeout(() => {
+                            dialog_content.style.display = 'none'
+                            wishlist()
+                        }, 2000)
+                    }
+                })
                 const product_title = document.querySelector(`.${styles.product_title} > h1`)
                 product_title.textContent = detail.name
                 const product_name = document.querySelector(`.${styles.product_name}`)
@@ -45,6 +92,9 @@ const Detail = () => {
                 </div>
             `
                 const prev_prod_btn = document.querySelector(`.${styles.prev_prod}`)
+                prev_prod_btn.addEventListener('click', () => {
+                    document.location.href = `/products/${prev_prod.id}`
+                })
                 prev_prod_btn.addEventListener('mouseenter', () => {
                     img_prev.style.display = 'flex'
                     img_prev.style.animation = `${styles.slideRight} .8s ease`
@@ -69,6 +119,9 @@ const Detail = () => {
             `
 
                 const next_prod_btn = document.querySelector(`.${styles.next_prod}`)
+                next_prod_btn.addEventListener('click', () => {
+                    document.location.href = `/products/${next_prod.id}`
+                })
                 next_prod_btn.addEventListener('mouseenter', () => {
                     img_next.style.display = 'flex'
                     img_next.style.animation = `${styles.slideRight} .8s ease`
@@ -141,11 +194,11 @@ const Detail = () => {
                 main_detail.appendChild(rating)
                 const stars = document.createElement('div')
                 stars.innerHTML = `
-                <span class="material-symbols-outlined">star</span>
-                <span class="material-symbols-outlined">star</span>
-                <span class="material-symbols-outlined">star</span>
-                <span class="material-symbols-outlined">star</span>
-                <span class="material-symbols-outlined">star_half</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="material-symbols-outlined">star_half</span>
                 `
                 rating.appendChild(stars)
                 const badge_caption = document.createElement('h5')
@@ -193,27 +246,42 @@ const Detail = () => {
                 size_items.className = styles.size_items
                 size_box.appendChild(size_items)
                 let size_1000g = '';
+                let size_1500g = ''
                 detail.sizes.forEach((item) => {
                     const size = document.createElement('button')
                     size.textContent = item
                     size_items.appendChild(size)
                     size.addEventListener('click', () => {
-                        if(item = '1000g'){
+                        if(item == '1000g'){
                             const sizeIndex = detail.sizes.indexOf(size.textContent)
                             size_1000g = detail.price[sizeIndex]
                             if (detail.promo_price > 0) {
+                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
+                                promo_price.innerHTML = ''
                                 const price = document.querySelector(`.${styles.prices} > h2`)
                                 price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
                             } else {
                                 const price = document.querySelector(`.${styles.price}`)
                                 price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
                             }
+                        }else if(item == '1500g'){
+                            const sizeIndex = detail.sizes.indexOf(size.textContent)
+                            size_1500g = detail.price[sizeIndex]
+                            if (detail.promo_price > 0) {
+                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
+                                promo_price.innerHTML = ''
+                                const price = document.querySelector(`.${styles.prices} > h2`)
+                                price.innerHTML = `${size_1500g.toLocaleString()}&#8363;`
+                            } else {
+                                const price = document.querySelector(`.${styles.price}`)
+                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
+                            }
                         }else{
                             if (detail.promo_price > 0) {
-                                const price = document.querySelector(`.${styles.prices} > h3`)
-                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
-                                const promo_price = document.querySelector(`.${styles.prices} > h2`)
-                                promo_price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
+                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
+                                promo_price.innerHTML = `<del>${detail.price[0].toLocaleString()}&#8363;</del>`
+                                const price = document.querySelector(`.${styles.prices} > h2`)
+                                price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
                             } else {
                                 const price = document.querySelector(`.${styles.price}`)
                                 price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
@@ -556,7 +624,6 @@ const Detail = () => {
                 cart.forEach((val) => {
                     sizeIndex = product.sizes.indexOf(val.size)
                 })
-                console.log(sizeIndex)
                 if (item.promo_price && sizeIndex == 0) {
                     const price = document.createElement('h4')
                     price.className = styles.cart_price
@@ -783,6 +850,22 @@ const Detail = () => {
             })
         }
 
+        const wishlist = async () => {
+            const detail = await getDetail(id);
+            const wishlist_icon = document.querySelector(`.${styles.wishlist_icon} > span`)
+            const user = await getUser(userId)
+            const existingLikes = user.products_fav.includes(id)
+            if(existingLikes){
+                wishlist_icon.style.color = '#b8784e'
+            }
+            const wishlist_number = document.querySelector(`.${styles.wishlist_icon} > h4`)
+            if(typeof detail.likes == 'undefined'){
+                wishlist_number.innerHTML = '(0)'
+            }else{
+                wishlist_number.innerHTML = `(${detail.likes})`
+            }
+        }
+        wishlist()
         additional_information()
         handleCartModal()
         fetchData()
@@ -842,7 +925,10 @@ const Detail = () => {
                         <div class={styles.product_title}>
                             <h1></h1>
                             <div className={styles.top_product}></div>
-                            <span><FontAwesomeIcon icon={faHeart} /></span>
+                            <div className={styles.wishlist_icon}>
+                                <h4></h4>
+                                <span><FontAwesomeIcon icon={faHeart} /></span>
+                            </div>
                         </div>
                         <div className={styles.main_detail}>
 
@@ -963,20 +1049,27 @@ const Detail = () => {
             </div>
 
             <>
-            <div id={styles.cartModal} className={styles.cartModal}>
-              <div className={styles.cartContent}>
-                <div className={styles.cartCol1}>
-                  <div className={styles.imgCart}>
-                  </div>
-                  <div className={styles.cartInfo}>
-                  </div>
-                  <span className={styles.closeCartModal}>&times;</span>
-                </div>
-                <div className={styles.cartCol2}>
+                <div id={styles.cartModal} className={styles.cartModal}>
+                <div className={styles.cartContent}>
+                    <div className={styles.cartCol1}>
+                    <div className={styles.imgCart}>
+                    </div>
+                    <div className={styles.cartInfo}>
+                    </div>
+                    <span className={styles.closeCartModal}>&times;</span>
+                    </div>
+                    <div className={styles.cartCol2}>
 
+                    </div>
                 </div>
-              </div>
-            </div>
+                </div>
+            </>
+
+            <>
+                <div id={styles.dialog_content}>
+                    <span></span>
+                    <p className={styles.dialog_text}></p>
+                </div>
             </>
         </>
 

@@ -13,6 +13,7 @@ import { SearchContextProvider } from './contexts/SearchContext/SearchContext';
 import Search from './components/Search/Search';
 import Product from './components/Product/Product';
 import Detail from './components/Detail/Detail';
+import MiniCart from './components/MiniCart/MiniCart';
 function App() {
   return (
     <div className={styles.App}>
@@ -77,8 +78,8 @@ function App() {
                       <Search />
                       <Header />
                       <div className={styles.homePage}>
-                        <Detail />
-                        <Footer />
+                      <Detail />
+                      <MiniCart />
                       </div>
                     </div>
                 }
