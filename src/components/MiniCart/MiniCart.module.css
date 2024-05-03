@@ -143,3 +143,76 @@
 .removeItem:hover > span {
     color:#b8784e;
 }
+
+.total {
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+}
+
+.total > h3 {
+    margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-size: 20px;
+}
+
+.total > h4 {
+    margin: 0;
+    font-size: 18px;
+    color:#b8784e;
+    font-family: "Nunito", sans-serif;
+}
+
+.subtotal {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 420px;
+}
+
+.view_cart{
+    background-color: #2a2a2a;
+    padding: 25px 0px;
+    width: 50%;
+    border: none;
+    outline: none;
+    transition: .3s ease;
+    cursor: pointer;
+}
+
+.view_cart > a {
+    color: white;
+    font-family: "Nunito", sans-serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.action_checkout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.checkout {
+    width: 50%;
+    border: none;
+    outline: none;
+    transition: .3s ease;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    padding: 25px 0px;
+    font-family: "Nunito", sans-serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+.checkout:hover, .view_cart:hover {
+    background-color: #b8784e;
+}

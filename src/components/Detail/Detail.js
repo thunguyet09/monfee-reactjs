@@ -819,6 +819,9 @@ const Detail = () => {
                 go_to_cart.className = styles.go_to_cart
                 go_to_cart.textContent = 'GO TO CART'
                 cartInfo.appendChild(go_to_cart)
+                go_to_cart.addEventListener('click', () => {
+                    document.location.href = '/cart'
+                })
                 const cart_condition = document.createElement('div')
                 cart_condition.className = styles.cart_condition
                 cartInfo.appendChild(cart_condition)

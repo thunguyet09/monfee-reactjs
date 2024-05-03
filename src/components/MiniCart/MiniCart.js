@@ -33,9 +33,12 @@ const MiniCart = () => {
                 }, 200)
             })
 
+            const total = document.querySelector(`.${styles.total} > h4`)
+            let total_num = 0;
             const product_cart = document.querySelector(`.${styles.product_cart}`)
             product_cart.innerHTML = ''
             filteredCarts.forEach(async (item) => {
+                let subtotal = 0;
                 const detail = await getDetail(item.prod_id)
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 const minicart_item = document.createElement('div')
@@ -92,10 +95,14 @@ const MiniCart = () => {
                 product_mini_row1.appendChild(price)
                 if(detail.promo_price && sizeIndex == 0){
                     price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
+                    subtotal += item.quantity * detail.promo_price
                 }else{
                     price.innerHTML = `${detail.price[sizeIndex].toLocaleString()}&#8363;`
+                    subtotal += item.quantity * detail.price[sizeIndex]
                 }
 
+                total_num += subtotal;
+                total.innerHTML = `${total_num.toLocaleString()}&#8363;`
             })
         }
 
@@ -120,6 +127,16 @@ const MiniCart = () => {
                             <div className={styles.prod}>
                                 <div className={styles.product_cart}>
                                     
+                                </div>
+                            </div>
+                            <div className={styles.subtotal}>
+                                <div className={styles.total}>
+                                    <h3>Total:</h3>
+                                    <h4></h4>
+                                </div>
+                                <div className={styles.action_checkout}>
+                                    <button className={styles.view_cart}><a href="/cart">VIEW CART</a></button>
+                                    <button className={styles.checkout}>CHECK OUT</button>
                                 </div>
                             </div>
                         </div>
