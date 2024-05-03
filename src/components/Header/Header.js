@@ -36,7 +36,11 @@ const Header = () => {
           header.style.backgroundColor = 'white'
         }
         header.style.position = 'absolute'
-        header.style.zIndex = -2
+        if(openMiniCart == true){
+          header.style.zIndex = -3
+        }else{
+          header.style.zIndex = -2
+        }
         header.style.top = 0
         header.style.left = 0
         header.style.right = 0

@@ -12,9 +12,13 @@ const Detail = () => {
         const url = new URL(document.location.href);
         const path = url.pathname.split('/').filter(Boolean);
         const id = parseInt(path[path.length - 1])
+        const imgCart = document.querySelector(`.${styles.imgCart}`)
+        imgCart.innerHTML = ''
+        const cartInfo = document.querySelector(`.${styles.cartInfo}`)
+        cartInfo.innerHTML = ''
+        let selectedColorIndex = '';
         const fetchData = async () => {
             const detail = await getDetail(id);
-            const carts = await getCarts()
             const products = await getAllProducts()
             const user = await getUser(userId)
             const existingLikes = user.products_fav.includes(id)
@@ -251,10 +255,12 @@ const Detail = () => {
                     const size = document.createElement('button')
                     size.textContent = item
                     size_items.appendChild(size)
+                    sizeItem = detail.sizes[0]
                     size.addEventListener('click', () => {
                         if(item == '1000g'){
                             const sizeIndex = detail.sizes.indexOf(size.textContent)
                             size_1000g = detail.price[sizeIndex]
+                            sizeItem = '1000g'
                             if (detail.promo_price > 0) {
                                 const promo_price = document.querySelector(`.${styles.prices} > h3`)
                                 promo_price.innerHTML = ''
@@ -267,6 +273,7 @@ const Detail = () => {
                         }else if(item == '1500g'){
                             const sizeIndex = detail.sizes.indexOf(size.textContent)
                             size_1500g = detail.price[sizeIndex]
+                            sizeItem = '1500g'
                             if (detail.promo_price > 0) {
                                 const promo_price = document.querySelector(`.${styles.prices} > h3`)
                                 promo_price.innerHTML = ''
@@ -277,6 +284,7 @@ const Detail = () => {
                                 price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
                             }
                         }else{
+                            sizeItem = '500g'
                             if (detail.promo_price > 0) {
                                 const promo_price = document.querySelector(`.${styles.prices} > h3`)
                                 promo_price.innerHTML = `<del>${detail.price[0].toLocaleString()}&#8363;</del>`
@@ -291,17 +299,16 @@ const Detail = () => {
                             val.style.backgroundColor = 'white'
                             val.style.color = 'grey'
                         })
-                        sizeItem = size.textContent
                         size.style.backgroundColor = 'black'
                         size.style.color = 'white'
                     })
                 })
                 let colorItem = ''
+                const color_box = document.createElement('div')
+                color_box.className = styles.color_box
+                main_detail.appendChild(color_box)
+                const color_btn = document.createElement('button')
                 if (detail.colors.length > 0) {
-                    const color_box = document.createElement('div')
-                    color_box.className = styles.color_box
-                    main_detail.appendChild(color_box)
-                    const color_btn = document.createElement('button')
                     color_btn.className = styles.color_btn
                     color_btn.textContent = 'COLOR'
                     color_box.appendChild(color_btn)
@@ -309,6 +316,7 @@ const Detail = () => {
                     color_items.className = styles.color_items
                     color_box.appendChild(color_items)
                     detail.colors.forEach((val) => {
+                        colorItem = detail.colors[0]
                         const color_block = document.createElement('div')
                         color_block.className = styles.color_block
                         color_items.appendChild(color_block)
@@ -316,7 +324,7 @@ const Detail = () => {
                             color_items.childNodes.forEach((res) => {
                                 res.style.border = 'none'
                             })
-                            const selectedColorIndex = detail.colors.indexOf(color_block.childNodes[0].value)
+                            selectedColorIndex = detail.colors.indexOf(color_block.childNodes[0].value)
                             img_featured.src = `../../img/${detail.img_url[selectedColorIndex]}`
                             colorItem = color_block.childNodes[0].value
                             color_block.style.border = '1px solid rgb(195, 195, 195)'
@@ -376,33 +384,122 @@ const Detail = () => {
                 closeCartModal.addEventListener('click', () => {
                     localStorage.removeItem('product_id')
                     cartModal.style.display = 'none'
+                    imgCart.innerHTML = ''
+                    cartInfo.innerHTML = ''
                 })
                 const addToCart = document.createElement('button')
                 addToCart.textContent = 'ADD TO CART'
                 addToCart.className = styles.addToCart
                 detail_actions.appendChild(addToCart)
-                const cartId = carts[carts.length - 1].id + 1
                 addToCart.addEventListener('click', async () => {
-                    if (token) {
-                        const existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id)
+                    let existingCart = []
+                    const carts = await getCarts()
+                    const cartId = carts[carts.length - 1].id + 1
+                    if(colorItem){
+                        if(sizeItem){
+                            existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.color == colorItem && res.size == sizeItem)
+                        }else{
+                            existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.color == colorItem)
+                        }
+                    }else{
+                        if(sizeItem){
+                            existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.size == sizeItem)
+                        }else{
+                            existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id)
+                        }
+                    }
+
+                    let checked = true;
+                    if(sizeItem == ''){
+                        size_btn.style.color = 'red'
+                        checked = false;
+                    }
+                    if(detail.colorslength == 0 && colorItem == ''){
+                        color_btn.style.color = 'red'
+                        checked = false;
+                    }
+    
+                    if (token && checked == true) {
                         if (existingCart.length > 0) {
                             existingCart.forEach(async (val) => {
-                                const new_quantity = val.quantity + 1;
-                                await fetch(`http://localhost:3000/cart`, {
-                                    method: 'PUT',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
-                                })
-                                    .then(() => {
-                                        localStorage.setItem('product_id', val.prod_id)
-                                        setTimeout(() => {
-                                            cartModal.style.display = 'block'
-                                            handleCartModal()
-                                            numsInCart()
-                                        }, 2000)
-                                    })
+                                const new_quantity = val.quantity + quantityValue;
+                                if(val.size){
+                                    if(val.color){
+                                        await fetch(`http://localhost:3000/cart`, {
+                                            method: 'PUT',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
+                                        })
+                                        .then(() => {
+                                            localStorage.setItem('product_id', val.prod_id)
+                                            setTimeout(() => {
+                                                cartModal.style.display = 'block'
+                                                imgCart.innerHTML = ''
+                                                cartInfo.innerHTML = ''
+                                                handleCartModal(colorItem, sizeItem)
+                                                numsInCart()
+                                            }, 2000)
+                                        })
+                                    }else{
+                                        await fetch(`http://localhost:3000/cart`, {
+                                            method: 'PUT',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
+                                        })
+                                        .then(() => {
+                                            localStorage.setItem('product_id', val.prod_id)
+                                            setTimeout(() => {
+                                                cartModal.style.display = 'block'
+                                                imgCart.innerHTML = ''
+                                                cartInfo.innerHTML = ''
+                                                handleCartModal(colorItem, sizeItem)
+                                                numsInCart()
+                                            }, 2000)
+                                        })
+                                    }
+                                }else{
+                                    if(val.color){
+                                        await fetch(`http://localhost:3000/cart`, {
+                                            method: 'PUT',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
+                                        })
+                                        .then(() => {
+                                            localStorage.setItem('product_id', val.prod_id)
+                                            setTimeout(() => {
+                                                cartModal.style.display = 'block'
+                                                imgCart.innerHTML = ''
+                                                cartInfo.innerHTML = ''
+                                                handleCartModal(colorItem, sizeItem)
+                                                numsInCart()
+                                            }, 2000)
+                                        })
+                                    }else{
+                                        await fetch(`http://localhost:3000/cart`, {
+                                            method: 'PUT',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
+                                        })
+                                        .then(() => {
+                                            localStorage.setItem('product_id', val.prod_id)
+                                            setTimeout(() => {
+                                                cartModal.style.display = 'block'
+                                                imgCart.innerHTML = ''
+                                                cartInfo.innerHTML = ''
+                                                handleCartModal(colorItem, sizeItem)
+                                                numsInCart()
+                                            }, 2000)
+                                        })
+                                    }
+                                }
                             })
                         } else {
                             if (detail.colors.length > 0) {
@@ -412,8 +509,10 @@ const Detail = () => {
                                     quantity: quantityValue,
                                     size: sizeItem,
                                     color: colorItem,
+                                    img_url: detail.img_url[selectedColorIndex],
                                     user_id: localStorage.getItem('userId')
                                 }
+        
                                 await fetch(`http://localhost:3000/cart`, {
                                     method: 'POST',
                                     headers: {
@@ -425,7 +524,9 @@ const Detail = () => {
                                     localStorage.setItem('product_id', detail.id)
                                     setTimeout(() => {
                                         cartModal.style.display = 'block'
-                                        handleCartModal()
+                                        imgCart.innerHTML = ''
+                                        cartInfo.innerHTML = ''
+                                        handleCartModal(colorItem, sizeItem)
                                         numsInCart()
                                     }, 2000)
                                 })
@@ -435,23 +536,31 @@ const Detail = () => {
                                     prod_id: detail.id,
                                     quantity: quantityValue,
                                     size: sizeItem,
+                                    img_url: selectedColorIndex ? detail.img_url[selectedColorIndex] : detail.img_url[0],
                                     user_id: localStorage.getItem('userId')
                                 }
-                                await fetch(`http://localhost:3000/cart`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(cart)
-                                })
-                                .then(() => {
-                                    localStorage.setItem('product_id', detail.id)
-                                    setTimeout(() => {
-                                        cartModal.style.display = 'block'
-                                        handleCartModal()
-                                        numsInCart()
-                                    }, 2000)
-                                })
+                                console.log(cart)
+                                try{
+                                    await fetch(`http://localhost:3000/cart`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(cart)
+                                    })
+                                    .then(() => {
+                                        localStorage.setItem('product_id', detail.id)
+                                        setTimeout(() => {
+                                            cartModal.style.display = 'block'
+                                            imgCart.innerHTML = ''
+                                            cartInfo.innerHTML = ''
+                                            handleCartModal('', sizeItem)
+                                            numsInCart()
+                                        }, 2000)
+                                    })
+                                }catch(err){
+                                    console.error(err)
+                                }
                             }
                         }
                     }
@@ -593,17 +702,28 @@ const Detail = () => {
             }
         };
 
-        const handleCartModal = async () => {
+        const handleCartModal = async (colorItem, sizeItem) => {
             const productId = localStorage.getItem('product_id')
             const cart = await getCarts()
-            const data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
+            let data = '';
+            if(colorItem){
+                if(sizeItem){
+                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem && item.size == sizeItem)
+                }else{
+                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem)
+                }
+            }else{
+                if(sizeItem){
+                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.size == sizeItem)
+                }else{
+                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId )
+                }
+            }
             const myCart = cart.filter((item) => item.user_id == userId)
             const product = await getDetail(productId)
             const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
             data.forEach(async (item) => {
-                const imgCart = document.querySelector(`.${styles.imgCart}`)
                 imgCart.innerHTML = ''
-                const cartInfo = document.querySelector(`.${styles.cartInfo}`)
                 cartInfo.innerHTML = ''
                 const confirm = document.createElement('h2')
                 confirm.innerHTML = `
@@ -613,15 +733,22 @@ const Detail = () => {
               <span>Added to cart successfully!</span>
               `
                 imgCart.appendChild(confirm)
-                const img = document.createElement('img')
-                img.src = `../../img/${product.img_url[0]}`
-                img.width = 200
-                imgCart.appendChild(img)
+                if(selectedColorIndex == ''){
+                    const img = document.createElement('img')
+                    img.src = `../../img/${product.img_url[0]}`
+                    img.width = 200
+                    imgCart.appendChild(img)
+                }else{
+                    const img = document.createElement('img')
+                    img.src = `../../img/${product.img_url[selectedColorIndex]}`
+                    img.width = 200
+                    imgCart.appendChild(img)
+                }
                 const product_name = document.createElement('h3')
                 product_name.textContent = product.name
                 imgCart.appendChild(product_name)
                 let sizeIndex = 0;
-                cart.forEach((val) => {
+                data.forEach((val) => {
                     sizeIndex = product.sizes.indexOf(val.size)
                 })
                 if (item.promo_price && sizeIndex == 0) {

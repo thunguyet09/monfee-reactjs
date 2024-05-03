@@ -15,6 +15,7 @@ import Product from './components/Product/Product';
 import Detail from './components/Detail/Detail';
 import MiniCart from './components/MiniCart/MiniCart';
 import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContext';
+import Cart from './components/Cart/Cart';
 function App() {
   return (
     <div className={styles.App}>
@@ -96,6 +97,21 @@ function App() {
                       <Header />
                       <div className={styles.homePage}>
                         <Home />
+                        <Footer />
+                      </div>
+                    </div>
+                }
+            />
+
+            <Route
+                exact
+                path="/cart"
+                element={
+                    <div className={styles.main}>
+                      <Search />
+                      <Header />
+                      <div className={styles.homePage}>
+                        <Cart />
                         <Footer />
                       </div>
                     </div>

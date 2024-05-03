@@ -2,12 +2,19 @@ import React from 'react'
 import { useEffect } from 'react'
 import styles from './MiniCart.module.css'
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext'
-import { getCarts } from '../../api'
+import { getCarts, getDetail } from '../../api'
 const MiniCart = () => {
     const {openMiniCart, setMiniCartOpen} = useMiniCart()
     const userId = localStorage.getItem('userId')
     useEffect(() => {
-        const handleMiniCart = async () => {
+        const numsInCart = async () => {
+            const carts = await getCarts()
+            const numsInCart = document.querySelector(`.${styles.mini_cart_counter} > span`)
+            const filteredCarts = carts.filter(((item) => item.user_id == userId))
+            numsInCart.innerHTML = `${filteredCarts.length}`
+            handleMiniCart(filteredCarts)
+        }
+        const handleMiniCart = async (filteredCarts) => {
             const relative = document.querySelector(`.${styles.relative}`)
             const mini_content = document.querySelector(`.${styles.mini_content}`)
             const mini_cart_close = document.querySelector(`.${styles.mini_cart_close}`)
@@ -20,18 +27,79 @@ const MiniCart = () => {
 
             mini_cart_close.addEventListener('click', () => {
                 setMiniCartOpen(false)
-                mini_content.style.right = '-380px'
+                mini_content.style.right = '-420px'
                 setTimeout(() => {
                     relative.style.display = 'none'
                 }, 200)
             })
 
-            const carts = await getCarts()
-            const numsInCart = document.querySelector(`.${styles.mini_cart_counter} > span`)
-            const filteredCarts = carts.filter(((item) => item.user_id == userId))
-            numsInCart.innerHTML = `${filteredCarts.length}`
+            const product_cart = document.querySelector(`.${styles.product_cart}`)
+            product_cart.innerHTML = ''
+            filteredCarts.forEach(async (item) => {
+                const detail = await getDetail(item.prod_id)
+                const sizeIndex = detail.sizes.indexOf(item.size)
+                const minicart_item = document.createElement('div')
+                minicart_item.className = styles.minicart_item
+                product_cart.appendChild(minicart_item)
+                const cart_img = document.createElement('a')
+                cart_img.className = styles.cart_img
+                cart_img.href = `/products/${item.prod_id}`
+                minicart_item.appendChild(cart_img)
+                const img = document.createElement('img')
+                img.width = 90
+                img.src = `../../img/${item.img_url}`
+                cart_img.appendChild(img)
+                const product_mini = document.createElement('div')
+                product_mini.className = styles.product_mini
+                minicart_item.appendChild(product_mini)
+                const product_mini_row1 = document.createElement('div')
+                product_mini_row1.className = styles.product_mini_row1
+                product_mini.appendChild(product_mini_row1)
+                const product_mini_row2 = document.createElement('div')
+                product_mini.appendChild(product_mini_row2)
+                const removeItem = document.createElement('div')
+                removeItem.className = styles.removeItem
+                removeItem.innerHTML = `<span class="material-symbols-outlined">delete</span>`
+                product_mini_row2.appendChild(removeItem)
+                removeItem.addEventListener('click', async () => {
+                    await fetch(`http://localhost:3000/cart/${item.id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        numsInCart()
+                    })
+                })
+                const product_name_mini = document.createElement('h4')
+                product_name_mini.className = styles.product_name_mini
+                product_mini_row1.appendChild(product_name_mini)
+                product_name_mini.innerHTML = `<a href="/products/${item.prod_id}">${detail.name}</a>`
+                const product_attribute = document.createElement('span')
+                product_attribute.className = styles.product_attribute
+                product_mini_row1.appendChild(product_attribute)
+                if(item.color){
+                    product_attribute.innerHTML = `${item.size} / ${item.color}`
+                    
+                }else{
+                    product_attribute.innerHTML = `${item.size}`
+                }
+                const quantity = document.createElement('p')
+                quantity.className = styles.minicart_quantity
+                quantity.innerHTML = `QTY: ${item.quantity}`
+                product_mini_row1.appendChild(quantity)
+
+                const price = document.createElement('h4')
+                price.className = styles.minicart_price
+                product_mini_row1.appendChild(price)
+                if(detail.promo_price && sizeIndex == 0){
+                    price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
+                }else{
+                    price.innerHTML = `${detail.price[sizeIndex].toLocaleString()}&#8363;`
+                }
+
+            })
         }
-        handleMiniCart()
+
+        numsInCart()
         return () => {}
     }, [openMiniCart])
     return (
@@ -49,7 +117,11 @@ const MiniCart = () => {
                             </div>
                         </div>
                         <div className={styles.mini_cart_bottom}>
-
+                            <div className={styles.prod}>
+                                <div className={styles.product_cart}>
+                                    
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
