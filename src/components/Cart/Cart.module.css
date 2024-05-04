@@ -198,3 +198,57 @@ td:first-child {
 .detail_box > h3:hover {
     color:#b8784e;
 }
+
+.voucher {
+    text-align: left;
+    margin-top: 40px;
+}
+
+.voucher_box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.voucher_box > input {
+    font-family: "Nunito", sans-serif;
+    padding: 15px 9px;
+    width: 400px;
+    border: none;
+    outline: none;
+    border: 1px solid rgb(188, 188, 188);
+    font-size: 17px;
+    border-radius: 3px;
+    transition: .3s ease;
+}
+
+.voucher_box > input::placeholder {
+    letter-spacing: 0.5px;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgb(161, 161, 161);
+}
+
+.apply_btn {
+    font-family: "Nunito", sans-serif;
+    padding: 15px 30px;
+    border: none;
+    outline: none;
+    border-radius: 2px;
+    background-color: #b8784e;
+    color:white;
+    cursor: pointer;
+    font-size: 17px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    transition: .3s ease;
+}
+
+.apply_btn:hover {
+    background-color: black;
+}
+
+.voucher_box > input:focus {
+    border: 1px solid #b8784e;
+}

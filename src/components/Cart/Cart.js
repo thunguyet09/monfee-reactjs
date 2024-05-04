@@ -12,10 +12,53 @@ const Cart = () => {
 
             if (isMounted) {
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
-                cartTable(filteredCarts)
+                filteredCarts.forEach(async (item) => {
+                    const detail = await getDetail(item.prod_id)
+                    const sizeIndex = detail.sizes.indexOf(item.size)
+                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    updateQuantity(item.id, item.quantity, price)
+                })
+                setTimeout(() => {
+                    calc_total(filteredCarts)
+                }, 200)
             }
         }
 
+        const renderCart = async () => {
+            const carts = await getCarts()
+            if(isMounted){
+                const filteredCarts = carts.filter(((item) => item.user_id == userId))
+                cartTable(filteredCarts)
+            }
+        }
+        
+        const calc_total = (data) => {
+            let total = 0;
+            data.forEach((item) => {
+                let subtotal = item.quantity * item.price
+                total += subtotal
+                console.log(total)
+            })
+        }
+        const updateQuantity = async (itemId, quantity, price) => {
+            try {
+              const response = await fetch(`http://localhost:3000/cart/quantity`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id: itemId, quantity: quantity, price: price}),
+              });
+          
+              if (response.ok) {
+                console.log('Quantity updated successfully');
+              } else {
+                console.error('Failed to update quantity');
+              }
+            } catch (error) {
+              console.error('Error occurred while updating quantity', error);
+            }
+          };
         const cartTable = (data) => {
             let itemSubtotal = 0;
             data.forEach(async (item) => {
@@ -71,12 +114,27 @@ const Cart = () => {
                 
                 const quantity_input = document.createElement('input')
                 quantity_input.value = item.quantity
-                quantity_input.addEventListener('change', () => {
+                quantity_input.addEventListener('change', async () => {
                     quantity_value = parseInt(quantity_input.value);
                     if (isNaN(quantity_value)) {
                         quantity_value = 0;
                     }
                     updateSubtotal();
+                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    await fetch('http://localhost:3000/cart/quantity', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: item.id,
+                            quantity: quantity_value,
+                            price: price
+                        })
+                    })
+                    .then(() => {
+                        getAPI()
+                    })
                 })
                 quantity_input.value = item.quantity
                 quantity_box.appendChild(quantity_input)
@@ -85,19 +143,49 @@ const Cart = () => {
                 quantity_box.appendChild(quantity_btns)
                 const increase = document.createElement('button')
 
-                increase.addEventListener('click', () => {
+                increase.addEventListener('click', async () => {
                     quantity_input.value++;
                     quantity_value = quantity_input.value
                     updateSubtotal()
+                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    await fetch('http://localhost:3000/cart/quantity', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: item.id,
+                            quantity: quantity_value,
+                            price: price
+                        })
+                    })
+                    .then(() => {
+                        getAPI()
+                    })
                 })
                 increase.innerHTML = `<span class="material-symbols-outlined">add</span>`
                 increase.className = styles.increase
                 quantity_btns.appendChild(increase)
                 const decrease = document.createElement('button')
-                decrease.addEventListener('click', () => {
+                decrease.addEventListener('click', async () => {
                     quantity_input.value--;
                     quantity_value = quantity_input.value
                     updateSubtotal()
+                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    await fetch('http://localhost:3000/cart/quantity', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: item.id,
+                            quantity: quantity_value,
+                            price: price
+                        })
+                    })
+                    .then(() => {
+                        getAPI()
+                    })
                 })
                 decrease.innerHTML = `<span class="material-symbols-outlined">remove</span>`
                 decrease.className = styles.decrease
@@ -125,6 +213,7 @@ const Cart = () => {
         }
 
         getAPI()
+        renderCart()
         return () => {
             isMounted = false;
         }
@@ -161,6 +250,12 @@ const Cart = () => {
 
                             </tbody>
                         </table>
+                        <div className={styles.voucher}>
+                            <div className={styles.voucher_box}>
+                                <input placeholder='VOUCHER CODE' type="text"/>
+                                <button className={styles.apply_btn}>APPLY</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
