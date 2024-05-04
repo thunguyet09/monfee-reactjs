@@ -27,6 +27,7 @@ const Header = () => {
     const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
     const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
     const header = document.getElementById(styles.header);
+    const rightHeader = document.querySelector(`.${styles.rightHeader}`)
     const handleScroll = () => {
       if (window.scrollY > 66) {
         header.style.animation = 'slideDown 2s linear'
@@ -35,7 +36,7 @@ const Header = () => {
         } else {
           header.style.backgroundColor = 'white'
         }
-        header.style.position = 'absolute'
+        header.style.position = 'fixed'
         if(openMiniCart == true){
           header.style.zIndex = -3
         }else{
@@ -55,7 +56,7 @@ const Header = () => {
         shoppingIcon.style.color = 'black'
       } else {
         if (typeof (value) == 'undefined') {
-          header.style.position = 'fixed'
+          header.style.position = 'absolute'
           header.style.backgroundColor = 'rgba(0, 0, 0, 0)'
           menuItems.forEach((node) => {
             node.style.color = 'white'

@@ -68,6 +68,7 @@ function App() {
                       <Header />
                       <div className={styles.homePage}>
                         <Product />
+                        <MiniCart />
                         <Footer />
                       </div>
                     </div>
@@ -97,6 +98,7 @@ function App() {
                       <Header />
                       <div className={styles.homePage}>
                         <Home />
+                        <MiniCart />
                         <Footer />
                       </div>
                     </div>
