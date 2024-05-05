@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import styles from './App.module.css';
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Switch } from 'react-router-dom';
+import React, {Suspense} from 'react';
+import { BrowserRouter as Router, Route, Routes, Switch, Navigate } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Home from './components/Home/Home'
@@ -16,112 +16,197 @@ import Detail from './components/Detail/Detail';
 import MiniCart from './components/MiniCart/MiniCart';
 import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContext';
 import Cart from './components/Cart/Cart';
+import Dashboard from './admin/Dashboard/Dashboard';
+import { useState, useEffect } from 'react';
+
+const ProtectedRoute = ({ path, element: Element }) => {
+  const getUserToken = () => {
+    return localStorage.getItem('token');
+  };
+  const verifyTokenOnServer = async (token) => {
+    return fetch('http://localhost:3000/users/verifyToken', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    })
+      .then((response) => response.json())
+      .then((data) => data.isValid);
+  };
+
+  const checkTokenValidity = async () => {
+    const token = getUserToken();
+
+    if (token) {
+      return await verifyTokenOnServer(token);
+    }
+
+    return false;
+  };
+  const isAuthenticated = checkTokenValidity();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Route path={path} element={<Element />} />;
+};
+
+const UserRoute = ({ element: Element }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  useEffect(() => {
+    const checkTokenValidity = async () => {
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        const isValid = await verifyUserTokenOnServer(token);
+        setIsAuthenticated(isValid);
+      } else {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkTokenValidity();
+  }, []);
+
+  const verifyUserTokenOnServer = async (token) => {
+    const response = await fetch('http://localhost:3000/users/verifyUserRole', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await response.json();
+    return data.isValid;
+  };
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      {isAuthenticated ? (
+        <Element />
+      ) : (
+        <Navigate to="/login" replace />
+      )}
+    </>
+  );
+};
+
+
+const CartPage = () => (
+  <div className={styles.main}>
+    <Search />
+    <Header />
+    <div className={styles.homePage}>
+      <Cart />
+      <Footer />
+    </div>
+  </div>
+);
 function App() {
   return (
     <div className={styles.App}>
-       <SearchContextProvider>
+      <SearchContextProvider>
         <MiniCartContextProvider>
-       <Routes>
+          <Routes>
             <Route
-                path="/register"
-                element={
-                    <div className={styles.main}>
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Register />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              path="/register"
+              element={
+                <div className={styles.main}>
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Register />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
             <Route
-                path="/login"
-                element={
-                    <div className={styles.main}>
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Login />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              path="/login"
+              element={
+                <div className={styles.main}>
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Login />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
             <Route
-                path="/account"
-                element={
-                    <div className={styles.main}>
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Account />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              path="/account"
+              element={
+                <div className={styles.main}>
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Account />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
             <Route element={<NotFound />} />
             <Route
-                exact
-                path="/shop"
-                element={
-                    <div className={styles.main}>
-                      <Search />
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Product />
-                        <MiniCart />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              exact
+              path="/shop"
+              element={
+                <div className={styles.main}>
+                  <Search />
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Product />
+                    <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
             <Route
-                exact
-                path="/products/:id"
-                element={
-                    <div className={styles.main}>
-                      <Search />
-                      <Header />
-                      <div className={styles.homePage}>
-                      <Detail />
-                      <MiniCart />
-                      <Footer />
-                      </div>
-                    </div>
-                }
+              exact
+              path="/products/:id"
+              element={
+                <div className={styles.main}>
+                  <Search />
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Detail />
+                    <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
             <Route
-                exact
-                path="/"
-                element={
-                    <div className={styles.main}>
-                      <Search />
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Home />
-                        <MiniCart />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              exact
+              path="/"
+              element={
+                <div className={styles.main}>
+                  <Search />
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Home />
+                    <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
 
             <Route
-                exact
-                path="/cart"
-                element={
-                    <div className={styles.main}>
-                      <Search />
-                      <Header />
-                      <div className={styles.homePage}>
-                        <Cart />
-                        <Footer />
-                      </div>
-                    </div>
-                }
+              path="/cart"
+              element={<UserRoute element={CartPage} />}
             />
-        </Routes>
+
+            <Route path="/admin" element={<ProtectedRoute element={Dashboard} />} />
+          </Routes>
         </MiniCartContextProvider>
-       </SearchContextProvider>
+      </SearchContextProvider>
     </div>
   );
 }
