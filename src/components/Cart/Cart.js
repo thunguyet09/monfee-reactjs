@@ -6,6 +6,10 @@ const Cart = () => {
     useLayoutEffect(() => {
         const tbody = document.querySelector(`.${styles.page_cart} > table > tbody`)
         const userId = localStorage.getItem('userId')
+        const continue_shop = document.querySelector(`.${styles.continue_shop}`)
+        continue_shop.addEventListener('click', () => {
+            document.location.href = '/shop'
+        })
         let isMounted = true;
         const getAPI = async () => {
             const carts = await getCarts()
@@ -34,10 +38,11 @@ const Cart = () => {
         
         const calc_total = (data) => {
             let total = 0;
+            const cart_amount = document.querySelector(`.${styles.cart_amount}`)
             data.forEach((item) => {
                 let subtotal = item.quantity * item.price
                 total += subtotal
-                console.log(total)
+                cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
             })
         }
         const updateQuantity = async (itemId, quantity, price) => {
@@ -254,6 +259,17 @@ const Cart = () => {
                             <div className={styles.voucher_box}>
                                 <input placeholder='VOUCHER CODE' type="text"/>
                                 <button className={styles.apply_btn}>APPLY</button>
+                            </div>
+                        </div>
+                        <div className={styles.cart_total}>
+                            <button>CART TOTALS</button>
+                            <div className={styles.cart_body}>
+                                <h4 className={styles.cart_label}>Total</h4>
+                                <h4 className={styles.cart_amount}></h4>
+                            </div>
+                            <div className={styles.cart_actions}>
+                                <button className={styles.checkout}>PROCEED TO CHECKOUT</button>
+                                <button className={styles.continue_shop}>CONTINUE SHOPPING</button>
                             </div>
                         </div>
                     </div>

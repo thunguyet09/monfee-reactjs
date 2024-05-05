@@ -225,7 +225,7 @@ td:first-child {
 
 .voucher_box > input::placeholder {
     letter-spacing: 0.5px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: rgb(161, 161, 161);
 }
@@ -251,4 +251,92 @@ td:first-child {
 
 .voucher_box > input:focus {
     border: 1px solid #b8784e;
+}
+
+.cart_total {
+    text-align: left;
+    border: 1px solid #ddd;
+    margin-top: 50px;
+    padding: 70px 45px;
+}
+
+.cart_total > button {
+    background-color: white;
+    border: none;
+    outline: none;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    padding: 0;
+    padding-bottom: 22px;
+    font-family: "Nunito", sans-serif;
+    letter-spacing: 1px;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.cart_amount {}
+
+.cart_body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.cart_label {
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    width: 40%;
+    font-size: 18px;
+}
+
+.cart_amount {
+    font-family: "Nunito", sans-serif;
+    width: 60%;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.cart_actions {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.checkout {
+    padding: 22px 65px;
+    font-family: "Nunito", sans-serif;
+    background-color: #b8784e;
+    color: white;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    transition: .3s ease;
+}
+
+.checkout:hover {
+    background-color: #5f8e3e;
+    cursor: pointer;
+}
+
+.continue_shop {
+    padding: 22px 40px;
+    font-family: "Nunito", sans-serif;
+    background-color: black;
+    color: white;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    transition: .3s ease;
+    cursor: pointer;
+}
+
+.continue_shop:hover {
+    background-color: #b8784e;
 }

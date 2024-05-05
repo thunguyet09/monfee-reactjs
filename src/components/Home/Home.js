@@ -493,6 +493,68 @@ const Home = () => {
           cart.innerHTML = `<button><span class="material-symbols-outlined">local_mall</span></button>`
           actions.appendChild(cart)
 
+          cart.addEventListener('click', async () => {
+            if(token){
+              const carts =  await getCarts()
+              let id = 0;
+              if(carts.length > 0){
+                id = carts[carts.length - 1].id + 1
+              }else{
+                id = 0
+              }
+              const cartObj = {
+                id: id,
+                prod_id: item.id,
+                quantity: 1,
+                user_id: userId,
+                size: '500g'
+              }
+              const existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == item.id)
+        
+              if(existingCart.length > 0){
+               existingCart.forEach(async (val) => {
+                const new_quantity = val.quantity + 1;
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({quantity: new_quantity, prod_id: val.prod_id, user_id: userId})
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', val.prod_id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+               })
+              }else{
+                await fetch(`http://localhost:3000/cart`, {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(cartObj)
+                })
+                .then(() => {
+                  localStorage.setItem('product_id', item.id)
+                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`
+                  cart.style.color = '#b8784e'
+                  setTimeout(() => {
+                    cartModal.style.display = 'block'
+                    handleCartModal()
+                    numsInCart()
+                  }, 2000)
+                })
+              }
+            }else{
+              document.location.href = '/login'
+            }
+          })
           const cartModal = document.querySelector(`.${styles.cartModal}`)
           const closeCartModal = document.querySelector(`.${styles.closeCartModal}`)
           closeCartModal.addEventListener('click', () => {
