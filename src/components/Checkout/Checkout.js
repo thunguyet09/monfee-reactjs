@@ -49,7 +49,7 @@ const Checkout = () => {
                         </div>
                         <div className={styles.payment}>
                             <h3>Payment</h3>
-                            <p>All transactions are secure and encrypted</p>
+                            <p>All transactions are secure and encrypted.</p>
                             <div className={styles.cod}>
                                 <h3>Thanh toán khi nhận hàng</h3>
                                 <img src="../../img/cash.png" width="25px"/>

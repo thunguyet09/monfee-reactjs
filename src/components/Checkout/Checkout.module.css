@@ -97,12 +97,32 @@
     flex-direction: row;
     justify-content: space-between;
     background-color: rgb(240, 247, 255);
-    border-left: 1px solid rgb(18, 117, 162);
-    border-right: 1px solid rgb(18, 117, 162);
-    padding: 20px 10px;
+    border-left: 2px solid rgb(18, 117, 162);
+    border-right: 2px solid rgb(18, 117, 162);
+    padding: 20px;
+    border-radius: 10px;
+    border-top: 1px solid rgb(221, 221, 221);
+    border-bottom: 1px solid rgb(221, 221, 221);
 }
 
 .standard > span {
     font-size: 17px;
     font-weight: 500;
+}
+
+.payment {
+    margin-top: 40px;
+}
+
+.payment > h3 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.payment > p {
+    margin: 0;
+    margin-top: 8px;
+    font-size: 16px;
+    color: grey;
 }
