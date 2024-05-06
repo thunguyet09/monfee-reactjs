@@ -18,6 +18,7 @@ import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContex
 import Cart from './components/Cart/Cart';
 import Dashboard from './admin/Dashboard/Dashboard';
 import { useState, useEffect } from 'react';
+import Checkout from './components/Checkout/Checkout';
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
@@ -45,7 +46,7 @@ const ProtectedRoute = ({ path, element: Element }) => {
     return false;
   };
   const isAuthenticated = checkTokenValidity();
-
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -55,10 +56,11 @@ const ProtectedRoute = ({ path, element: Element }) => {
 
 const UserRoute = ({ element: Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  console.log(isAuthenticated)
+
   useEffect(() => {
     const checkTokenValidity = async () => {
       const token = localStorage.getItem('token');
-
       if (token) {
         const isValid = await verifyUserTokenOnServer(token);
         setIsAuthenticated(isValid);
@@ -71,7 +73,7 @@ const UserRoute = ({ element: Element }) => {
   }, []);
 
   const verifyUserTokenOnServer = async (token) => {
-    const response = await fetch('http://localhost:3000/users/verifyUserRole', {
+    const response = await fetch('http://localhost:3000/users/verifyUserToken', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -201,6 +203,22 @@ function App() {
             <Route
               path="/cart"
               element={<UserRoute element={CartPage} />}
+            />
+
+            <Route
+              exact
+              path="/checkout"
+              element={
+                <div className={styles.main}>
+                  <Search />
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Checkout />
+                    <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
 
             <Route path="/admin" element={<ProtectedRoute element={Dashboard} />} />

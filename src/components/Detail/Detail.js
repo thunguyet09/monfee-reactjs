@@ -12,6 +12,7 @@ const Detail = () => {
         const url = new URL(document.location.href);
         const path = url.pathname.split('/').filter(Boolean);
         const id = parseInt(path[path.length - 1])
+        console.log(id)
         const imgCart = document.querySelector(`.${styles.imgCart}`)
         imgCart.innerHTML = ''
         const cartInfo = document.querySelector(`.${styles.cartInfo}`)
@@ -20,8 +21,7 @@ const Detail = () => {
         const fetchData = async () => {
             const detail = await getDetail(id);
             const products = await getAllProducts()
-            const user = await getUser(userId)
-            const existingLikes = user.products_fav.includes(id)
+            const user = userId ? await getUser(userId) : ''
             const lastId = products[products.length - 1].id
             let prev_prod;
             if (id == 0) {
@@ -563,6 +563,8 @@ const Detail = () => {
                                 }
                             }
                         }
+                    }else{
+                        document.location.href = '/login'
                     }
                 })
                 const buy_now = document.createElement('button')
@@ -983,10 +985,12 @@ const Detail = () => {
         const wishlist = async () => {
             const detail = await getDetail(id);
             const wishlist_icon = document.querySelector(`.${styles.wishlist_icon} > span`)
-            const user = await getUser(userId)
-            const existingLikes = user.products_fav.includes(id)
+            const user = userId ? await getUser(userId) : null;
+            const existingLikes = user ? user.products_fav.includes(id) : false;
             if(existingLikes){
                 wishlist_icon.style.color = '#b8784e'
+            }else{
+                wishlist_icon.style.color = 'black'
             }
             const wishlist_number = document.querySelector(`.${styles.wishlist_icon} > h4`)
             if(typeof detail.likes == 'undefined'){

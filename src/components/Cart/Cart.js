@@ -10,6 +10,10 @@ const Cart = () => {
         continue_shop.addEventListener('click', () => {
             document.location.href = '/shop'
         })
+        const checkout = document.querySelector(`.${styles.checkout}`)
+        checkout.addEventListener('click', () => {
+            document.location.href = '/checkout'
+        })
         let isMounted = true;
         const getAPI = async () => {
             const carts = await getCarts()
@@ -24,7 +28,7 @@ const Cart = () => {
                 })
                 setTimeout(() => {
                     calc_total(filteredCarts)
-                }, 200)
+                }, 100)
             }
         }
 
