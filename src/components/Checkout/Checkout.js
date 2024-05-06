@@ -22,6 +22,7 @@ const Checkout = () => {
                             </div>
                         </div>  
                         <div className={styles.delivery}>
+                            <h2>Delivery</h2>
                             <div className={styles.fullName_box}>
                                 <h3>Full name</h3>
                                 <input type="text" className={styles.full_name} />
@@ -40,6 +41,7 @@ const Checkout = () => {
                             </div>
                         </div>
                         <div className={styles.shipping}>
+                            <h3>Shipping method</h3>
                             <div className={styles.standard}>
                                 <span>Standard</span>
                                 <span>Free</span>
@@ -48,6 +50,10 @@ const Checkout = () => {
                         <div className={styles.payment}>
                             <h3>Payment</h3>
                             <p>All transactions are secure and encrypted</p>
+                            <div className={styles.cod}>
+                                <h3>Thanh toán khi nhận hàng</h3>
+                                <img src="../../img/cash.png" width="25px"/>
+                            </div>
                         </div>
                     </div>
                     <div className={styles.products_info}>

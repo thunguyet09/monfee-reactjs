@@ -1,1 +1,108 @@
 .email {}
+
+#checkout {
+    margin-top: 110px;
+}
+.checkout_main {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.customer_info {
+    text-align: left;
+    width: 50%;
+    margin-left: 220px;
+    margin-top: 20px;
+    font-family: "Nunito", sans-serif;
+}
+
+.products_info {
+    width: 50%;
+    background-color: rgb(250,250,250);
+}
+
+.contact > h2, .delivery > h2 {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.group_control {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.group_control > h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.email_checkbox {
+    margin-bottom: 20px;
+}
+
+.group_control > input {
+    border: none;
+    outline: none;
+    border: 1px solid rgb(206, 206, 206);
+    padding: 15px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.email_checkbox, .save_info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.email_checkbox > input, .save_info > input {
+    width: 17px;
+    height: 17px;
+}
+
+.fullName_box, .address_box, .city_box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.fullName_box > h3, .address_box > h3, .city_box > h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.fullName_box > input, .address_box > input, .city_box > input {
+    border: none;
+    outline: none;
+    border: 1px solid rgb(206, 206, 206);
+    padding: 15px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.shipping > h3 {
+    margin-top: 30px;
+    font-weight: 600;
+}
+
+.standard {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgb(240, 247, 255);
+    border-left: 1px solid rgb(18, 117, 162);
+    border-right: 1px solid rgb(18, 117, 162);
+    padding: 20px 10px;
+}
+
+.standard > span {
+    font-size: 17px;
+    font-weight: 500;
+}

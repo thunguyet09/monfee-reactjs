@@ -1199,8 +1199,8 @@ const Home = () => {
     fetchData();
     setIsLoading(false);
     handleCountDown()
-  }, [])
 
+  }, [])
 
   return (
     <div>

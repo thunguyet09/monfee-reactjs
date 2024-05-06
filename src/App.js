@@ -56,11 +56,10 @@ const ProtectedRoute = ({ path, element: Element }) => {
 
 const UserRoute = ({ element: Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
-  console.log(isAuthenticated)
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const checkTokenValidity = async () => {
-      const token = localStorage.getItem('token');
       if (token) {
         const isValid = await verifyUserTokenOnServer(token);
         setIsAuthenticated(isValid);
@@ -80,7 +79,7 @@ const UserRoute = ({ element: Element }) => {
       },
       body: JSON.stringify({ token }),
     });
-
+   
     const data = await response.json();
     return data.isValid;
   };
