@@ -26,9 +26,7 @@ const Cart = () => {
                     let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
                     updateQuantity(item.id, item.quantity, price)
                 })
-                setTimeout(() => {
-                    calc_total(filteredCarts)
-                }, 100)
+                calc_total(filteredCarts)
             }
         }
 

@@ -18,6 +18,9 @@
 }
 
 .products_info {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
     width: 50%;
     background-color: rgb(250,250,250);
 }
@@ -103,6 +106,7 @@
     border-radius: 10px;
     border-top: 1px solid rgb(221, 221, 221);
     border-bottom: 1px solid rgb(221, 221, 221);
+    cursor: pointer;
 }
 
 .standard > span {
@@ -111,7 +115,7 @@
 }
 
 .payment {
-    margin-top: 40px;
+    margin: 40px 0px 60px 0px;
 }
 
 .payment > h3 {
@@ -125,4 +129,112 @@
     margin-top: 8px;
     font-size: 16px;
     color: grey;
+}
+
+.cod {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgb(221, 221, 221);
+    border-bottom: 1px solid rgb(221, 221, 221);
+    padding: 0px 20px;
+    background-color: rgb(240, 255, 240);
+    border-radius: 10px;
+    border-left: 2px solid green;
+    border-right: 2px solid green;
+    cursor: pointer;
+}
+
+.cod > h3 {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.product_frame {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin-top: 13px;
+}
+
+.products_info {
+    padding: 35px 40px;
+    border-left: 1px solid rgb(216, 216, 216);
+}
+.product_item {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.img_box > img {
+    border-radius: 5px;
+    border: 1px solid rgb(201, 201, 201);
+}
+
+.product_item_col1 {
+    text-align: left;
+}
+
+.img_box {
+    position: relative;
+}
+
+.quantity {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border:none;
+    outline: none;
+    background-color: rgba(0, 0, 0, 0.56);
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.product_item_col1 > h4 {
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    margin: 0;
+}
+
+.prod_attribute {
+    margin-top: 10px;
+    font-size: 15px;
+    color: grey;
+}
+
+.product_item_col2 {
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+}
+
+.subtotalDiv {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 73%;
+}
+
+.subtotalDiv > h3, .shipping_box > h3 {
+    font-weight: 600;
+    font-family: "Nunito", sans-serif;
+    font-size: 17px;
+    margin: 0;
+}
+
+.shipping_box {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 73%;
 }
