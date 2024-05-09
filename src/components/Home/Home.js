@@ -24,34 +24,12 @@ const Home = () => {
     );
   };
 
-  useEffect(() => {
-    const categoryImg = document.querySelectorAll(`.${styles.homeCol2} > div > img`);
-
-    const handleMouseEnter = (e) => {
-      const parentNode = e.target.parentNode
-      parentNode.classList.add(styles.hovered)
-    };
-
-    const handleMouseLeave = (e) => {
-      const parentNode = e.target.parentNode
-      parentNode.classList.remove(styles.hovered)
-    }
-    categoryImg.forEach((item) => {
-      item.addEventListener('mouseenter', handleMouseEnter);
-      item.addEventListener('mouseleave', handleMouseLeave)
-    });
-
-    return () => {
-      categoryImg.forEach((item) => {
-        item.removeEventListener('mouseenter', handleMouseEnter);
-      });
-    };
-  }, []);
 
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     const userId = localStorage.getItem('userId')
+
     const fetchData = async () => {
       try {
         const products = await getAllProducts();
@@ -962,6 +940,21 @@ const Home = () => {
           const slideWidth = sliderContainer.clientWidth;
           sliderContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
         }
+
+        const categoryImg = document.querySelectorAll(`.${styles.homeCol2} > div > img`)
+        const handleMouseEnter = (e) => {
+          const parentNode = e.target.parentNode
+          parentNode.classList.add(styles.hovered)
+        };
+
+        const handleMouseLeave = (e) => {
+          const parentNode = e.target.parentNode
+          parentNode.classList.remove(styles.hovered)
+        }
+        categoryImg.forEach((item) => {
+          item.addEventListener('mouseenter', handleMouseEnter);
+          item.addEventListener('mouseleave', handleMouseLeave)
+        });
     }
 
     const handleCartModal = async () => {
@@ -1192,6 +1185,7 @@ const Home = () => {
         }
       })
     }
+
 
     handleCartModal()
     showNews()

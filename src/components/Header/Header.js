@@ -27,7 +27,6 @@ const Header = () => {
     const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
     const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
     const header = document.getElementById(styles.header);
-    const rightHeader = document.querySelector(`.${styles.rightHeader}`)
     const handleScroll = () => {
       if (window.scrollY > 66) {
         header.style.animation = 'slideDown 2s linear'
