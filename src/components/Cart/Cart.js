@@ -16,14 +16,14 @@ const Cart = () => {
         })
         let isMounted = true;
         const getAPI = async () => {
-            const carts = await getCarts()
+            const carts = await getCarts("cart")
 
             if (isMounted) {
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 filteredCarts.forEach(async (item) => {
                     const detail = await getDetail(item.prod_id)
                     const sizeIndex = detail.sizes.indexOf(item.size)
-                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    let price = detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     updateQuantity(item.id, item.quantity, price)
                 })
                 calc_total(filteredCarts)
@@ -31,7 +31,7 @@ const Cart = () => {
         }
 
         const renderCart = async () => {
-            const carts = await getCarts()
+            const carts = await getCarts("cart")
             if(isMounted){
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 cartTable(filteredCarts)
@@ -56,12 +56,6 @@ const Cart = () => {
                 },
                 body: JSON.stringify({id: itemId, quantity: quantity, price: price}),
               });
-          
-              if (response.ok) {
-                console.log('Quantity updated successfully');
-              } else {
-                console.error('Failed to update quantity');
-              }
             } catch (error) {
               console.error('Error occurred while updating quantity', error);
             }
@@ -78,8 +72,9 @@ const Cart = () => {
                 product_name.className = styles.product_name
                 tr.appendChild(product_name)
                 const img = document.createElement('img')
-                img.src = `../../img/${item.img_url}`
+                img.src = `../../img/${detail.img_url[0]}`
                 img.width = 100
+                img.height = 120
                 product_name.appendChild(img)
                 img.addEventListener('click', () => {
                     document.location.href = `/products/${detail.id}`
@@ -105,9 +100,9 @@ const Cart = () => {
                 tr.appendChild(price)
 
                 let quantity_value = item.quantity
-                if (detail.promo_price && sizeIndex == 0) {
-                    price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
-                    itemSubtotal = quantity_value * detail.promo_price
+                if (detail.promo_price && detail.promo_price[sizeIndex] > 0) {
+                    price.innerHTML = `${detail.promo_price[sizeIndex].toLocaleString()}&#8363;`
+                    itemSubtotal = quantity_value * detail.promo_price[sizeIndex]
                 } else {
                     price.innerHTML = `${detail.price[sizeIndex].toLocaleString()}&#8363;`
                     itemSubtotal = quantity_value * detail.price[sizeIndex]
@@ -154,7 +149,7 @@ const Cart = () => {
                     quantity_input.value++;
                     quantity_value = quantity_input.value
                     updateSubtotal()
-                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    let price = detail.promo_price && detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     await fetch('http://localhost:3000/cart/quantity', {
                         method: 'PUT',
                         headers: {
@@ -178,7 +173,7 @@ const Cart = () => {
                     quantity_input.value--;
                     quantity_value = quantity_input.value
                     updateSubtotal()
-                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    let price = detail.promo_price && detail.promo_price[sizeIndex] > 0  ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     await fetch('http://localhost:3000/cart/quantity', {
                         method: 'PUT',
                         headers: {
@@ -208,8 +203,8 @@ const Cart = () => {
 
 
                 const updateSubtotal = () => {
-                    if (detail.promo_price && sizeIndex === 0) {
-                        itemSubtotal = quantity_value * detail.promo_price;
+                    if (detail.promo_price && detail.promo_price[sizeIndex] > 0) {
+                        itemSubtotal = quantity_value * detail.promo_price[sizeIndex]
                     } else {
                         itemSubtotal = quantity_value * detail.price[sizeIndex];
                     }

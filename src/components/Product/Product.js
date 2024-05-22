@@ -440,7 +440,6 @@ const Product = () => {
                     row.appendChild(price)
                 }
 
-
                 const product_colors = document.createElement('div')
                 row.appendChild(product_colors)
                 if (item.colors.length > 0) {

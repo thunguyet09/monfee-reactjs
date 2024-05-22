@@ -393,7 +393,7 @@ const Detail = () => {
                 detail_actions.appendChild(addToCart)
                 addToCart.addEventListener('click', async () => {
                     let existingCart = []
-                    const carts = await getCarts()
+                    const carts = await getCarts("cart")
                     const cartId = carts[carts.length - 1].id + 1
                     if(colorItem){
                         if(sizeItem){
@@ -539,7 +539,6 @@ const Detail = () => {
                                     img_url: selectedColorIndex ? detail.img_url[selectedColorIndex] : detail.img_url[0],
                                     user_id: localStorage.getItem('userId')
                                 }
-                                console.log(cart)
                                 try{
                                     await fetch(`http://localhost:3000/cart`, {
                                         method: 'POST',

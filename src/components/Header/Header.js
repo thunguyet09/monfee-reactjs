@@ -8,7 +8,7 @@ import { SearchContext, useSearch } from '../../contexts/SearchContext/SearchCon
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
-  const carts = await getCarts()
+  const carts = await getCarts('cart')
   const numsInCart = document.querySelector(`.${styles.numsInCart}`)
   const filteredCarts = carts.filter(((item) => item.user_id == userId))
   numsInCart.innerHTML = `${filteredCarts.length}`

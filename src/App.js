@@ -91,7 +91,7 @@ const UserRoute = ({ element: Element }) => {
   return (
     <>
       {isAuthenticated ? (
-        <Element />
+        <Element authenticated="true"/>
       ) : (
         <Navigate to="/login" replace />
       )}

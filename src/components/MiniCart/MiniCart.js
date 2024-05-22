@@ -8,7 +8,7 @@ const MiniCart = () => {
     const userId = localStorage.getItem('userId')
     useEffect(() => {
         const numsInCart = async () => {
-            const carts = await getCarts()
+            const carts = await getCarts("cart")
             const numsInCart = document.querySelector(`.${styles.mini_cart_counter} > span`)
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
             numsInCart.innerHTML = `${filteredCarts.length}`
@@ -50,7 +50,7 @@ const MiniCart = () => {
                 minicart_item.appendChild(cart_img)
                 const img = document.createElement('img')
                 img.width = 90
-                img.src = `../../img/${item.img_url}`
+                img.src = `../../img/${detail.img_url[0]}`
                 cart_img.appendChild(img)
                 const product_mini = document.createElement('div')
                 product_mini.className = styles.product_mini
@@ -93,9 +93,9 @@ const MiniCart = () => {
                 const price = document.createElement('h4')
                 price.className = styles.minicart_price
                 product_mini_row1.appendChild(price)
-                if(detail.promo_price && sizeIndex == 0){
-                    price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
-                    subtotal += item.quantity * detail.promo_price
+                if(detail.promo_price && sizeIndex == 0 && detail.promo_price[0] > 0){
+                    price.innerHTML = `${detail.promo_price[0].toLocaleString()}&#8363;`
+                    subtotal += item.quantity * detail.promo_price[0]
                 }else{
                     price.innerHTML = `${detail.price[sizeIndex].toLocaleString()}&#8363;`
                     subtotal += item.quantity * detail.price[sizeIndex]

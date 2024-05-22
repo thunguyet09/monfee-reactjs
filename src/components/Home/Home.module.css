@@ -839,10 +839,22 @@
     font-weight: 600;
     margin: 0;
     margin: 10px 0px;
-    border-bottom: 1px solid rgb(217, 217, 217);
-    padding-bottom: 30px;
 }
 
+.quickViewPrice {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgb(217, 217, 217);
+    padding-bottom: 20px;
+}
+
+.quickViewPrice > h4 > del {
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    color: rgb(88, 88, 88);
+}
 .quickViewInfo>p {
     margin-top: 30px;
     font-family: "Nunito", sans-serif;
@@ -1168,8 +1180,8 @@
         width: 610px;
         height: 210px;
         background-color: #fff;
-        margin-left: - 5px;
-        margin-top: - 5px;
+        margin-left: -5px;
+        margin-top: -5px;
     }
 
     20% {

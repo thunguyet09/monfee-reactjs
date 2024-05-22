@@ -148,7 +148,8 @@ td:first-child {
     border-top: 2px solid black;
     border-right: 2px solid black;
     border-left: 1px solid black;
-    padding: 5px 10px;
+    padding: 0px 10px;
+    height: 34px;
     text-align: center;
 }
 
@@ -160,7 +161,8 @@ td:first-child {
     border-right: 2px solid black;
     border-left: 1px solid black;
     border-top: 1px solid black;
-    padding: 5px 10px;
+    padding: 0px 10px;
+    height: 35px;
     text-align: center;
 }
 
@@ -312,7 +314,7 @@ td:first-child {
     color: white;
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 15px;
     letter-spacing: 2px;
     font-weight: 600;
     transition: .3s ease;
@@ -330,7 +332,7 @@ td:first-child {
     color: white;
     border: none;
     outline: none;
-    font-size: 16px;
+    font-size: 15px;
     letter-spacing: 2px;
     font-weight: 600;
     transition: .3s ease;

@@ -7,7 +7,7 @@ const Checkout = () => {
         const products_info = document.querySelector(`.${styles.products_info}`)
         const userId = localStorage.getItem('userId')
         const getAPI = async () => {
-            const carts = await getCarts()
+            const carts = await getCarts("cart")
             if(isMounted){
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 showProducts(filteredCarts)
