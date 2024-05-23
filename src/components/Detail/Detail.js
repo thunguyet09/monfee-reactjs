@@ -12,7 +12,6 @@ const Detail = () => {
         const url = new URL(document.location.href);
         const path = url.pathname.split('/').filter(Boolean);
         const id = parseInt(path[path.length - 1])
-        console.log(id)
         const imgCart = document.querySelector(`.${styles.imgCart}`)
         imgCart.innerHTML = ''
         const cartInfo = document.querySelector(`.${styles.cartInfo}`)
@@ -20,7 +19,7 @@ const Detail = () => {
         let selectedColorIndex = '';
         const fetchData = async () => {
             const detail = await getDetail(id);
-            const products = await getAllProducts()
+            const products = await getAllProducts('products')
             const user = userId ? await getUser(userId) : ''
             const lastId = products[products.length - 1].id
             let prev_prod;
@@ -51,8 +50,8 @@ const Detail = () => {
                         user_id: userId,
                         favorites: fav_arr
                     };
-                
-                    if(!existingLikes){
+
+                    if (!existingLikes) {
                         await fetch(`http://localhost:3000/products/wishlist`, {
                             method: 'PUT',
                             headers: {
@@ -60,17 +59,17 @@ const Detail = () => {
                             },
                             body: JSON.stringify(obj)
                         })
-                        .then(() => {
-                            dialog_content.style.display = 'flex'
-                            dialog_content.style.backgroundColor = '#6B8A47'
-                            dialog_icon.innerHTML = `<span class="material-symbols-outlined">done</span>`
-                            dialog_text.textContent = 'Product is added to wishlist successfully!'
-                            setTimeout(() => {
-                                dialog_content.style.display = 'none'
-                                wishlist()
-                            }, 2000)
-                        })
-                    }else{
+                            .then(() => {
+                                dialog_content.style.display = 'flex'
+                                dialog_content.style.backgroundColor = '#6B8A47'
+                                dialog_icon.innerHTML = `<span class="material-symbols-outlined">done</span>`
+                                dialog_text.textContent = 'Product is added to wishlist successfully!'
+                                setTimeout(() => {
+                                    dialog_content.style.display = 'none'
+                                    wishlist()
+                                }, 2000)
+                            })
+                    } else {
                         dialog_content.style.display = 'flex'
                         dialog_content.style.backgroundColor = '#6B8A47'
                         dialog_icon.innerHTML = `<span class="material-symbols-outlined">done</span>`
@@ -175,21 +174,14 @@ const Detail = () => {
                 sales.className = styles.sales
                 sales.innerHTML = `Lượt bán: ${detail.sales}`
                 main_detail.appendChild(sales)
-                if (detail.promo_price > 0) {
-                    const prices = document.createElement('div')
-                    prices.className = styles.prices
-                    main_detail.appendChild(prices)
-                    const price = document.createElement('h3')
-                    price.innerHTML = `<del>${detail.price[0].toLocaleString()}&#8363;</del>`
-                    prices.appendChild(price)
-                    const promo_price = document.createElement('h2')
-                    promo_price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
-                    prices.appendChild(promo_price)
+                const prices = document.createElement('div')
+                prices.className = styles.prices
+                main_detail.appendChild(prices)
+                if (detail.promo_price[0] > 0 && detail.promo_price.length > 0) {
+                    prices.innerHTML = `<h2>${detail.promo_price[0].toLocaleString()}&#8363;</h2>
+                    <h3><del>${detail.price[0].toLocaleString()}&#8363;</del></h3>`
                 } else {
-                    const price = document.createElement('h2')
-                    price.className = styles.price
-                    price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
-                    main_detail.appendChild(price)
+                    prices.innerHTML = `<h2>${detail.price[0].toLocaleString()}&#8363;</h2>`
                 }
 
                 //reviews
@@ -217,8 +209,9 @@ const Detail = () => {
                 count_down.className = styles.count_down
                 main_detail.appendChild(count_down)
                 const original_quantity = detail.sales + detail.quantity
+                const max_quantity = Math.max(...detail.quantity)
                 const count_down_text = document.createElement('h3')
-                count_down_text.innerHTML = `HURRY! ONLY <b>${detail.quantity}</b> LEFT IN STOCK`
+                count_down_text.innerHTML = `HURRY! ONLY <b>${max_quantity}</b> LEFT IN STOCK`
                 count_down_text.className = styles.count_down_text
                 count_down.appendChild(count_down_text)
                 const process = document.createElement('input')
@@ -252,55 +245,48 @@ const Detail = () => {
                 let size_1000g = '';
                 let size_1500g = ''
                 detail.sizes.forEach((item) => {
-                    const size = document.createElement('button')
-                    size.textContent = item
-                    size_items.appendChild(size)
-                    sizeItem = detail.sizes[0]
-                    size.addEventListener('click', () => {
-                        if(item == '1000g'){
-                            const sizeIndex = detail.sizes.indexOf(size.textContent)
-                            size_1000g = detail.price[sizeIndex]
-                            sizeItem = '1000g'
-                            if (detail.promo_price > 0) {
-                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
-                                promo_price.innerHTML = ''
-                                const price = document.querySelector(`.${styles.prices} > h2`)
-                                price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
-                            } else {
-                                const price = document.querySelector(`.${styles.price}`)
-                                price.innerHTML = `${size_1000g.toLocaleString()}&#8363;`
-                            }
-                        }else if(item == '1500g'){
-                            const sizeIndex = detail.sizes.indexOf(size.textContent)
-                            size_1500g = detail.price[sizeIndex]
-                            sizeItem = '1500g'
-                            if (detail.promo_price > 0) {
-                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
-                                promo_price.innerHTML = ''
-                                const price = document.querySelector(`.${styles.prices} > h2`)
-                                price.innerHTML = `${size_1500g.toLocaleString()}&#8363;`
-                            } else {
-                                const price = document.querySelector(`.${styles.price}`)
-                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
-                            }
-                        }else{
-                            sizeItem = '500g'
-                            if (detail.promo_price > 0) {
-                                const promo_price = document.querySelector(`.${styles.prices} > h3`)
-                                promo_price.innerHTML = `<del>${detail.price[0].toLocaleString()}&#8363;</del>`
-                                const price = document.querySelector(`.${styles.prices} > h2`)
-                                price.innerHTML = `${detail.promo_price.toLocaleString()}&#8363;`
-                            } else {
-                                const price = document.querySelector(`.${styles.price}`)
-                                price.innerHTML = `${detail.price[0].toLocaleString()}&#8363;`
-                            }
+                    const sizeButton = document.createElement('button');
+                    sizeButton.textContent = item;
+                    size_items.appendChild(sizeButton);
+
+                    const zeroIndices = [];
+                    detail.quantity.forEach((quantity, index) => {
+                        if (quantity === 0) {
+                            zeroIndices.push(index);
+                        }
+                    });
+
+                    zeroIndices.forEach((index) => {
+                        if (size_items.children[index] === sizeButton) {
+                            sizeButton.disabled = true;
+                            sizeButton.style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
+                            sizeButton.style.color = 'grey';
+                        }
+                    });
+
+                    sizeButton.addEventListener('click', () => {
+                        const sizeIndex = detail.sizes.indexOf(sizeButton.textContent)
+                        if (detail.promo_price && detail.promo_price.length > 0) {
+                            prices.innerHTML = `
+                            <h2>${detail.promo_price[sizeIndex].toLocaleString()}&#8363;</h2>
+                            <h3><del>${detail.price[sizeIndex].toLocaleString()}&#8363;</del></h3>`
+                        } else {
+                            prices.innerHTML = `<h2>${detail.price[sizeIndex].toLocaleString()}&#8363;</h2>`
                         }
                         size_items.childNodes.forEach((val) => {
                             val.style.backgroundColor = 'white'
                             val.style.color = 'grey'
                         })
-                        size.style.backgroundColor = 'black'
-                        size.style.color = 'white'
+
+
+                        zeroIndices.forEach((index) => {
+                            size_items.children[index].disabled = true;
+                            size_items.children[index].style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
+                            size_items.children[index].style.color = 'grey';
+                        });
+
+                        sizeButton.style.backgroundColor = 'black'
+                        sizeButton.style.color = 'white'
                     })
                 })
                 let colorItem = ''
@@ -395,36 +381,36 @@ const Detail = () => {
                     let existingCart = []
                     const carts = await getCarts("cart")
                     const cartId = carts[carts.length - 1].id + 1
-                    if(colorItem){
-                        if(sizeItem){
+                    if (colorItem) {
+                        if (sizeItem) {
                             existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.color == colorItem && res.size == sizeItem)
-                        }else{
+                        } else {
                             existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.color == colorItem)
                         }
-                    }else{
-                        if(sizeItem){
+                    } else {
+                        if (sizeItem) {
                             existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id && res.size == sizeItem)
-                        }else{
+                        } else {
                             existingCart = carts.filter((res) => res.user_id == userId && res.prod_id == detail.id)
                         }
                     }
 
                     let checked = true;
-                    if(sizeItem == ''){
+                    if (sizeItem == '') {
                         size_btn.style.color = 'red'
                         checked = false;
                     }
-                    if(detail.colorslength == 0 && colorItem == ''){
+                    if (detail.colorslength == 0 && colorItem == '') {
                         color_btn.style.color = 'red'
                         checked = false;
                     }
-    
+
                     if (token && checked == true) {
                         if (existingCart.length > 0) {
                             existingCart.forEach(async (val) => {
                                 const new_quantity = val.quantity + quantityValue;
-                                if(val.size){
-                                    if(val.color){
+                                if (val.size) {
+                                    if (val.color) {
                                         await fetch(`http://localhost:3000/cart`, {
                                             method: 'PUT',
                                             headers: {
@@ -432,17 +418,17 @@ const Detail = () => {
                                             },
                                             body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
                                         })
-                                        .then(() => {
-                                            localStorage.setItem('product_id', val.prod_id)
-                                            setTimeout(() => {
-                                                cartModal.style.display = 'block'
-                                                imgCart.innerHTML = ''
-                                                cartInfo.innerHTML = ''
-                                                handleCartModal(colorItem, sizeItem)
-                                                numsInCart()
-                                            }, 2000)
-                                        })
-                                    }else{
+                                            .then(() => {
+                                                localStorage.setItem('product_id', val.prod_id)
+                                                setTimeout(() => {
+                                                    cartModal.style.display = 'block'
+                                                    imgCart.innerHTML = ''
+                                                    cartInfo.innerHTML = ''
+                                                    handleCartModal(colorItem, sizeItem)
+                                                    numsInCart()
+                                                }, 2000)
+                                            })
+                                    } else {
                                         await fetch(`http://localhost:3000/cart`, {
                                             method: 'PUT',
                                             headers: {
@@ -450,19 +436,19 @@ const Detail = () => {
                                             },
                                             body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
                                         })
-                                        .then(() => {
-                                            localStorage.setItem('product_id', val.prod_id)
-                                            setTimeout(() => {
-                                                cartModal.style.display = 'block'
-                                                imgCart.innerHTML = ''
-                                                cartInfo.innerHTML = ''
-                                                handleCartModal(colorItem, sizeItem)
-                                                numsInCart()
-                                            }, 2000)
-                                        })
+                                            .then(() => {
+                                                localStorage.setItem('product_id', val.prod_id)
+                                                setTimeout(() => {
+                                                    cartModal.style.display = 'block'
+                                                    imgCart.innerHTML = ''
+                                                    cartInfo.innerHTML = ''
+                                                    handleCartModal(colorItem, sizeItem)
+                                                    numsInCart()
+                                                }, 2000)
+                                            })
                                     }
-                                }else{
-                                    if(val.color){
+                                } else {
+                                    if (val.color) {
                                         await fetch(`http://localhost:3000/cart`, {
                                             method: 'PUT',
                                             headers: {
@@ -470,17 +456,17 @@ const Detail = () => {
                                             },
                                             body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
                                         })
-                                        .then(() => {
-                                            localStorage.setItem('product_id', val.prod_id)
-                                            setTimeout(() => {
-                                                cartModal.style.display = 'block'
-                                                imgCart.innerHTML = ''
-                                                cartInfo.innerHTML = ''
-                                                handleCartModal(colorItem, sizeItem)
-                                                numsInCart()
-                                            }, 2000)
-                                        })
-                                    }else{
+                                            .then(() => {
+                                                localStorage.setItem('product_id', val.prod_id)
+                                                setTimeout(() => {
+                                                    cartModal.style.display = 'block'
+                                                    imgCart.innerHTML = ''
+                                                    cartInfo.innerHTML = ''
+                                                    handleCartModal(colorItem, sizeItem)
+                                                    numsInCart()
+                                                }, 2000)
+                                            })
+                                    } else {
                                         await fetch(`http://localhost:3000/cart`, {
                                             method: 'PUT',
                                             headers: {
@@ -488,16 +474,16 @@ const Detail = () => {
                                             },
                                             body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
                                         })
-                                        .then(() => {
-                                            localStorage.setItem('product_id', val.prod_id)
-                                            setTimeout(() => {
-                                                cartModal.style.display = 'block'
-                                                imgCart.innerHTML = ''
-                                                cartInfo.innerHTML = ''
-                                                handleCartModal(colorItem, sizeItem)
-                                                numsInCart()
-                                            }, 2000)
-                                        })
+                                            .then(() => {
+                                                localStorage.setItem('product_id', val.prod_id)
+                                                setTimeout(() => {
+                                                    cartModal.style.display = 'block'
+                                                    imgCart.innerHTML = ''
+                                                    cartInfo.innerHTML = ''
+                                                    handleCartModal(colorItem, sizeItem)
+                                                    numsInCart()
+                                                }, 2000)
+                                            })
                                     }
                                 }
                             })
@@ -512,7 +498,7 @@ const Detail = () => {
                                     img_url: detail.img_url[selectedColorIndex],
                                     user_id: localStorage.getItem('userId')
                                 }
-        
+
                                 await fetch(`http://localhost:3000/cart`, {
                                     method: 'POST',
                                     headers: {
@@ -520,16 +506,16 @@ const Detail = () => {
                                     },
                                     body: JSON.stringify(cart)
                                 })
-                                .then(() => {
-                                    localStorage.setItem('product_id', detail.id)
-                                    setTimeout(() => {
-                                        cartModal.style.display = 'block'
-                                        imgCart.innerHTML = ''
-                                        cartInfo.innerHTML = ''
-                                        handleCartModal(colorItem, sizeItem)
-                                        numsInCart()
-                                    }, 2000)
-                                })
+                                    .then(() => {
+                                        localStorage.setItem('product_id', detail.id)
+                                        setTimeout(() => {
+                                            cartModal.style.display = 'block'
+                                            imgCart.innerHTML = ''
+                                            cartInfo.innerHTML = ''
+                                            handleCartModal(colorItem, sizeItem)
+                                            numsInCart()
+                                        }, 2000)
+                                    })
                             } else {
                                 const cart = {
                                     id: cartId,
@@ -539,7 +525,7 @@ const Detail = () => {
                                     img_url: selectedColorIndex ? detail.img_url[selectedColorIndex] : detail.img_url[0],
                                     user_id: localStorage.getItem('userId')
                                 }
-                                try{
+                                try {
                                     await fetch(`http://localhost:3000/cart`, {
                                         method: 'POST',
                                         headers: {
@@ -547,22 +533,22 @@ const Detail = () => {
                                         },
                                         body: JSON.stringify(cart)
                                     })
-                                    .then(() => {
-                                        localStorage.setItem('product_id', detail.id)
-                                        setTimeout(() => {
-                                            cartModal.style.display = 'block'
-                                            imgCart.innerHTML = ''
-                                            cartInfo.innerHTML = ''
-                                            handleCartModal('', sizeItem)
-                                            numsInCart()
-                                        }, 2000)
-                                    })
-                                }catch(err){
+                                        .then(() => {
+                                            localStorage.setItem('product_id', detail.id)
+                                            setTimeout(() => {
+                                                cartModal.style.display = 'block'
+                                                imgCart.innerHTML = ''
+                                                cartInfo.innerHTML = ''
+                                                handleCartModal('', sizeItem)
+                                                numsInCart()
+                                            }, 2000)
+                                        })
+                                } catch (err) {
                                     console.error(err)
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         document.location.href = '/login'
                     }
                 })
@@ -705,19 +691,19 @@ const Detail = () => {
 
         const handleCartModal = async (colorItem, sizeItem) => {
             const productId = localStorage.getItem('product_id')
-            const cart = await getCarts()
+            const cart = await getCarts("cart")
             let data = '';
-            if(colorItem){
-                if(sizeItem){
+            if (colorItem) {
+                if (sizeItem) {
                     data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem && item.size == sizeItem)
-                }else{
+                } else {
                     data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem)
                 }
-            }else{
-                if(sizeItem){
+            } else {
+                if (sizeItem) {
                     data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.size == sizeItem)
-                }else{
-                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId )
+                } else {
+                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
                 }
             }
             const myCart = cart.filter((item) => item.user_id == userId)
@@ -734,12 +720,12 @@ const Detail = () => {
               <span>Added to cart successfully!</span>
               `
                 imgCart.appendChild(confirm)
-                if(selectedColorIndex == ''){
+                if (selectedColorIndex == '') {
                     const img = document.createElement('img')
                     img.src = `../../img/${product.img_url[0]}`
                     img.width = 200
                     imgCart.appendChild(img)
-                }else{
+                } else {
                     const img = document.createElement('img')
                     img.src = `../../img/${product.img_url[selectedColorIndex]}`
                     img.width = 200
@@ -767,11 +753,11 @@ const Detail = () => {
                 let total = 0
                 for (const res of myCart) {
                     const product = await getDetail(res.prod_id);
-                    if(product.sizes.indexOf(res.size) > 0){
+                    if (product.sizes.indexOf(res.size) > 0) {
                         const sizeIndex = product.sizes.indexOf(res.size)
                         const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[sizeIndex];
                         total += itemTotal;
-                    }else{
+                    } else {
                         const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[0];
                         total += itemTotal;
                     }
@@ -961,13 +947,13 @@ const Detail = () => {
             more_info_col2.innerHTML = `<img src="../../img/${detail.img_url[0]}" />`
             nav_tabs.forEach((item) => {
                 item.addEventListener('click', () => {
-                    if(item.value == '0'){
+                    if (item.value == '0') {
                         desc_prod.style.display = 'block'
                         more_info.style.display = 'none'
-                    }else if(item.value == '1'){
-                       more_info.style.display = 'flex'
-                       desc_prod.style.display = 'none'
-                    }else {
+                    } else if (item.value == '1') {
+                        more_info.style.display = 'flex'
+                        desc_prod.style.display = 'none'
+                    } else {
                         desc_prod.style.display = 'none'
                         more_info.style.display = 'none'
                     }
@@ -986,15 +972,15 @@ const Detail = () => {
             const wishlist_icon = document.querySelector(`.${styles.wishlist_icon} > span`)
             const user = userId ? await getUser(userId) : null;
             const existingLikes = user ? user.products_fav.includes(id) : false;
-            if(existingLikes){
+            if (existingLikes) {
                 wishlist_icon.style.color = '#b8784e'
-            }else{
+            } else {
                 wishlist_icon.style.color = 'black'
             }
             const wishlist_number = document.querySelector(`.${styles.wishlist_icon} > h4`)
-            if(typeof detail.likes == 'undefined'){
+            if (typeof detail.likes == 'undefined') {
                 wishlist_number.innerHTML = '(0)'
-            }else{
+            } else {
                 wishlist_number.innerHTML = `(${detail.likes})`
             }
         }
@@ -1125,9 +1111,9 @@ const Detail = () => {
                         </div>
                         <div className={styles.more_info}>
                             <div className={styles.more_info_col1}>
-                                 <p>MORE INFORMATION TO YOU</p>
-                                 <h3>Things You Need To Know</h3>
-                                 <div className={styles.row}>
+                                <p>MORE INFORMATION TO YOU</p>
+                                <h3>Things You Need To Know</h3>
+                                <div className={styles.row}>
                                     <div className={styles.more_info_content1}>
                                         <p>We use industry standard SSL encryption to protect your details. Potentially sensitive information such as your name, address and card details are encoded so they can only be read on the secure server.</p>
                                         <ul>
@@ -1157,10 +1143,10 @@ const Detail = () => {
                                             </ul>
                                         </div>
                                     </div>
-                                 </div>
+                                </div>
                             </div>
                             <div className={styles.more_info_col2}>
-                                 
+
                             </div>
                         </div>
                     </div>
@@ -1182,19 +1168,25 @@ const Detail = () => {
             </div>
 
             <>
-                <div id={styles.cartModal} className={styles.cartModal}>
-                <div className={styles.cartContent}>
-                    <div className={styles.cartCol1}>
-                    <div className={styles.imgCart}>
-                    </div>
-                    <div className={styles.cartInfo}>
-                    </div>
-                    <span className={styles.closeCartModal}>&times;</span>
-                    </div>
-                    <div className={styles.cartCol2}>
+                <div className={styles.sold_out_box}>
 
-                    </div>
                 </div>
+            </>
+
+            <>
+                <div id={styles.cartModal} className={styles.cartModal}>
+                    <div className={styles.cartContent}>
+                        <div className={styles.cartCol1}>
+                            <div className={styles.imgCart}>
+                            </div>
+                            <div className={styles.cartInfo}>
+                            </div>
+                            <span className={styles.closeCartModal}>&times;</span>
+                        </div>
+                        <div className={styles.cartCol2}>
+
+                        </div>
+                    </div>
                 </div>
             </>
 

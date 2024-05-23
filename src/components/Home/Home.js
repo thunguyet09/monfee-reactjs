@@ -111,7 +111,6 @@ const Home = ({ authenticated }) => {
             localStorage.removeItem("product_id");
             cartModal.style.display = "none";
           });
-
           cart.addEventListener("click", async () => {
             if (token) {
               const carts = await getCarts("cart");
@@ -132,21 +131,41 @@ const Home = ({ authenticated }) => {
                 (res) => res.user_id == userId && res.prod_id == item.id
               );
 
-              if (existingCart.length > 0) {
-                existingCart.forEach(async (val) => {
-                  const new_quantity = val.quantity + 1;
+              if(item.quantity[0] > 0){
+                if (existingCart.length > 0) {
+                  existingCart.forEach(async (val) => {
+                    const new_quantity = val.quantity + 1;
+                    await fetch(`http://localhost:3000/cart`, {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        quantity: new_quantity,
+                        prod_id: val.prod_id,
+                        user_id: userId,
+                      }),
+                    }).then(() => {
+                      localStorage.setItem("product_id", val.prod_id);
+                      cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`;
+                      cart.style.color = "#b8784e";
+                      setTimeout(() => {
+                        cartModal.style.display = "block";
+                        console.log(item.quantity[0])
+                        handleCartModal();
+                        numsInCart();
+                      }, 2000);
+                    });
+                  });
+                } else {
                   await fetch(`http://localhost:3000/cart`, {
-                    method: "PUT",
+                    method: "POST",
                     headers: {
                       "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                      quantity: new_quantity,
-                      prod_id: val.prod_id,
-                      user_id: userId,
-                    }),
+                    body: JSON.stringify(cartObj),
                   }).then(() => {
-                    localStorage.setItem("product_id", val.prod_id);
+                    localStorage.setItem("product_id", item.id);
                     cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`;
                     cart.style.color = "#b8784e";
                     setTimeout(() => {
@@ -155,24 +174,9 @@ const Home = ({ authenticated }) => {
                       numsInCart();
                     }, 2000);
                   });
-                });
-              } else {
-                await fetch(`http://localhost:3000/cart`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(cartObj),
-                }).then(() => {
-                  localStorage.setItem("product_id", item.id);
-                  cart.innerHTML = `<button><span class="material-symbols-outlined">check_circle</span></button>`;
-                  cart.style.color = "#b8784e";
-                  setTimeout(() => {
-                    cartModal.style.display = "block";
-                    handleCartModal();
-                    numsInCart();
-                  }, 2000);
-                });
+                }
+              }else{
+                document.location.href = `/products/${item.id}`
               }
             } else {
               document.location.href = "/login";
