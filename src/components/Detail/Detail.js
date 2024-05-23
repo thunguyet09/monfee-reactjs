@@ -231,7 +231,7 @@ const Detail = () => {
                 `
                 main_detail.appendChild(size_guide)
 
-                let sizeItem = ''
+                let sizeItem = detail.sizes[0]
                 const size_box = document.createElement('div')
                 size_box.className = styles.size_box
                 main_detail.appendChild(size_box)
@@ -331,7 +331,7 @@ const Detail = () => {
                 addToCart.textContent = 'ADD TO CART'
                 addToCart.className = styles.addToCart
                 detail_actions.appendChild(addToCart)
-                let sizeChoosed = ''
+                const sold_out_box = document.querySelector(`.${styles.sold_out_box}`)
                 detail.sizes.forEach((item) => {
                     const sizeButton = document.createElement('button');
                     sizeButton.textContent = item;
@@ -344,20 +344,23 @@ const Detail = () => {
                         }
                     });
 
+                    if(detail.quantity[0] == 0){
+                        sold_out_box.style.display = 'block'
+                    }
                     zeroIndices.forEach((index) => {
                         if (size_items.children[index] === sizeButton) {
                             sizeButton.disabled = true;
                             sizeButton.style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
                             sizeButton.style.color = 'grey';
                             addToCart.disabled = true
-                        }else{
+                        } else {
                             addToCart.disabled = false
                         }
                     });
 
                     sizeButton.addEventListener('click', () => {
-                        sizeChoosed = sizeButton.textContent
                         const sizeIndex = detail.sizes.indexOf(sizeButton.textContent)
+                        sizeItem = sizeButton.textContent
                         if (detail.promo_price && detail.promo_price.length > 0) {
                             prices.innerHTML = `
                                 <h2>${detail.promo_price[sizeIndex].toLocaleString()}&#8363;</h2>
@@ -370,13 +373,12 @@ const Detail = () => {
                             val.style.color = 'grey'
                         })
 
-                        const sold_out_box = document.querySelector(`.${styles.sold_out_box}`)
                         zeroIndices.forEach((index) => {
                             size_items.children[index].disabled = true;
                             size_items.children[index].style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
                             size_items.children[index].style.color = 'grey';
 
-                            if(sizeIndex !== index){
+                            if (sizeIndex !== index) {
                                 sold_out_box.style.display = 'none'
                             }
                         });
@@ -385,7 +387,6 @@ const Detail = () => {
                     })
                 })
                 addToCart.addEventListener('click', async () => {
-                    console.log(sizeChoosed)
                     let existingCart = []
                     const carts = await getCarts("cart")
                     const cartId = carts[carts.length - 1].id + 1
@@ -412,128 +413,102 @@ const Detail = () => {
                         color_btn.style.color = 'red'
                         checked = false;
                     }
-
-                    if (token && checked == true ) {
-                        if (existingCart.length > 0) {
-                            existingCart.forEach(async (val) => {
-                                const new_quantity = val.quantity + quantityValue;
-                                if (val.size) {
-                                    if (val.color) {
-                                        await fetch(`http://localhost:3000/cart`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
-                                        })
-                                            .then(() => {
-                                                localStorage.setItem('product_id', val.prod_id)
-                                                setTimeout(() => {
-                                                    cartModal.style.display = 'block'
-                                                    imgCart.innerHTML = ''
-                                                    cartInfo.innerHTML = ''
-                                                    handleCartModal(colorItem, sizeItem)
-                                                    numsInCart()
-                                                }, 2000)
+                    
+                    if (token) {
+                        if (checked) {
+                            if (existingCart.length > 0) {
+                                existingCart.forEach(async (val) => {
+                                    const new_quantity = val.quantity + quantityValue;
+                                    if (val.size) {
+                                        if (val.color) {
+                                            await fetch(`http://localhost:3000/cart`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
                                             })
+                                                .then(() => {
+                                                    localStorage.setItem('product_id', val.prod_id)
+                                                    setTimeout(() => {
+                                                        cartModal.style.display = 'block'
+                                                        imgCart.innerHTML = ''
+                                                        cartInfo.innerHTML = ''
+                                                        handleCartModal(colorItem, sizeItem)
+                                                        numsInCart()
+                                                    }, 2000)
+                                                })
+                                        } else {
+                                            await fetch(`http://localhost:3000/cart`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
+                                            })
+                                                .then(() => {
+                                                    localStorage.setItem('product_id', val.prod_id)
+                                                    setTimeout(() => {
+                                                        cartModal.style.display = 'block'
+                                                        imgCart.innerHTML = ''
+                                                        cartInfo.innerHTML = ''
+                                                        handleCartModal(colorItem, sizeItem)
+                                                        numsInCart()
+                                                    }, 2000)
+                                                })
+                                        }
                                     } else {
-                                        await fetch(`http://localhost:3000/cart`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
-                                        })
-                                            .then(() => {
-                                                localStorage.setItem('product_id', val.prod_id)
-                                                setTimeout(() => {
-                                                    cartModal.style.display = 'block'
-                                                    imgCart.innerHTML = ''
-                                                    cartInfo.innerHTML = ''
-                                                    handleCartModal(colorItem, sizeItem)
-                                                    numsInCart()
-                                                }, 2000)
+                                        if (val.color) {
+                                            await fetch(`http://localhost:3000/cart`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
                                             })
+                                                .then(() => {
+                                                    localStorage.setItem('product_id', val.prod_id)
+                                                    setTimeout(() => {
+                                                        cartModal.style.display = 'block'
+                                                        imgCart.innerHTML = ''
+                                                        cartInfo.innerHTML = ''
+                                                        handleCartModal(colorItem, sizeItem)
+                                                        numsInCart()
+                                                    }, 2000)
+                                                })
+                                        } else {
+                                            await fetch(`http://localhost:3000/cart`, {
+                                                method: 'PUT',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
+                                            })
+                                                .then(() => {
+                                                    localStorage.setItem('product_id', val.prod_id)
+                                                    setTimeout(() => {
+                                                        cartModal.style.display = 'block'
+                                                        imgCart.innerHTML = ''
+                                                        cartInfo.innerHTML = ''
+                                                        handleCartModal(colorItem, sizeItem)
+                                                        numsInCart()
+                                                    }, 2000)
+                                                })
+                                        }
                                     }
-                                } else {
-                                    if (val.color) {
-                                        await fetch(`http://localhost:3000/cart`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
-                                        })
-                                            .then(() => {
-                                                localStorage.setItem('product_id', val.prod_id)
-                                                setTimeout(() => {
-                                                    cartModal.style.display = 'block'
-                                                    imgCart.innerHTML = ''
-                                                    cartInfo.innerHTML = ''
-                                                    handleCartModal(colorItem, sizeItem)
-                                                    numsInCart()
-                                                }, 2000)
-                                            })
-                                    } else {
-                                        await fetch(`http://localhost:3000/cart`, {
-                                            method: 'PUT',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
-                                        })
-                                            .then(() => {
-                                                localStorage.setItem('product_id', val.prod_id)
-                                                setTimeout(() => {
-                                                    cartModal.style.display = 'block'
-                                                    imgCart.innerHTML = ''
-                                                    cartInfo.innerHTML = ''
-                                                    handleCartModal(colorItem, sizeItem)
-                                                    numsInCart()
-                                                }, 2000)
-                                            })
-                                    }
-                                }
-                            })
-                        } else {
-                            if (detail.colors.length > 0) {
-                                const cart = {
-                                    id: cartId,
-                                    prod_id: detail.id,
-                                    quantity: quantityValue,
-                                    size: sizeItem,
-                                    color: colorItem,
-                                    img_url: detail.img_url[selectedColorIndex],
-                                    user_id: localStorage.getItem('userId')
-                                }
-
-                                await fetch(`http://localhost:3000/cart`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(cart)
                                 })
-                                    .then(() => {
-                                        localStorage.setItem('product_id', detail.id)
-                                        setTimeout(() => {
-                                            cartModal.style.display = 'block'
-                                            imgCart.innerHTML = ''
-                                            cartInfo.innerHTML = ''
-                                            handleCartModal(colorItem, sizeItem)
-                                            numsInCart()
-                                        }, 2000)
-                                    })
                             } else {
-                                const cart = {
-                                    id: cartId,
-                                    prod_id: detail.id,
-                                    quantity: quantityValue,
-                                    size: sizeItem,
-                                    img_url: selectedColorIndex ? detail.img_url[selectedColorIndex] : detail.img_url[0],
-                                    user_id: localStorage.getItem('userId')
-                                }
-                                try {
+                                if (detail.colors.length > 0) {
+                                    const cart = {
+                                        id: cartId,
+                                        prod_id: detail.id,
+                                        quantity: quantityValue,
+                                        size: sizeItem,
+                                        color: colorItem,
+                                        img_url: detail.img_url[selectedColorIndex],
+                                        user_id: localStorage.getItem('userId')
+                                    }
+
                                     await fetch(`http://localhost:3000/cart`, {
                                         method: 'POST',
                                         headers: {
@@ -547,14 +522,44 @@ const Detail = () => {
                                                 cartModal.style.display = 'block'
                                                 imgCart.innerHTML = ''
                                                 cartInfo.innerHTML = ''
-                                                handleCartModal('', sizeItem)
+                                                handleCartModal(colorItem, sizeItem)
                                                 numsInCart()
                                             }, 2000)
                                         })
-                                } catch (err) {
-                                    console.error(err)
+                                } else {
+                                    const cart = {
+                                        id: cartId,
+                                        prod_id: detail.id,
+                                        quantity: quantityValue,
+                                        size: sizeItem,
+                                        img_url: selectedColorIndex ? detail.img_url[selectedColorIndex] : detail.img_url[0],
+                                        user_id: localStorage.getItem('userId')
+                                    }
+                                    try {
+                                        await fetch(`http://localhost:3000/cart`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify(cart)
+                                        })
+                                            .then(() => {
+                                                localStorage.setItem('product_id', detail.id)
+                                                setTimeout(() => {
+                                                    cartModal.style.display = 'block'
+                                                    imgCart.innerHTML = ''
+                                                    cartInfo.innerHTML = ''
+                                                    handleCartModal('', sizeItem)
+                                                    numsInCart()
+                                                }, 2000)
+                                            })
+                                    } catch (err) {
+                                        console.error(err)
+                                    }
                                 }
                             }
+                        } else {
+
                         }
                     } else {
                         document.location.href = '/login'
@@ -699,250 +704,252 @@ const Detail = () => {
 
         const handleCartModal = async (colorItem, sizeItem) => {
             const productId = localStorage.getItem('product_id')
-            const cart = await getCarts("cart")
-            let data = '';
-            if (colorItem) {
-                if (sizeItem) {
-                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem && item.size == sizeItem)
+            if (productId) {
+                const cart = await getCarts("cart")
+                let data = '';
+                if (colorItem) {
+                    if (sizeItem) {
+                        data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem && item.size == sizeItem)
+                    } else {
+                        data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem)
+                    }
                 } else {
-                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.color == colorItem)
+                    if (sizeItem) {
+                        data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.size == sizeItem)
+                    } else {
+                        data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
+                    }
                 }
-            } else {
-                if (sizeItem) {
-                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId && item.size == sizeItem)
-                } else {
-                    data = cart.filter((item) => item.prod_id == productId && item.user_id == userId)
-                }
-            }
-            const myCart = cart.filter((item) => item.user_id == userId)
-            const product = await getDetail(productId)
-            const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
-            data.forEach(async (item) => {
-                imgCart.innerHTML = ''
-                cartInfo.innerHTML = ''
-                const confirm = document.createElement('h2')
-                confirm.innerHTML = `
+                const myCart = cart.filter((item) => item.user_id == userId)
+                const product = await getDetail(productId)
+                const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
+                data.forEach(async (item) => {
+                    imgCart.innerHTML = ''
+                    cartInfo.innerHTML = ''
+                    const confirm = document.createElement('h2')
+                    confirm.innerHTML = `
               <span class="material-symbols-outlined">
                 done
               </span>
               <span>Added to cart successfully!</span>
               `
-                imgCart.appendChild(confirm)
-                if (selectedColorIndex == '') {
-                    const img = document.createElement('img')
-                    img.src = `../../img/${product.img_url[0]}`
-                    img.width = 200
-                    imgCart.appendChild(img)
-                } else {
-                    const img = document.createElement('img')
-                    img.src = `../../img/${product.img_url[selectedColorIndex]}`
-                    img.width = 200
-                    imgCart.appendChild(img)
-                }
-                const product_name = document.createElement('h3')
-                product_name.textContent = product.name
-                imgCart.appendChild(product_name)
-                let sizeIndex = 0;
-                data.forEach((val) => {
-                    sizeIndex = product.sizes.indexOf(val.size)
-                })
-                if (item.promo_price && sizeIndex == 0) {
-                    const price = document.createElement('h4')
-                    price.className = styles.cart_price
-                    price.innerHTML = `PRICE: <b>${product.promo_price.toLocaleString()}&#8363;</b>`
-                    imgCart.appendChild(price)
-                } else {
-                    const price = document.createElement('h4')
-                    price.className = styles.cart_price
-                    price.innerHTML = `PRICE: <b>${product.price[sizeIndex].toLocaleString()}&#8363;</b>`
-                    imgCart.appendChild(price)
-                }
-
-                let total = 0
-                for (const res of myCart) {
-                    const product = await getDetail(res.prod_id);
-                    if (product.sizes.indexOf(res.size) > 0) {
-                        const sizeIndex = product.sizes.indexOf(res.size)
-                        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[sizeIndex];
-                        total += itemTotal;
+                    imgCart.appendChild(confirm)
+                    if (selectedColorIndex == '') {
+                        const img = document.createElement('img')
+                        img.src = `../../img/${product.img_url[0]}`
+                        img.width = 200
+                        imgCart.appendChild(img)
                     } else {
-                        const itemTotal = product.promo_price ? res.quantity * product.promo_price : res.quantity * product.price[0];
-                        total += itemTotal;
+                        const img = document.createElement('img')
+                        img.src = `../../img/${product.img_url[selectedColorIndex]}`
+                        img.width = 200
+                        imgCart.appendChild(img)
                     }
-                }
-                const quantity = document.createElement('h4')
-                quantity.className = styles.cart_quantity
-                quantity.innerHTML = `QTY: <b>${item.quantity}</b>`
-                imgCart.appendChild(quantity)
-
-                let cal_subtotal = 0;
-                if (item.promo_price && sizeIndex == 0) {
-                    cal_subtotal = item.quantity * product.promo_price
-                } else {
-                    cal_subtotal = item.quantity * product.price[sizeIndex]
-                }
-                const subtotal = document.createElement('h4')
-                subtotal.className = styles.cart_subtotal
-                subtotal.innerHTML = `SUBTOTAL: <b>${cal_subtotal.toLocaleString()}&#8363;</b>`
-                imgCart.appendChild(subtotal)
-
-                if (myCart.length < 2) {
-                    const items_count = document.createElement('p')
-                    items_count.className = styles.items_count
-                    items_count.innerHTML = `There are <span>${myCart.length}</span> item in your cart`
-                    cartInfo.appendChild(items_count)
-                } else {
-                    const items_count = document.createElement('p')
-                    items_count.className = styles.items_count
-                    items_count.innerHTML = `There are <span>${myCart.length}</span> items in your cart`
-                    cartInfo.appendChild(items_count)
-                }
-                const cartModal = document.querySelector(`.${styles.cartModal}`)
-                const cart_total = document.createElement('p')
-                cart_total.className = styles.total_price
-                cart_total.innerHTML = `CART TOTALS: <span>${total.toLocaleString()}&#8363;</span>`
-                cartInfo.appendChild(cart_total)
-                const continue_shopping = document.createElement('button')
-                continue_shopping.className = styles.continue_shopping
-                continue_shopping.textContent = 'CONTINUE SHOPPING'
-                continue_shopping.addEventListener('click', () => {
-                    cartModal.style.display = 'none'
-                })
-                cartInfo.appendChild(continue_shopping)
-
-                const go_to_cart = document.createElement('button')
-                go_to_cart.className = styles.go_to_cart
-                go_to_cart.textContent = 'GO TO CART'
-                cartInfo.appendChild(go_to_cart)
-                go_to_cart.addEventListener('click', () => {
-                    document.location.href = '/cart'
-                })
-                const cart_condition = document.createElement('div')
-                cart_condition.className = styles.cart_condition
-                cartInfo.appendChild(cart_condition)
-                const condition_checkbox = document.createElement('input')
-                condition_checkbox.type = 'checkbox'
-                cart_condition.appendChild(condition_checkbox)
-                const condition_label = document.createElement('label')
-                condition_label.textContent = 'Agree with term and conditional.'
-                cart_condition.appendChild(condition_label)
-
-                const checkOutBtn = document.createElement('input')
-                checkOutBtn.type = 'button'
-                checkOutBtn.value = 'PROCEED TO CHECKOUT'
-                checkOutBtn.className = styles.checkOutBtn
-                checkOutBtn.disabled = true
-                checkOutBtn.style.opacity = 0.7
-                cartInfo.appendChild(checkOutBtn)
-
-                condition_checkbox.addEventListener('change', () => {
-                    if (condition_checkbox.checked == true) {
-                        checkOutBtn.disabled = false;
-                        checkOutBtn.style.opacity = 1
-                    } else {
-                        checkOutBtn.disabled = true;
-                        checkOutBtn.style.opacity = 0.7
-                    }
-                })
-
-                const cartCol2 = document.querySelector(`.${styles.cartCol2}`)
-                cartCol2.innerHTML = ''
-                const suggested_products = document.createElement('div')
-                cartCol2.appendChild(suggested_products)
-                const suggested_products_title = document.createElement('div')
-                suggested_products_title.className = styles.suggested_products_title
-                suggested_products.appendChild(suggested_products_title)
-                const also_like_title = document.createElement('h3')
-                also_like_title.textContent = 'Suggested products:'
-                suggested_products_title.appendChild(also_like_title)
-                const also_like_btns = document.createElement('div')
-                also_like_btns.className = styles.also_like_btns
-                suggested_products_title.appendChild(also_like_btns)
-                const prevBtn = document.createElement('button')
-                prevBtn.className = styles.also_like_prevBtn
-                prevBtn.innerHTML = `<span class="material-symbols-outlined">arrow_back_ios</span>`
-                prevBtn.childNodes[0].setAttribute('id', styles.arrow_active)
-                also_like_btns.appendChild(prevBtn)
-                const nextBtn = document.createElement('button')
-                nextBtn.className = styles.also_like_nextBtn
-                nextBtn.innerHTML = `<span class="material-symbols-outlined">arrow_forward_ios</span>`
-                also_like_btns.appendChild(nextBtn)
-
-                const buttons = document.querySelectorAll(`.${styles.also_like_btns} > button`)
-                buttons.forEach((item) => {
-                    item.addEventListener('click', () => {
-                        buttons.forEach((val) => {
-                            val.childNodes[0].removeAttribute('id')
-                        })
-                        item.childNodes[0].setAttribute('id', styles.arrow_active)
+                    const product_name = document.createElement('h3')
+                    product_name.textContent = product.name
+                    imgCart.appendChild(product_name)
+                    let sizeIndex = 0;
+                    data.forEach((val) => {
+                        sizeIndex = product.sizes.indexOf(val.size)
                     })
-                })
-                const suggected_prod_container = document.createElement('div')
-                suggected_prod_container.className = styles.suggected_prod_container
-                cartCol2.appendChild(suggected_prod_container)
-                products_by_categoryId.forEach((item) => {
-                    const suggested_prod_box = document.createElement('div')
-                    suggested_prod_box.className = styles.box
-                    suggected_prod_container.appendChild(suggested_prod_box)
-                    const img = document.createElement('img')
-                    img.src = `../../img/${item.img_url[0]}`
-                    img.width = 200
-                    suggested_prod_box.appendChild(img)
-                    const name = document.createElement('h4')
-                    name.textContent = item.name
-                    suggested_prod_box.appendChild(name)
-                    if (item.promo_price) {
-                        const price_box = document.createElement('div')
-                        price_box.className = styles.price_box
-                        suggested_prod_box.appendChild(price_box)
-                        const promo_price = document.createElement('h4')
-                        promo_price.innerHTML = `${item.promo_price.toLocaleString()}`
-                        price_box.appendChild(promo_price)
-                        const price = document.createElement('span')
-                        price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
-                        price_box.appendChild(price)
-
-                        const discount = document.createElement('div')
-                        discount.className = styles.discount
-                        const percent = 100 - Math.floor(((item.promo_price * 100) / item.price[0]))
-                        discount.textContent = '-' + percent + '%'
-                        suggested_prod_box.appendChild(discount)
+                    if (product.promo_price && product.promo_price.length > 0) {
+                        const price = document.createElement('h4')
+                        price.className = styles.cart_price
+                        price.innerHTML = `PRICE: <b>${product.promo_price[sizeIndex].toLocaleString()}&#8363;</b>`
+                        imgCart.appendChild(price)
                     } else {
-                        const price = document.createElement('h3')
-                        price.className = styles.suggested_price
-                        price.innerHTML = `${item.price[0].toLocaleString()}`
-                        suggested_prod_box.appendChild(price)
+                        const price = document.createElement('h4')
+                        price.className = styles.cart_price
+                        price.innerHTML = `PRICE: <b>${product.price[sizeIndex].toLocaleString()}&#8363;</b>`
+                        imgCart.appendChild(price)
                     }
-                })
 
-                let slideIndex = 0;
+                    let total = 0
+                    for (const res of myCart) {
+                        const product = await getDetail(res.prod_id);
+                        if (product.sizes.indexOf(res.size) > 0) {
+                            const sizeIndex = product.sizes.indexOf(res.size)
+                            const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
+                            total += itemTotal;
+                        } else {
+                            const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[0];
+                            total += itemTotal;
+                        }
+                    }
+                    const quantity = document.createElement('h4')
+                    quantity.className = styles.cart_quantity
+                    quantity.innerHTML = `QTY: <b>${item.quantity}</b>`
+                    imgCart.appendChild(quantity)
 
-                prevBtn.addEventListener('click', () => {
-                    if (slideIndex == 0) {
-                        slideIndex = 2;
-                        const slideWidth = suggected_prod_container.clientWidth;
+                    let cal_subtotal = 0;
+                    if (product.promo_price && product.promo_price.length > 0) {
+                        cal_subtotal = item.quantity * product.promo_price[sizeIndex]
+                    } else {
+                        cal_subtotal = item.quantity * product.price[sizeIndex]
+                    }
+                    const subtotal = document.createElement('h4')
+                    subtotal.className = styles.cart_subtotal
+                    subtotal.innerHTML = `SUBTOTAL: <b>${cal_subtotal.toLocaleString()}&#8363;</b>`
+                    imgCart.appendChild(subtotal)
+
+                    if (myCart.length < 2) {
+                        const items_count = document.createElement('p')
+                        items_count.className = styles.items_count
+                        items_count.innerHTML = `There are <span>${myCart.length}</span> item in your cart`
+                        cartInfo.appendChild(items_count)
+                    } else {
+                        const items_count = document.createElement('p')
+                        items_count.className = styles.items_count
+                        items_count.innerHTML = `There are <span>${myCart.length}</span> items in your cart`
+                        cartInfo.appendChild(items_count)
+                    }
+                    const cartModal = document.querySelector(`.${styles.cartModal}`)
+                    const cart_total = document.createElement('p')
+                    cart_total.className = styles.total_price
+                    cart_total.innerHTML = `CART TOTALS: <span>${total.toLocaleString()}&#8363;</span>`
+                    cartInfo.appendChild(cart_total)
+                    const continue_shopping = document.createElement('button')
+                    continue_shopping.className = styles.continue_shopping
+                    continue_shopping.textContent = 'CONTINUE SHOPPING'
+                    continue_shopping.addEventListener('click', () => {
+                        cartModal.style.display = 'none'
+                    })
+                    cartInfo.appendChild(continue_shopping)
+
+                    const go_to_cart = document.createElement('button')
+                    go_to_cart.className = styles.go_to_cart
+                    go_to_cart.textContent = 'GO TO CART'
+                    cartInfo.appendChild(go_to_cart)
+                    go_to_cart.addEventListener('click', () => {
+                        document.location.href = '/cart'
+                    })
+                    const cart_condition = document.createElement('div')
+                    cart_condition.className = styles.cart_condition
+                    cartInfo.appendChild(cart_condition)
+                    const condition_checkbox = document.createElement('input')
+                    condition_checkbox.type = 'checkbox'
+                    cart_condition.appendChild(condition_checkbox)
+                    const condition_label = document.createElement('label')
+                    condition_label.textContent = 'Agree with term and conditional.'
+                    cart_condition.appendChild(condition_label)
+
+                    const checkOutBtn = document.createElement('input')
+                    checkOutBtn.type = 'button'
+                    checkOutBtn.value = 'PROCEED TO CHECKOUT'
+                    checkOutBtn.className = styles.checkOutBtn
+                    checkOutBtn.disabled = true
+                    checkOutBtn.style.opacity = 0.7
+                    cartInfo.appendChild(checkOutBtn)
+
+                    condition_checkbox.addEventListener('change', () => {
+                        if (condition_checkbox.checked == true) {
+                            checkOutBtn.disabled = false;
+                            checkOutBtn.style.opacity = 1
+                        } else {
+                            checkOutBtn.disabled = true;
+                            checkOutBtn.style.opacity = 0.7
+                        }
+                    })
+
+                    const cartCol2 = document.querySelector(`.${styles.cartCol2}`)
+                    cartCol2.innerHTML = ''
+                    const suggested_products = document.createElement('div')
+                    cartCol2.appendChild(suggested_products)
+                    const suggested_products_title = document.createElement('div')
+                    suggested_products_title.className = styles.suggested_products_title
+                    suggested_products.appendChild(suggested_products_title)
+                    const also_like_title = document.createElement('h3')
+                    also_like_title.textContent = 'Suggested products:'
+                    suggested_products_title.appendChild(also_like_title)
+                    const also_like_btns = document.createElement('div')
+                    also_like_btns.className = styles.also_like_btns
+                    suggested_products_title.appendChild(also_like_btns)
+                    const prevBtn = document.createElement('button')
+                    prevBtn.className = styles.also_like_prevBtn
+                    prevBtn.innerHTML = `<span class="material-symbols-outlined">arrow_back_ios</span>`
+                    prevBtn.childNodes[0].setAttribute('id', styles.arrow_active)
+                    also_like_btns.appendChild(prevBtn)
+                    const nextBtn = document.createElement('button')
+                    nextBtn.className = styles.also_like_nextBtn
+                    nextBtn.innerHTML = `<span class="material-symbols-outlined">arrow_forward_ios</span>`
+                    also_like_btns.appendChild(nextBtn)
+
+                    const buttons = document.querySelectorAll(`.${styles.also_like_btns} > button`)
+                    buttons.forEach((item) => {
+                        item.addEventListener('click', () => {
+                            buttons.forEach((val) => {
+                                val.childNodes[0].removeAttribute('id')
+                            })
+                            item.childNodes[0].setAttribute('id', styles.arrow_active)
+                        })
+                    })
+                    const suggected_prod_container = document.createElement('div')
+                    suggected_prod_container.className = styles.suggected_prod_container
+                    cartCol2.appendChild(suggected_prod_container)
+                    products_by_categoryId.forEach((item) => {
+                        const suggested_prod_box = document.createElement('div')
+                        suggested_prod_box.className = styles.box
+                        suggected_prod_container.appendChild(suggested_prod_box)
+                        const img = document.createElement('img')
+                        img.src = `../../img/${item.img_url[0]}`
+                        img.width = 200
+                        suggested_prod_box.appendChild(img)
+                        const name = document.createElement('h4')
+                        name.textContent = item.name
+                        suggested_prod_box.appendChild(name)
+                        if (item.promo_price && item.promo_price.length > 0) {
+                            const price_box = document.createElement('div')
+                            price_box.className = styles.price_box
+                            suggested_prod_box.appendChild(price_box)
+                            const promo_price = document.createElement('h4')
+                            promo_price.innerHTML = `${item.promo_price[0].toLocaleString()}`
+                            price_box.appendChild(promo_price)
+                            const price = document.createElement('span')
+                            price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
+                            price_box.appendChild(price)
+
+                            const discount = document.createElement('div')
+                            discount.className = styles.discount
+                            const percent = 100 - Math.floor(((item.promo_price[0] * 100) / item.price[0]))
+                            discount.textContent = '-' + percent + '%'
+                            suggested_prod_box.appendChild(discount)
+                        } else {
+                            const price = document.createElement('h3')
+                            price.className = styles.suggested_price
+                            price.innerHTML = `${item.price[0].toLocaleString()}`
+                            suggested_prod_box.appendChild(price)
+                        }
+                    })
+
+                    let slideIndex = 0;
+
+                    prevBtn.addEventListener('click', () => {
+                        if (slideIndex == 0) {
+                            slideIndex = 2;
+                            const slideWidth = suggected_prod_container.clientWidth;
+                            suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+                        } else {
+                            slideIndex = (slideIndex - 1 + suggected_prod_container.children.length) % suggected_prod_container.children.length;
+                            updateSliderPosition();
+                        }
+                    });
+
+                    nextBtn.addEventListener('click', () => {
+                        slideIndex = (slideIndex + 1) % suggected_prod_container.children.length;
+
+                        if (slideIndex > 2) {
+                            slideIndex = 0;
+                            suggected_prod_container.style.transform = `translateX(0px)`
+                        } else {
+                            updateSliderPosition();
+                        }
+                    });
+                    function updateSliderPosition() {
+                        const slideWidth = (suggected_prod_container.clientWidth - 205);
                         suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
-                    } else {
-                        slideIndex = (slideIndex - 1 + suggected_prod_container.children.length) % suggected_prod_container.children.length;
-                        updateSliderPosition();
                     }
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    slideIndex = (slideIndex + 1) % suggected_prod_container.children.length;
-
-                    if (slideIndex > 2) {
-                        slideIndex = 0;
-                        suggected_prod_container.style.transform = `translateX(0px)`
-                    } else {
-                        updateSliderPosition();
-                    }
-                });
-                function updateSliderPosition() {
-                    const slideWidth = (suggected_prod_container.clientWidth - 205);
-                    suggected_prod_container.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
-                }
-            })
+                })
+            }
         }
 
         const additional_information = async () => {

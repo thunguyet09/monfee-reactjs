@@ -1542,7 +1542,7 @@
     font-weight: 600;
 }
 
-.suggested_price {
+.suggested_price, .price_box > h3 {
     color:#b8784e;
     font-size: 17px;
     font-family: "Nunito", sans-serif;

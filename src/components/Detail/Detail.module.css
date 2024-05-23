@@ -1481,6 +1481,7 @@ input[type="range"] {
 }
 
 .sold_out_box {
+    display: none;
     position: fixed;
     bottom: 0;
     left: 0;
