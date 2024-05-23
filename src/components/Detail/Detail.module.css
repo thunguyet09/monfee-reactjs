@@ -1480,3 +1480,13 @@ input[type="range"] {
     font-size: 24px;
 }
 
+.sold_out_box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #0000006b;
+    font-family: "Nunito", sans-serif;
+    color: white;
+    z-index: 9;
+}

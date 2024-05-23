@@ -242,53 +242,7 @@ const Detail = () => {
                 const size_items = document.createElement('div')
                 size_items.className = styles.size_items
                 size_box.appendChild(size_items)
-                let size_1000g = '';
-                let size_1500g = ''
-                detail.sizes.forEach((item) => {
-                    const sizeButton = document.createElement('button');
-                    sizeButton.textContent = item;
-                    size_items.appendChild(sizeButton);
 
-                    const zeroIndices = [];
-                    detail.quantity.forEach((quantity, index) => {
-                        if (quantity === 0) {
-                            zeroIndices.push(index);
-                        }
-                    });
-
-                    zeroIndices.forEach((index) => {
-                        if (size_items.children[index] === sizeButton) {
-                            sizeButton.disabled = true;
-                            sizeButton.style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
-                            sizeButton.style.color = 'grey';
-                        }
-                    });
-
-                    sizeButton.addEventListener('click', () => {
-                        const sizeIndex = detail.sizes.indexOf(sizeButton.textContent)
-                        if (detail.promo_price && detail.promo_price.length > 0) {
-                            prices.innerHTML = `
-                            <h2>${detail.promo_price[sizeIndex].toLocaleString()}&#8363;</h2>
-                            <h3><del>${detail.price[sizeIndex].toLocaleString()}&#8363;</del></h3>`
-                        } else {
-                            prices.innerHTML = `<h2>${detail.price[sizeIndex].toLocaleString()}&#8363;</h2>`
-                        }
-                        size_items.childNodes.forEach((val) => {
-                            val.style.backgroundColor = 'white'
-                            val.style.color = 'grey'
-                        })
-
-
-                        zeroIndices.forEach((index) => {
-                            size_items.children[index].disabled = true;
-                            size_items.children[index].style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
-                            size_items.children[index].style.color = 'grey';
-                        });
-
-                        sizeButton.style.backgroundColor = 'black'
-                        sizeButton.style.color = 'white'
-                    })
-                })
                 let colorItem = ''
                 const color_box = document.createElement('div')
                 color_box.className = styles.color_box
@@ -377,7 +331,61 @@ const Detail = () => {
                 addToCart.textContent = 'ADD TO CART'
                 addToCart.className = styles.addToCart
                 detail_actions.appendChild(addToCart)
+                let sizeChoosed = ''
+                detail.sizes.forEach((item) => {
+                    const sizeButton = document.createElement('button');
+                    sizeButton.textContent = item;
+                    size_items.appendChild(sizeButton);
+
+                    const zeroIndices = [];
+                    detail.quantity.forEach((quantity, index) => {
+                        if (quantity === 0) {
+                            zeroIndices.push(index);
+                        }
+                    });
+
+                    zeroIndices.forEach((index) => {
+                        if (size_items.children[index] === sizeButton) {
+                            sizeButton.disabled = true;
+                            sizeButton.style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
+                            sizeButton.style.color = 'grey';
+                            addToCart.disabled = true
+                        }else{
+                            addToCart.disabled = false
+                        }
+                    });
+
+                    sizeButton.addEventListener('click', () => {
+                        sizeChoosed = sizeButton.textContent
+                        const sizeIndex = detail.sizes.indexOf(sizeButton.textContent)
+                        if (detail.promo_price && detail.promo_price.length > 0) {
+                            prices.innerHTML = `
+                                <h2>${detail.promo_price[sizeIndex].toLocaleString()}&#8363;</h2>
+                                <h3><del>${detail.price[sizeIndex].toLocaleString()}&#8363;</del></h3>`
+                        } else {
+                            prices.innerHTML = `<h2>${detail.price[sizeIndex].toLocaleString()}&#8363;</h2>`
+                        }
+                        size_items.childNodes.forEach((val) => {
+                            val.style.backgroundColor = 'white'
+                            val.style.color = 'grey'
+                        })
+
+                        const sold_out_box = document.querySelector(`.${styles.sold_out_box}`)
+                        zeroIndices.forEach((index) => {
+                            size_items.children[index].disabled = true;
+                            size_items.children[index].style.backgroundColor = 'rgba(9, 9, 9, 0.253)';
+                            size_items.children[index].style.color = 'grey';
+
+                            if(sizeIndex !== index){
+                                sold_out_box.style.display = 'none'
+                            }
+                        });
+                        sizeButton.style.backgroundColor = 'black'
+                        sizeButton.style.color = 'white'
+                    })
+                })
                 addToCart.addEventListener('click', async () => {
+                    console.log(sizeChoosed)
                     let existingCart = []
                     const carts = await getCarts("cart")
                     const cartId = carts[carts.length - 1].id + 1
@@ -405,7 +413,7 @@ const Detail = () => {
                         checked = false;
                     }
 
-                    if (token && checked == true) {
+                    if (token && checked == true ) {
                         if (existingCart.length > 0) {
                             existingCart.forEach(async (val) => {
                                 const new_quantity = val.quantity + quantityValue;
@@ -626,12 +634,12 @@ const Detail = () => {
                     relate_title.className = styles.relate_prod_name
                     relate_title.textContent = item.name
                     relate_item.appendChild(relate_title)
-                    if (item.promo_price) {
+                    if (item.promo_price && item.promo_price[0] > 0) {
                         const price_box = document.createElement('div')
                         price_box.className = styles.relate_price_box
                         relate_item.appendChild(price_box)
                         const promo_price = document.createElement('h3')
-                        promo_price.innerHTML = `${item.promo_price.toLocaleString()}&#8363;`
+                        promo_price.innerHTML = `${item.promo_price[0].toLocaleString()}&#8363;`
                         price_box.appendChild(promo_price)
                         const price = document.createElement('h4')
                         price.innerHTML = `<del>${item.price[0].toLocaleString()}&#8363;</del>`
@@ -1169,7 +1177,7 @@ const Detail = () => {
 
             <>
                 <div className={styles.sold_out_box}>
-
+                    <p>This product is currently out of stock.</p>
                 </div>
             </>
 
