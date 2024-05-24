@@ -96,7 +96,7 @@ const Product = () => {
         const items_per_page = localStorage.getItem('items_per_page')
         let page = 1;
         const colors = async () => {
-            const products = await getAllProducts()
+            const products = await getAllProducts("products")
             const uniqueColors = products.reduce((colorSet, item) => {
                 item.colors.forEach(color => colorSet.add(color));
                 return colorSet;
@@ -108,8 +108,9 @@ const Product = () => {
                 color_item.addEventListener('click', () => {
                     const color_choose = color_item.childNodes[0].title;
                     const products_filtered = products.filter((val) => {
-                      return val.colors.includes(color_choose);
+                        return val.colors.includes(color_choose);
                     });
+                    product_items.innerHTML = ''
                     showProductGrid(products_filtered)
                     product_items.style.justifyContent = 'flex-start'
                     product_items.style.columnGap = '30px'
@@ -127,8 +128,9 @@ const Product = () => {
                 button.addEventListener('click', () => {
                     const color_choose = button.childNodes[0].placeholder;
                     const products_filtered = products.filter((val) => {
-                      return val.colors.includes(color_choose);
+                        return val.colors.includes(color_choose);
                     });
+                    product_items.innerHTML = ''
                     showProductGrid(products_filtered)
                     product_items.style.justifyContent = 'flex-start'
                     product_items.style.columnGap = '30px'
@@ -157,15 +159,16 @@ const Product = () => {
             price_list_v1.addEventListener('click', async () => {
                 let data = await product_pagination(page, items_per_page)
                 const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= minPrice && val.promo_price <= price_v1;
+                    if (val.promo_price[0] > 0) {
+                        return val.promo_price[0] >= minPrice && val.promo_price[0] <= price_v1;
                     } else {
-                      return val.price[0] >= minPrice && val.price[0] <= price_v1;
+                        return val.price[0] >= minPrice && val.price[0] <= price_v1;
                     }
-                  });
+                });
                 product_items.style.justifyContent = 'flex-start'
                 product_items.style.columnGap = '25px'
                 data.products = filter_products
+                product_items.innerHTML = ''
                 showProductGrid(data.products)
             })
             price_list.appendChild(price_list_v1)
@@ -176,15 +179,16 @@ const Product = () => {
             price_list_v2.addEventListener('click', async () => {
                 let data = await product_pagination(page, items_per_page)
                 const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v1 && val.promo_price <= price_v2;
+                    if (val.promo_price[0] > 0) {
+                        return val.promo_price[0] >= price_v1 && val.promo_price[0] <= price_v2;
                     } else {
-                      return val.price[0] >= price_v1 && val.price[0] <= price_v2;
+                        return val.price[0] >= price_v1 && val.price[0] <= price_v2;
                     }
-                  });
+                });
                 product_items.style.justifyContent = 'flex-start'
                 product_items.style.columnGap = '25px'
                 data.products = filter_products
+                product_items.innerHTML = ''
                 showProductGrid(data.products)
             })
             price_list.appendChild(price_list_v2)
@@ -195,15 +199,16 @@ const Product = () => {
             price_list_v3.addEventListener('click', async () => {
                 let data = await product_pagination(page, items_per_page)
                 const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v2 && val.promo_price <= price_v3;
+                    if (val.promo_price[0] > 0) {
+                        return val.promo_price[0] >= price_v2 && val.promo_price[0] <= price_v3;
                     } else {
-                      return val.price[0] >= price_v2 && val.price[0] <= price_v3;
+                        return val.price[0] >= price_v2 && val.price[0] <= price_v3;
                     }
-                  });
+                });
                 product_items.style.justifyContent = 'flex-start'
                 product_items.style.columnGap = '25px'
                 data.products = filter_products
+                product_items.innerHTML = ''
                 showProductGrid(data.products)
             })
             price_list.appendChild(price_list_v3)
@@ -214,15 +219,16 @@ const Product = () => {
             price_list_v4.addEventListener('click', async () => {
                 let data = await product_pagination(page, items_per_page)
                 const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v3 && val.promo_price <= price_v4;
+                    if (val.promo_price[0] > 0) {
+                        return val.promo_price[0] >= price_v3 && val.promo_price[0] <= price_v4;
                     } else {
-                      return val.price[0] >= price_v3 && val.price[0] <= price_v4;
+                        return val.price[0] >= price_v3 && val.price[0] <= price_v4;
                     }
-                  });
+                });
                 product_items.style.justifyContent = 'flex-start'
                 product_items.style.columnGap = '25px'
                 data.products = filter_products
+                product_items.innerHTML = ''
                 showProductGrid(data.products)
             })
             price_list.appendChild(price_list_v4)
@@ -232,118 +238,137 @@ const Product = () => {
             price_list_v5.addEventListener('click', async () => {
                 let data = await product_pagination(page, items_per_page)
                 const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price > price_v4;
+                    if (val.promo_price[0] > 0) {
+                        return val.promo_price[0] > price_v4;
                     } else {
-                      return val.price[0] > price_v4;
+                        return val.price[0] > price_v4;
                     }
-                  });
+                });
                 product_items.style.justifyContent = 'flex-start'
                 product_items.style.columnGap = '25px'
                 data.products = filter_products
+                product_items.innerHTML = ''
                 showProductGrid(data.products)
             })
             price_list.appendChild(price_list_v5)
         }
 
         const priceFilter = async () => {
-            const products = await getAllProducts()
-            const filter = document.querySelector(`.${styles.col_content} > .${styles.filter_price}`)
-            const minPrice = products.reduce((min, product) => {
-                const price = product.price[0]
-                return price < min ? price : min;
-            }, Infinity);
-            const price_node_v1 = document.createElement('li')
-            const price_v1 = minPrice + 80000
-            price_node_v1.innerHTML = `<a>${minPrice.toLocaleString()} - ${price_v1.toLocaleString()}</a>`
-            price_node_v1.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
-                const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= minPrice && val.promo_price <= price_v1;
-                    } else {
-                      return val.price[0] >= minPrice && val.price[0] <= price_v1;
-                    }
-                  });
-                product_items.style.justifyContent = 'flex-start'
-                product_items.style.columnGap = '25px'
-                data.products = filter_products
-                showProductGrid(data.products)
-            })
-            filter.appendChild(price_node_v1)
-            const price_node_v2 = document.createElement('li')
-            const price_v2 = price_v1 + 80000
-            price_node_v2.innerHTML = `<a>${price_v1.toLocaleString()} - ${price_v2.toLocaleString()}</a>`
-            filter.appendChild(price_node_v2)
-            price_node_v2.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
-                const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v1 && val.promo_price <= price_v2;
-                    } else {
-                      return val.price[0] >= price_v1 && val.price[0] <= price_v2;
-                    }
-                  });
-                product_items.style.justifyContent = 'flex-start'
-                product_items.style.columnGap = '25px'
-                data.products = filter_products
-                showProductGrid(data.products)
-            })
+            try {
+                const products = await getAllProducts('products');
+                const filter = document.querySelector(`.${styles.col_content} > .${styles.filter_price}`);
 
-            const price_node_v3 = document.createElement('li')
-            const price_v3 = price_v2 + 80000
-            price_node_v3.innerHTML = `<a>${price_v2.toLocaleString()} - ${price_v3.toLocaleString()}</a>`
-            filter.appendChild(price_node_v3)
-            price_node_v3.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
-                const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v2 && val.promo_price <= price_v3;
-                    } else {
-                      return val.price[0] >= price_v2 && val.price[0] <= price_v3;
-                    }
-                  });
-                product_items.style.justifyContent = 'flex-start'
-                product_items.style.columnGap = '25px'
-                data.products = filter_products
-                showProductGrid(data.products)
-            })
-            const price_node_v4 = document.createElement('li')
-            const price_v4 = price_v3 + 80000
-            price_node_v4.innerHTML = `<a>${price_v3.toLocaleString()} - ${price_v4.toLocaleString()}</a>`
-            filter.appendChild(price_node_v4)
-            price_node_v4.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
-                const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price >= price_v3 && val.promo_price <= price_v4;
-                    } else {
-                      return val.price[0] >= price_v3 && val.price[0] <= price_v4;
-                    }
-                  });
-                product_items.style.justifyContent = 'flex-start'
-                product_items.style.columnGap = '25px'
-                data.products = filter_products
-                showProductGrid(data.products)
-            })
+                const minPrice = products.reduce((min, product) => {
+                    const price = product.price?.[0] || Infinity;
+                    return price < min ? price : min;
+                }, Infinity);
 
-            const price_node_v5 = document.createElement('li')
-            price_node_v5.innerHTML = `<a>Over ${price_v4.toLocaleString()}</a>`
-            filter.appendChild(price_node_v5)
-            price_node_v5.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
-                const filter_products = products.filter((val) => {
-                    if (val.promo_price) {
-                      return val.promo_price > price_v4;
-                    } else {
-                      return val.price[0] > price_v4;
+                const priceRangeNode = document.createElement('li');
+                const price_v1 = minPrice + 80000;
+                priceRangeNode.innerHTML = `<a>${minPrice.toLocaleString()} - ${price_v1.toLocaleString()}</a>`;
+
+                priceRangeNode.addEventListener('click', async () => {
+                    try {
+                        const data = await product_pagination(page, items_per_page);
+                        const filteredProducts = products.filter((product) => {
+                            const price = product.promo_price?.[0] || product.price?.[0];
+                            return price >= minPrice && price <= price_v1;
+                        });
+
+                        product_items.style.justifyContent = 'flex-start';
+                        product_items.style.columnGap = '25px';
+                        data.products = filteredProducts;
+                        console.log(data.products)
+                        product_items.innerHTML = ''
+                        showProductGrid(data.products);
+                    } catch (error) {
+                        console.error('Error in click event handler:', error);
                     }
-                  });
-                product_items.style.justifyContent = 'flex-start'
-                product_items.style.columnGap = '25px'
-                data.products = filter_products
-                showProductGrid(data.products)
-            })
+                });
+
+                filter.appendChild(priceRangeNode);
+
+                const price_node_v2 = document.createElement('li')
+                const price_v2 = price_v1 + 80000
+                price_node_v2.innerHTML = `<a>${price_v1.toLocaleString()} - ${price_v2.toLocaleString()}</a>`
+                filter.appendChild(price_node_v2)
+                price_node_v2.addEventListener('click', async () => {
+                    let data = await product_pagination(page, items_per_page)
+                    const filter_products = products.filter((val) => {
+                        if (val.promo_price[0] > 0) {
+                            return val.promo_price[0] >= price_v1 && val.promo_price[0] <= price_v2;
+                        } else {
+                            return val.price[0] >= price_v1 && val.price[0] <= price_v2;
+                        }
+                    });
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '25px'
+                    data.products = filter_products
+                    product_items.innerHTML = ''
+                    showProductGrid(data.products)
+                })
+
+                const price_node_v3 = document.createElement('li')
+                const price_v3 = price_v2 + 80000
+                price_node_v3.innerHTML = `<a>${price_v2.toLocaleString()} - ${price_v3.toLocaleString()}</a>`
+                filter.appendChild(price_node_v3)
+                price_node_v3.addEventListener('click', async () => {
+                    let data = await product_pagination(page, items_per_page)
+                    const filter_products = products.filter((val) => {
+                        if (val.promo_price[0 > 0]) {
+                            return val.promo_price[0] >= price_v2 && val.promo_price[0] <= price_v3;
+                        } else {
+                            return val.price[0] >= price_v2 && val.price[0] <= price_v3;
+                        }
+                    });
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '25px'
+                    data.products = filter_products
+                    product_items.innerHTML = ''
+                    showProductGrid(data.products)
+                })
+                const price_node_v4 = document.createElement('li')
+                const price_v4 = price_v3 + 80000
+                price_node_v4.innerHTML = `<a>${price_v3.toLocaleString()} - ${price_v4.toLocaleString()}</a>`
+                filter.appendChild(price_node_v4)
+                price_node_v4.addEventListener('click', async () => {
+                    let data = await product_pagination(page, items_per_page)
+                    const filter_products = products.filter((val) => {
+                        if (val.promo_price[0] > 0) {
+                            return val.promo_price[0] >= price_v3 && val.promo_price[0] <= price_v4;
+                        } else {
+                            return val.price[0] >= price_v3 && val.price[0] <= price_v4;
+                        }
+                    });
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '25px'
+                    data.products = filter_products
+                    product_items.innerHTML = ''
+                    showProductGrid(data.products)
+                })
+
+                const price_node_v5 = document.createElement('li')
+                price_node_v5.innerHTML = `<a>Over ${price_v4.toLocaleString()}</a>`
+                filter.appendChild(price_node_v5)
+                price_node_v5.addEventListener('click', async () => {
+                    let data = await product_pagination(page, items_per_page)
+                    const filter_products = products.filter((val) => {
+                        if (val.promo_price[0] > 0) {
+                            return val.promo_price[0] > price_v4;
+                        } else {
+                            return val.price[0] > price_v4;
+                        }
+                    });
+                    product_items.style.justifyContent = 'flex-start'
+                    product_items.style.columnGap = '25px'
+                    data.products = filter_products
+                    product_items.innerHTML = ''
+                    showProductGrid(data.products)
+                })
+
+            } catch (err) {
+                console.error('Error in price filter', err)
+            }
         }
 
         const getApi = async (page, items_per_page) => {
@@ -354,12 +379,12 @@ const Product = () => {
                 data = await product_pagination(page, items_per_page)
             }
             pages(data.totalPages)
+            product_items.innerHTML = ''
             showProductGrid(data.products)
         }
 
         const showProductGrid = async (products) => {
             const prod_per = document.querySelectorAll(`.${styles.prod_per} > button`)
-            product_items.innerHTML = ''
             const product_item_arr = []
             products.forEach((item) => {
                 const row = document.createElement('div')
@@ -423,7 +448,7 @@ const Product = () => {
                 title_product.className = styles.title_product
                 title_product.textContent = item.name
                 row.appendChild(title_product)
-                if (item.promo_price) {
+                if (item.promo_price && item.promo_price.length > 0 && item.promo_price[0] > 0) {
                     const price_box = document.createElement('div')
                     price_box.className = styles.price_box
                     row.appendChild(price_box)
@@ -431,7 +456,7 @@ const Product = () => {
                     price.innerHTML = `<del>${item.price[0].toLocaleString()}</del>`
                     price_box.appendChild(price)
                     const promo_price = document.createElement('h4')
-                    promo_price.textContent = item.promo_price.toLocaleString()
+                    promo_price.textContent = item.promo_price[0].toLocaleString()
                     price_box.appendChild(promo_price)
                 } else {
                     const price = document.createElement('h4')
@@ -450,10 +475,10 @@ const Product = () => {
                         product_colors.appendChild(color_btn)
                     })
                 }
-                if (item.promo_price) {
+                if (item.promo_price && item.promo_price.length > 0 && item.promo_price[0] > 0) {
                     const discount = document.createElement('div')
                     discount.className = styles.discount
-                    const percent = 100 - Math.floor(((item.promo_price * 100) / item.price[0]))
+                    const percent = 100 - Math.floor(((item.promo_price[0] * 100) / item.price[0]))
                     discount.innerHTML = `-${percent}%`
                     row.appendChild(discount)
                 }
@@ -628,7 +653,7 @@ const Product = () => {
         if (page == 1) {
             first_page.style.display = 'none'
             prev_page.style.display = 'none'
-        }else{
+        } else {
             first_page.style.display = 'flex'
             prev_page.style.display = 'flex'
         }
@@ -652,6 +677,7 @@ const Product = () => {
                     })
                     product_items.style.justifyContent = 'flex-start'
                     product_items.style.columnGap = '25px'
+                    product_items.innerHTML = ''
                     showProductGrid(filteredData)
                 })
             })
@@ -664,16 +690,18 @@ const Product = () => {
                     })
                     product_items.style.justifyContent = 'flex-start'
                     product_items.style.columnGap = '25px'
+                    product_items.innerHTML = ''
                     showProductGrid(filteredData)
                 })
             })
             next_page.addEventListener('click', async () => {
                 const next_page_number = parseInt(page) + 1
                 page = next_page_number;
-               if(next_page_number > totalPages){
+                if (next_page_number > totalPages) {
                     page = totalPages
+                    product_items.innerHTML = ''
                     showProductGrid(last_page_data.products)
-               }else{
+                } else {
                     total_pages.childNodes.forEach((p) => {
                         p.removeAttribute('id');
                     });
@@ -682,16 +710,17 @@ const Product = () => {
                     if (currentPage) {
                         currentPage.setAttribute('id', styles.page_active);
                         let data = await product_pagination(next_page_number, items_per_page)
+                        product_items.innerHTML = ''
                         showProductGrid(data.products)
                     }
                     if (page == 1) {
                         first_page.style.display = 'none'
                         prev_page.style.display = 'none'
-                    }else{
+                    } else {
                         first_page.style.display = 'flex'
                         prev_page.style.display = 'flex'
                     }
-               }
+                }
             })
             last_page.addEventListener('click', () => {
                 showProductGrid(last_page_data.products)
@@ -710,7 +739,7 @@ const Product = () => {
             prev_page.addEventListener('click', async () => {
                 const prev_page_number = parseInt(page) - 1
                 page = prev_page_number;
-                if(prev_page_number <= 1){
+                if (prev_page_number <= 1) {
                     page = 1;
                     total_pages.childNodes.forEach((p) => {
                         p.removeAttribute('id');
@@ -720,8 +749,9 @@ const Product = () => {
                     if (currentPage) {
                         currentPage.setAttribute('id', styles.page_active);
                     }
+                    product_items.innerHTML = ''
                     showProductGrid(first_page_data.products)
-               }else{
+                } else {
                     total_pages.childNodes.forEach((p) => {
                         p.removeAttribute('id');
                     });
@@ -730,19 +760,21 @@ const Product = () => {
                     if (currentPage) {
                         currentPage.setAttribute('id', styles.page_active);
                         let data = await product_pagination(prev_page_number, items_per_page)
+                        product_items.innerHTML = ''
                         showProductGrid(data.products)
                     }
                     if (page == 1) {
                         first_page.style.display = 'none'
                         prev_page.style.display = 'none'
-                    }else{
+                    } else {
                         first_page.style.display = 'flex'
                         prev_page.style.display = 'flex'
                     }
-               }
+                }
             })
 
             first_page.addEventListener('click', () => {
+                product_items.innerHTML = ''
                 showProductGrid(first_page_data.products)
                 total_pages.childNodes.forEach((p) => {
                     p.removeAttribute('id');
@@ -774,7 +806,7 @@ const Product = () => {
                     if (page == 1) {
                         first_page.style.display = 'none'
                         prev_page.style.display = 'none'
-                    }else{
+                    } else {
                         first_page.style.display = 'flex'
                         prev_page.style.display = 'flex'
                     }
@@ -782,10 +814,12 @@ const Product = () => {
                     setTimeout(async () => {
                         if (items_per_page) {
                             let data = await product_pagination(i, items_per_page)
+                            product_items.innerHTML = ''
                             showProductGrid(data.products)
 
                         } else {
                             let data = await product_pagination(i, 12)
+                            product_items.innerHTML = ''
                             showProductGrid(data.products)
                         }
                     }, 200)
@@ -838,6 +872,7 @@ const Product = () => {
                     const items_per_page = item.textContent
                     localStorage.setItem('items_per_page', items_per_page)
                     const data = await product_pagination(page, items_per_page)
+                    product_items.innerHTML = ''
                     showProductGrid(data.products)
                     pages(data.totalPages)
                 })
@@ -849,39 +884,45 @@ const Product = () => {
             dropdown.forEach((item) => {
                 item.addEventListener('click', async () => {
                     const products = await getAllProducts()
-                    if(item.value == '1'){
-                        const sorted = products.sort((a,b) => b.sales - a.sales)
+                    if (item.value == '1') {
+                        const sorted = products.sort((a, b) => b.sales - a.sales)
                         const data = await product_pagination(page, items_per_page)
                         data.products = sorted
+                        product_items.innerHTML = ''
                         showProductGrid(data.products)
-                    }else if(item.value == '2'){
-                        const sorted = products.sort((a,b) => a.name - b.name)
+                    } else if (item.value == '2') {
+                        const sorted = products.sort((a, b) => a.name - b.name)
                         const data = await product_pagination(page, items_per_page)
                         data.products = sorted
+                        product_items.innerHTML = ''
                         showProductGrid(data.products)
-                    }else if(item.value == '3'){
+                    } else if (item.value == '3') {
                         const sorted = products.sort((a, b) => b.price[0] - a.price[0]);
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
+                        product_items.innerHTML = ''
                         showProductGrid(data.products);
-                    }else if(item.value == '4'){
+                    } else if (item.value == '4') {
                         const sorted = products.sort((a, b) => a.price[0] - b.price[0]);
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
+                        product_items.innerHTML = ''
                         showProductGrid(data.products);
-                    }else if(item.value == '5'){
-                        const sorted = products.sort((a,b) => {
+                    } else if (item.value == '5') {
+                        const sorted = products.sort((a, b) => {
                             return new Date(b.createdAt) - new Date(a.createdAt)
                         })
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
+                        product_items.innerHTML = ''
                         showProductGrid(data.products);
-                    }else if(item.value == '6'){
-                        const sorted = products.sort((a,b) => {
+                    } else if (item.value == '6') {
+                        const sorted = products.sort((a, b) => {
                             return new Date(a.createdAt) - new Date(b.createdAt)
                         })
                         const data = await product_pagination(page, items_per_page);
                         data.products = sorted;
+                        product_items.innerHTML = ''
                         showProductGrid(data.products);
                     }
                 })

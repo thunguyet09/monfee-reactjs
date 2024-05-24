@@ -46,6 +46,12 @@ const Cart = () => {
                 total += subtotal
                 cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
             })
+            
+            const apply_voucher = document.querySelector(`.${styles.apply_btn}`)
+            const voucher_code = document.querySelector(`.${styles.voucher_box} > input`)
+            apply_voucher.addEventListener('click', () => {
+                console.log(voucher_code.value)
+            })
         }
         const updateQuantity = async (itemId, quantity, price) => {
             try {
