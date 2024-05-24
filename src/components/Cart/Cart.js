@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import styles from './Cart.module.css'
-import { getCarts, getDetail } from '../../api'
+import { getAllVouchers, getCarts, getDetail, getUser } from '../../api'
 
 const Cart = () => {
     useLayoutEffect(() => {
@@ -18,27 +18,25 @@ const Cart = () => {
         const getAPI = async () => {
             const carts = await getCarts("cart")
 
-            if (isMounted) {
-                const filteredCarts = carts.filter(((item) => item.user_id == userId))
-                filteredCarts.forEach(async (item) => {
-                    const detail = await getDetail(item.prod_id)
-                    const sizeIndex = detail.sizes.indexOf(item.size)
-                    let price = detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
-                    updateQuantity(item.id, item.quantity, price)
-                })
-                calc_total(filteredCarts)
-            }
+            const filteredCarts = carts.filter(((item) => item.user_id == userId))
+            filteredCarts.forEach(async (item) => {
+                const detail = await getDetail(item.prod_id)
+                const sizeIndex = detail.sizes.indexOf(item.size)
+                let price = detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
+                updateQuantity(item.id, item.quantity, price)
+            })
+            calc_total(filteredCarts)
         }
 
         const renderCart = async () => {
             const carts = await getCarts("cart")
-            if(isMounted){
+            if (isMounted) {
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 cartTable(filteredCarts)
             }
         }
-        
-        const calc_total = (data) => {
+
+        const calc_total = async (data) => {
             let total = 0;
             const cart_amount = document.querySelector(`.${styles.cart_amount}`)
             data.forEach((item) => {
@@ -46,26 +44,87 @@ const Cart = () => {
                 total += subtotal
                 cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
             })
-            
+
             const apply_voucher = document.querySelector(`.${styles.apply_btn}`)
             const voucher_code = document.querySelector(`.${styles.voucher_box} > input`)
+            const currentDate = new Date()
+            const year = currentDate.getFullYear()
+            const month = currentDate.getMonth() + 1
+            const day = currentDate.getDate()
+            const hour = currentDate.getHours()
+            const minute = currentDate.getMinutes()
+            let formatDate = '';
+            if (minute < 10 && hour < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + "0" + minute
+            } else if (hour < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + minute
+            } else if (minute < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + hour + ":" + "0" + minute
+            } else {
+                formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
+            }
+            const vouchers = await getAllVouchers('vouchers')
+            const userId = localStorage.getItem('userId')
             apply_voucher.addEventListener('click', () => {
-                console.log(voucher_code.value)
+                const voucher_error = document.querySelector(`.${styles.voucher_error}`)
+                const existingVoucher = vouchers.filter((item) => item.voucher_code == voucher_code.value)
+                if (existingVoucher.length == 0) {
+                    voucher_error.innerHTML = 'Voucher này không tồn tại.'
+                } else {
+                    existingVoucher.forEach(async (item) => {
+                        if (formatDate < item.expiredDate && item.quantity > 0) {
+                            let vouchers = []
+                            const user = await getUser(userId)
+                            total = total - ((total * item.discount) / 100)
+                            cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
+                            vouchers.push(...user.vouchers, item.id)
+                            if (user) {
+                                await fetch(`http://localhost:3000/users/vouchers/${userId}`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        'vouchers': vouchers
+                                    })
+                                })
+                                    .then(() => {
+                                        voucher_error.innerHTML = 'Voucher đã được áp dụng.'
+                                    })
+                            }
+
+                            let updatedQuantity = item.quantity - 1;
+                            await fetch(`http://localhost:3000/vouchers/quantity/${item.id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    'quantity': updatedQuantity
+                                })
+                            })
+                        } else if (item.quantity == 0) {
+                            voucher_error.innerHTML = 'Voucher đã hết lượt sử dụng.'
+                        } else {
+                            voucher_error.innerHTML = 'Voucher đã hết hạn.'
+                        }
+                    })
+                }
             })
         }
         const updateQuantity = async (itemId, quantity, price) => {
             try {
-              const response = await fetch(`http://localhost:3000/cart/quantity`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({id: itemId, quantity: quantity, price: price}),
-              });
+                const response = await fetch(`http://localhost:3000/cart/quantity`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: itemId, quantity: quantity, price: price }),
+                });
             } catch (error) {
-              console.error('Error occurred while updating quantity', error);
+                console.error('Error occurred while updating quantity', error);
             }
-          };
+        };
         const cartTable = (data) => {
             let itemSubtotal = 0;
             data.forEach(async (item) => {
@@ -119,7 +178,7 @@ const Cart = () => {
                 const quantity_box = document.createElement('div')
                 quantity_box.className = styles.quantity_box
                 quantity.appendChild(quantity_box)
-                
+
                 const quantity_input = document.createElement('input')
                 quantity_input.value = item.quantity
                 quantity_input.addEventListener('change', async () => {
@@ -140,9 +199,9 @@ const Cart = () => {
                             price: price
                         })
                     })
-                    .then(() => {
-                        getAPI()
-                    })
+                        .then(() => {
+                            getAPI()
+                        })
                 })
                 quantity_input.value = item.quantity
                 quantity_box.appendChild(quantity_input)
@@ -167,9 +226,9 @@ const Cart = () => {
                             price: price
                         })
                     })
-                    .then(() => {
-                        getAPI()
-                    })
+                        .then(() => {
+                            getAPI()
+                        })
                 })
                 increase.innerHTML = `<span class="material-symbols-outlined">add</span>`
                 increase.className = styles.increase
@@ -179,7 +238,7 @@ const Cart = () => {
                     quantity_input.value--;
                     quantity_value = quantity_input.value
                     updateSubtotal()
-                    let price = detail.promo_price && detail.promo_price[sizeIndex] > 0  ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
+                    let price = detail.promo_price && detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     await fetch('http://localhost:3000/cart/quantity', {
                         method: 'PUT',
                         headers: {
@@ -191,9 +250,9 @@ const Cart = () => {
                             price: price
                         })
                     })
-                    .then(() => {
-                        getAPI()
-                    })
+                        .then(() => {
+                            getAPI()
+                        })
                 })
                 decrease.innerHTML = `<span class="material-symbols-outlined">remove</span>`
                 decrease.className = styles.decrease
@@ -260,9 +319,10 @@ const Cart = () => {
                         </table>
                         <div className={styles.voucher}>
                             <div className={styles.voucher_box}>
-                                <input placeholder='VOUCHER CODE' type="text"/>
+                                <input placeholder='VOUCHER CODE' type="text" />
                                 <button className={styles.apply_btn}>APPLY</button>
                             </div>
+                            <p className={styles.voucher_error}></p>
                         </div>
                         <div className={styles.cart_total}>
                             <button>CART TOTALS</button>

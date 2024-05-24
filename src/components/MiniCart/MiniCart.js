@@ -136,7 +136,7 @@ const MiniCart = () => {
                                 </div>
                                 <div className={styles.action_checkout}>
                                     <button className={styles.view_cart}><a href="/cart">VIEW CART</a></button>
-                                    <button className={styles.checkout}>CHECK OUT</button>
+                                    <button className={styles.checkout}><a href="/checkout">CHECK OUT</a></button>
                                 </div>
                             </div>
                         </div>

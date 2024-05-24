@@ -124,6 +124,7 @@ const Home = ({ authenticated }) => {
                 prod_id: item.id,
                 quantity: 1,
                 user_id: userId,
+                img_url: item.img_url[0],
                 size: "500g",
               };
               const existingCart = carts.filter(
@@ -734,6 +735,7 @@ const Home = ({ authenticated }) => {
                 prod_id: item.id,
                 quantity: 1,
                 user_id: userId,
+                img_url: item.img_url[0],
                 size: "500g",
               };
               const existingCart = carts.filter(
@@ -1369,7 +1371,6 @@ const Home = ({ authenticated }) => {
       const product = await getDetail(productId);
       if (product) {
         const cart = await getCarts("cart");
-        const products_by_categoryId = await getProductsByCategoryId(product.cat_id);
         const data = cart.filter(
           (item) => item.prod_id == productId && item.user_id == userId
         );
@@ -1553,6 +1554,7 @@ const Home = ({ authenticated }) => {
           const suggected_prod_container = document.createElement("div");
           suggected_prod_container.className = styles.suggected_prod_container;
           cartCol2.appendChild(suggected_prod_container);
+          const products_by_categoryId = await getProductsByCategoryId(product.cat_id.toString());
           products_by_categoryId.forEach((item) => {
             const suggested_prod_box = document.createElement("div");
             suggested_prod_box.className = styles.box;
@@ -1564,6 +1566,9 @@ const Home = ({ authenticated }) => {
             const name = document.createElement("h4");
             name.textContent = item.name;
             suggested_prod_box.appendChild(name);
+            const price_box = document.createElement('div')
+            price_box.className = styles.price_box
+            suggested_prod_box.appendChild(price_box)
             if (item.promo_price && item.promo_price.length > 0 && item.promo_price[0] > 0) {
 
               price_box.innerHTML = `<h4>${item.promo_price[0].toLocaleString()}</h4>

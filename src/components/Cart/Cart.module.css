@@ -342,3 +342,9 @@ td:first-child {
 .continue_shop:hover {
     background-color: #b8784e;
 }
+
+.voucher_error {
+    font-family: "Nunito", sans-serif;
+    color: red;
+    font-weight: 600;
+}

@@ -205,7 +205,6 @@
     transition: .3s ease;
     cursor: pointer;
     background-color: black;
-    color: white;
     padding: 25px 0px;
     font-family: "Nunito", sans-serif;
     font-size: 14px;
@@ -216,3 +215,9 @@
 .checkout:hover, .view_cart:hover {
     background-color: #b8784e;
 }
+
+.checkout > a {
+    color: white;
+    text-decoration: none;
+}
+

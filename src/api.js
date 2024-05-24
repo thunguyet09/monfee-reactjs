@@ -12,7 +12,15 @@ export const getChosedVoucher = async (val) => {
         const res = await fetch(url + val)
         const data = await res.json()
         return data
-        }
+    }
+}
+
+export const getAllVouchers = async (val) => {
+    if(val){
+        const res = await fetch(url + val)
+        const data = await res.json()
+        return data
+    }
 }
 
 export const getNewsApproved = async (val) => {
@@ -63,3 +71,8 @@ export const getUser = async (id) => {
     return data
    }
 }
+
+
+
+
+
