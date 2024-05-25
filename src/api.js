@@ -23,6 +23,14 @@ export const getAllVouchers = async (val) => {
     }
 }
 
+export const getDetailVoucher = async (val) => {
+    if(val){
+        const res = await fetch(url + val)
+        const data = await res.json()
+        return data
+    }
+}
+
 export const getNewsApproved = async (val) => {
     if(val){
         const res = await fetch(url + val)
@@ -71,6 +79,12 @@ export const getUser = async (id) => {
     return data
    }
 }
+
+export const getOrders = async (val) => {
+    const res = await fetch(url + val)
+    const data = await res.json()
+    return data
+ }
 
 
 

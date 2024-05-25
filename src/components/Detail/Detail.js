@@ -763,14 +763,9 @@ const Detail = () => {
                     let total = 0
                     for (const res of myCart) {
                         const product = await getDetail(res.prod_id);
-                        if (product.sizes.indexOf(res.size) > 0) {
-                            const sizeIndex = product.sizes.indexOf(res.size)
-                            const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
-                            total += itemTotal;
-                        } else {
-                            const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[0];
-                            total += itemTotal;
-                        }
+                        const sizeIndex = product.sizes.indexOf(res.size)
+                        const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
+                        total += itemTotal;
                     }
                     const quantity = document.createElement('h4')
                     quantity.className = styles.cart_quantity

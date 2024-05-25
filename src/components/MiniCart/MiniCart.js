@@ -93,9 +93,9 @@ const MiniCart = () => {
                 const price = document.createElement('h4')
                 price.className = styles.minicart_price
                 product_mini_row1.appendChild(price)
-                if(detail.promo_price && sizeIndex == 0 && detail.promo_price[0] > 0){
-                    price.innerHTML = `${detail.promo_price[0].toLocaleString()}&#8363;`
-                    subtotal += item.quantity * detail.promo_price[0]
+                if(detail.promo_price && detail.promo_price[0] > 0){
+                    price.innerHTML = `${detail.promo_price[sizeIndex].toLocaleString()}&#8363;`
+                    subtotal += item.quantity * detail.promo_price[sizeIndex]
                 }else{
                     price.innerHTML = `${detail.price[sizeIndex].toLocaleString()}&#8363;`
                     subtotal += item.quantity * detail.price[sizeIndex]

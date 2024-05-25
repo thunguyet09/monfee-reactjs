@@ -3,7 +3,8 @@ import styles from './Cart.module.css'
 import { getAllVouchers, getCarts, getDetail, getUser } from '../../api'
 
 const Cart = () => {
-    useLayoutEffect(() => {
+    useEffect(() => {
+        let isMounted = true;
         const tbody = document.querySelector(`.${styles.page_cart} > table > tbody`)
         const userId = localStorage.getItem('userId')
         const continue_shop = document.querySelector(`.${styles.continue_shop}`)
@@ -14,15 +15,13 @@ const Cart = () => {
         checkout.addEventListener('click', () => {
             document.location.href = '/checkout'
         })
-        let isMounted = true;
         const getAPI = async () => {
             const carts = await getCarts("cart")
-
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
             filteredCarts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id)
                 const sizeIndex = detail.sizes.indexOf(item.size)
-                let price = detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
+                let price = detail.promo_price && detail.promo_price[0] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                 updateQuantity(item.id, item.quantity, price)
             })
             calc_total(filteredCarts)
@@ -30,7 +29,7 @@ const Cart = () => {
 
         const renderCart = async () => {
             const carts = await getCarts("cart")
-            if (isMounted) {
+            if(isMounted){
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 cartTable(filteredCarts)
             }
@@ -65,6 +64,7 @@ const Cart = () => {
             }
             const vouchers = await getAllVouchers('vouchers')
             const userId = localStorage.getItem('userId')
+            const user = await getUser(userId)
             apply_voucher.addEventListener('click', () => {
                 const voucher_error = document.querySelector(`.${styles.voucher_error}`)
                 const existingVoucher = vouchers.filter((item) => item.voucher_code == voucher_code.value)
@@ -72,41 +72,49 @@ const Cart = () => {
                     voucher_error.innerHTML = 'Voucher này không tồn tại.'
                 } else {
                     existingVoucher.forEach(async (item) => {
-                        if (formatDate < item.expiredDate && item.quantity > 0) {
-                            let vouchers = []
-                            const user = await getUser(userId)
-                            total = total - ((total * item.discount) / 100)
-                            cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
-                            vouchers.push(...user.vouchers, item.id)
-                            if (user) {
-                                await fetch(`http://localhost:3000/users/vouchers/${userId}`, {
+                        const user_voucher = user.vouchers.filter((userItem) => {
+                            return userItem === parseInt(item.id)
+                        })
+                        if(user_voucher.length == 0){
+                            if (formatDate < item.expiredDate && item.quantity > 0) {
+                                let vouchers = []
+                                total = total - ((total * item.discount) / 100)
+                                cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
+                                vouchers.push(...user.vouchers, item.id)
+                                if (user) {
+                                    await fetch(`http://localhost:3000/users/vouchers/${userId}`, {
+                                        method: 'PUT',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            'vouchers': vouchers
+                                        })
+                                    })
+                                        .then(() => {
+                                            voucher_error.innerHTML = 'Voucher đã được áp dụng.'
+                                        })
+                                }
+    
+                                let updatedQuantity = item.quantity - 1;
+                                await fetch(`http://localhost:3000/vouchers/quantity/${item.id}`, {
                                     method: 'PUT',
                                     headers: {
                                         'Content-Type': 'application/json'
                                     },
                                     body: JSON.stringify({
-                                        'vouchers': vouchers
+                                        'quantity': updatedQuantity
                                     })
                                 })
-                                    .then(() => {
-                                        voucher_error.innerHTML = 'Voucher đã được áp dụng.'
-                                    })
+                            } else if (item.quantity == 0) {
+                                voucher_error.innerHTML = 'Voucher đã hết lượt sử dụng.'
+                            } else {
+                                voucher_error.innerHTML = 'Voucher đã hết hạn.'
                             }
-
-                            let updatedQuantity = item.quantity - 1;
-                            await fetch(`http://localhost:3000/vouchers/quantity/${item.id}`, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    'quantity': updatedQuantity
-                                })
-                            })
-                        } else if (item.quantity == 0) {
-                            voucher_error.innerHTML = 'Voucher đã hết lượt sử dụng.'
-                        } else {
-                            voucher_error.innerHTML = 'Voucher đã hết hạn.'
+                        }else{
+                            voucher_error.innerHTML = 'Voucher đã được áp dụng.'
+                            total = total - ((total * item.discount) / 100)
+                            cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
                         }
                     })
                 }
@@ -128,7 +136,6 @@ const Cart = () => {
         const cartTable = (data) => {
             let itemSubtotal = 0;
             data.forEach(async (item) => {
-                tbody.innerHTML = ''
                 const detail = await getDetail(item.prod_id)
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 const tr = document.createElement('tr')
