@@ -145,6 +145,7 @@ const Checkout = () => {
                 const email = document.querySelector(`.${styles.email}`)
                 const phone = document.querySelector(`.${styles.phone}`)
                 const save_user_info = document.querySelector(`.${styles.save_info} > input`)
+                const emailed_me = document.querySelector(`.${styles.email_checkbox} > input`)
                 const currentDate = new Date()
                 const year = currentDate.getFullYear()
                 const month = currentDate.getMonth() + 1
@@ -162,7 +163,22 @@ const Checkout = () => {
                     formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
                 }
                 const orders = await getOrders('orders')
-                place_order.addEventListener('click', () => {
+                const dialog_content = document.querySelector(`#${styles.dialog_content}`)
+                const dialog_icon = document.querySelector(`#${styles.dialog_content} > span`)
+                const dialog_text = document.querySelector(`.${styles.dialog_text}`)
+                let flag = false;
+                place_order.addEventListener('click', async () => {
+                    if(full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== ''){
+                        flag = true;
+                    }else{
+                        dialog_text.innerHTML = 'Vui lòng nhập đầy đủ thông tin.'
+                        dialog_icon.innerHTML = `<span class="material-symbols-outlined">close</span>`
+                        dialog_content.style.display = 'flex'
+                        dialog_content.style.backgroundColor = '#C5041B'
+                        setTimeout(() => {
+                            dialog_content.style.display = 'none'
+                        }, 2000)
+                    }
                     const order = {
                         date: formatDate,
                         da_tra: 0,
@@ -181,11 +197,57 @@ const Checkout = () => {
                         total: calc_total
                     }
 
-                    if(save_user_info.checked){
-                        
+                    if(flag){
+                        await fetch(`http://localhost:3000/orders`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(order)
+                        })
+                        .then(() => {
+                            orderSuccessConfirm(order.order_id)
+                        })
+                    }
+
+                    const orderInfo = {
+                        full_name: full_name.value,
+                        email: email.value,
+                        phone: phone.value,
+                        address: address.value,
+                        city: city.value,
+                    }
+
+                    if(save_user_info.checked && flag){
+                        await fetch(`http://localhost:3000/users/order-info/${userId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                order_info: orderInfo
+                            })
+                        })
+                    }
+
+                    if(emailed_me.checked && flag){
+                        await fetch(`http://localhost:3000/users/emailed/${userId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                'emailed': true
+                            })
+                        })
                     }
                 })
             })
+        }
+
+        const orderSuccessConfirm = (order_id) => {
+            const orderId = document.querySelector(`.${styles.orderId}`)
+            orderId.innerHTML = `Mã đơn hàng <b>${order_id}</b>`
         }
 
         getAPI()
@@ -255,6 +317,48 @@ const Checkout = () => {
                     </div>
                 </div>
             </div>
+
+            <>
+                <div id={styles.dialog_content}>
+                    <span></span>
+                    <p className={styles.dialog_text}></p>
+                </div>
+            </>
+
+            <>
+                <div className={styles.order_successful}>
+                    <div className={styles.order_successful_content}>
+                        <div className={styles.order_successful_box}>
+                            <img src="../../img/monfee-logo.png" width="200px"/>
+                            <div className={styles.bread_crumb}>
+                                <a href="/">Home</a>
+                                <span>/</span>
+                                <a>Checkout</a>
+                            </div>
+                            <div className={styles.order_icon}>
+                                <span className="material-symbols-outlined">
+                                    shopping_bag
+                                </span>
+                                <div className={styles.success_img}>
+                                    <img src="../../img/success.png" width="60px"/>
+                                </div>
+                            </div>
+                            <div class={styles.modal_content}>
+                                <h2>Mua hàng thành công</h2>
+                                <p className={styles.orderId}></p>
+                            </div>
+                        </div>
+                        <div className={styles.main_order_successful}>
+                            <h3>Cảm ơn bạn đã mua sắm tại Monfee</h3>
+                            <span>Bạn đã đặt hàng thành công. Để kiểm tra tất cả chi tiết về đơn hàng,
+                                vui lòng chọn "Theo dõi đơn hàng của bạn" hoặc tiếp tục khám phá thêm 
+                                nhiều sản phẩm khác.
+                            </span> 
+                            <div className={styles.order_countdown}></div>
+                        </div>
+                     </div>
+                </div>
+            </>
         </>
     )
 }
