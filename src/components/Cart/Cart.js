@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import styles from './Cart.module.css'
 import { getAllVouchers, getCarts, getDetail, getUser } from '../../api'
-
+import { numsInCart } from '../Header/Header'
 const Cart = () => {
     useEffect(() => {
         let isMounted = true;
@@ -18,13 +18,13 @@ const Cart = () => {
         const getAPI = async () => {
             const carts = await getCarts("cart")
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
+            calc_total(filteredCarts)
             filteredCarts.forEach(async (item) => {
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 let price = detail.promo_price && detail.promo_price[0] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                 updateQuantity(item.id, item.quantity, price)
             })
-            calc_total(filteredCarts)
         }
 
         const renderCart = async () => {
@@ -46,6 +46,7 @@ const Cart = () => {
 
             const apply_voucher = document.querySelector(`.${styles.apply_btn}`)
             const voucher_code = document.querySelector(`.${styles.voucher_box} > input`)
+            const voucher_error = document.querySelector(`.${styles.voucher_error}`)
             const currentDate = new Date()
             const year = currentDate.getFullYear()
             const month = currentDate.getMonth() + 1
@@ -65,8 +66,20 @@ const Cart = () => {
             const vouchers = await getAllVouchers('vouchers')
             const userId = localStorage.getItem('userId')
             const user = await getUser(userId)
+            if(user.vouchers.length > 0){
+                user.vouchers.forEach((userVoucher) => {
+                    const voucher = vouchers.filter((voucherItem) => {
+                        return voucherItem.id == userVoucher
+                    })
+                    voucher.forEach((val) => {
+                        voucher_code.value = val.voucher_code
+                        voucher_error.innerHTML = 'Voucher đã được áp dụng.'
+                        total = total - ((total * val.discount) / 100)
+                        cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
+                    })
+                })
+            }
             apply_voucher.addEventListener('click', () => {
-                const voucher_error = document.querySelector(`.${styles.voucher_error}`)
                 const existingVoucher = vouchers.filter((item) => item.voucher_code == voucher_code.value)
                 if (existingVoucher.length == 0) {
                     voucher_error.innerHTML = 'Voucher này không tồn tại.'
@@ -134,9 +147,28 @@ const Cart = () => {
             }
         };
         const cartTable = (data) => {
+            const page_cart = document.querySelector(`.${styles.page_cart}`)
+            if(data.length == 0){
+                page_cart.innerHTML = ''
+                page_cart.style.textAlign = 'left'
+                const no_cart_items = document.createElement('div')
+                no_cart_items.className = styles.no_cart_items
+                no_cart_items.innerHTML = `
+                    <h2>Shopping Cart</h2>
+                    <p>No products in the cart.</p>
+                    <img src="../../img/no_cart_item.svg" width="300px" />
+                    <button>SHOP NOW</button>
+                `
+                page_cart.appendChild(no_cart_items)
+                const recommended_products = document.createElement('div')
+                page_cart.appendChild(recommended_products)
+                const recommended_title = document.createElement('h3')
+                recommended_title.textContent = 'Recommended Products'
+                recommended_products.appendChild(recommended_title)
+            }
             let itemSubtotal = 0;
             data.forEach(async (item) => {
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 const tr = document.createElement('tr')
                 tbody.appendChild(tr)
@@ -161,9 +193,10 @@ const Cart = () => {
                 name.textContent = detail.name
                 detail_box.appendChild(name)
                 const attribute = document.createElement('span')
+                attribute.className = styles.attribute
                 detail_box.appendChild(attribute)
                 if (item.color) {
-                    attribute.innerHTML = `${item.size} / ${item.color}`
+                    attribute.innerHTML = `${item.size} / <button style="background-color: ${item.color}"></button>`
                 } else {
                     attribute.innerHTML = `${item.size}`
                 }
@@ -272,8 +305,16 @@ const Cart = () => {
                 removeItem.className = styles.removeItem
                 removeItem.innerHTML = `<span class="material-symbols-outlined">close</span>`
                 tr.appendChild(removeItem)
-
-
+                removeItem.childNodes[0].addEventListener('click', async () => {
+                    await fetch(`http://localhost:3000/cart/${item.id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(() => {
+                        tbody.innerHTML = ''
+                        renderCart()
+                        numsInCart()
+                    })
+                })
                 const updateSubtotal = () => {
                     if (detail.promo_price && detail.promo_price[sizeIndex] > 0) {
                         itemSubtotal = quantity_value * detail.promo_price[sizeIndex]

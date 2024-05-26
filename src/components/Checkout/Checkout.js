@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getCarts, getDetail, getDetailVoucher, getOrders, getUser } from '../../api'
+import { getCarts, getDetail, getDetailVoucher, getOrderDetails, getOrders, getUser } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
@@ -17,7 +17,7 @@ const Checkout = () => {
 
         const showProducts = (data) => {
             data.forEach(async (item) => {
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
                 const product_frame = document.createElement('div')
                 product_frame.className = styles.product_frame
                 products_info.appendChild(product_frame)
@@ -46,7 +46,7 @@ const Checkout = () => {
                 product_item_col1.appendChild(prod_attribute)
 
                 if (item.color) {
-                    prod_attribute.innerHTML = `${item.size} / ${item.color}`
+                    prod_attribute.innerHTML = `${item.size} / <button style="background-color: ${item.color}"></button>`
                 } else {
                     prod_attribute.innerHTML = `${item.size}`
                 }
@@ -65,10 +65,11 @@ const Checkout = () => {
         }
 
         const calc_total = async (data) => {
+            console.log(data)
             let total_quantity = 0;
             const promises = data.map(async (item) => {
                 total_quantity += item.quantity;
-                const detail = await getDetail(item.prod_id);
+                const detail = await getDetail(item.prod_id.toString());
                 const sizeIndex = detail.sizes.indexOf(item.size);
                 let itemSubtotal = detail.promo_price.length > 0 && detail.promo_price[sizeIndex] > 0
                     ? item.quantity * detail.promo_price[sizeIndex]
@@ -92,8 +93,16 @@ const Checkout = () => {
                 <h3>FREE</h3>
             `
             products_info.appendChild(shipping)
-
+            const full_name = document.querySelector(`.${styles.full_name}`)
+            const address = document.querySelector(`.${styles.address}`)
+            const city = document.querySelector(`.${styles.city}`)
+            const email = document.querySelector(`.${styles.email}`)
+            const phone = document.querySelector(`.${styles.phone}`)
             const user = await getUser(userId)
+           
+            if(user.order_info){
+
+            }
             user.vouchers.forEach(async (voucherItem) => {
                 const voucher = await getDetailVoucher(`vouchers/${voucherItem}`)
                 const discount_box = document.createElement('div')
@@ -139,11 +148,6 @@ const Checkout = () => {
                 place_order.className = styles.place_order
                 place_order.textContent = 'PLACE AN ORDER'
                 checkout_actions.appendChild(place_order)
-                const full_name = document.querySelector(`.${styles.full_name}`)
-                const address = document.querySelector(`.${styles.address}`)
-                const city = document.querySelector(`.${styles.city}`)
-                const email = document.querySelector(`.${styles.email}`)
-                const phone = document.querySelector(`.${styles.phone}`)
                 const save_user_info = document.querySelector(`.${styles.save_info} > input`)
                 const emailed_me = document.querySelector(`.${styles.email_checkbox} > input`)
                 const currentDate = new Date()
@@ -168,9 +172,9 @@ const Checkout = () => {
                 const dialog_text = document.querySelector(`.${styles.dialog_text}`)
                 let flag = false;
                 place_order.addEventListener('click', async () => {
-                    if(full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== ''){
+                    if (full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== '') {
                         flag = true;
-                    }else{
+                    } else {
                         dialog_text.innerHTML = 'Vui lòng nhập đầy đủ thông tin.'
                         dialog_icon.innerHTML = `<span class="material-symbols-outlined">close</span>`
                         dialog_content.style.display = 'flex'
@@ -179,6 +183,7 @@ const Checkout = () => {
                             dialog_content.style.display = 'none'
                         }, 2000)
                     }
+
                     const order = {
                         date: formatDate,
                         da_tra: 0,
@@ -197,7 +202,7 @@ const Checkout = () => {
                         total: calc_total
                     }
 
-                    if(flag){
+                    if (flag) {
                         await fetch(`http://localhost:3000/orders`, {
                             method: 'POST',
                             headers: {
@@ -205,9 +210,35 @@ const Checkout = () => {
                             },
                             body: JSON.stringify(order)
                         })
-                        .then(() => {
-                            orderSuccessConfirm(order.order_id)
-                        })
+                            .then(async () => {
+                                data.forEach(async (item) => {
+                                    const detail = await getDetail(item.prod_id)
+                                    const order_details = await getOrderDetails('order-details')
+                                    const order_detail_id = order_details.length > 0 ? order_details[order_details.length - 1].order_detail_id + 1 : 0
+                                    const newOrderDetails = {
+                                        order_detail_id: order_detail_id,
+                                        order_id: order.order_id,
+                                        prod_id: item.prod_id,
+                                        product_name: detail.name,
+                                        img_url: item.img_url,
+                                        product_price: item.price,
+                                        product_quantity: item.quantity,
+                                        size: item.size ? item.size : '',
+                                        color: item.color ? item.color : '',
+                                        subtotal: item.quantity * item.price
+                                    }
+                                    await fetch(`http://localhost:3000/order-details`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(newOrderDetails)
+                                    })
+                                })
+                            })
+                            .then(() => {
+                                handleProductQuantity(order.order_id, data)
+                            })
                     }
 
                     const orderInfo = {
@@ -218,7 +249,7 @@ const Checkout = () => {
                         city: city.value,
                     }
 
-                    if(save_user_info.checked && flag){
+                    if (save_user_info.checked && flag) {
                         await fetch(`http://localhost:3000/users/order-info/${userId}`, {
                             method: 'PUT',
                             headers: {
@@ -230,7 +261,7 @@ const Checkout = () => {
                         })
                     }
 
-                    if(emailed_me.checked && flag){
+                    if (emailed_me.checked && flag) {
                         await fetch(`http://localhost:3000/users/emailed/${userId}`, {
                             method: 'PUT',
                             headers: {
@@ -245,11 +276,75 @@ const Checkout = () => {
             })
         }
 
-        const orderSuccessConfirm = (order_id) => {
-            const orderId = document.querySelector(`.${styles.orderId}`)
-            orderId.innerHTML = `Mã đơn hàng <b>${order_id}</b>`
+        const orderSuccessConfirm = () => {
+            const order_successful_modal = document.querySelector(`.${styles.order_successful}`)
+            order_successful_modal.style.display = 'block'
+
+            const countdown = document.querySelector(`.${styles.order_countdown}`)
+            let currentSeconds = new Date().getSeconds();
+            let countdownSeconds = currentSeconds + 15;
+            let countdownDate = new Date().getTime() + (countdownSeconds * 1000);
+            let x = setInterval(function () {
+                let now = new Date().getTime();
+                let distance = countdownDate - now;
+                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                countdown.innerHTML = `Website sẽ tự quay về lại trang chủ sau ${seconds}s`
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.location.href = '/'
+                }
+            }, 1000);
         }
 
+        const handleProductQuantity = async (orderId, carts) => {
+            for (let i = 0; i < carts.length; i++) {
+                const product = await getDetail(carts[i].prod_id)
+                const sizeIndex = product.sizes.indexOf(carts[i].size)
+                if (carts[i].prod_id == product.id) {
+                    const luotBan = parseInt(product.luot_ban) + parseInt(carts[i].quantity)
+                    const quantity = parseInt(product.quantity[sizeIndex]) - parseInt(carts[i].quantity)
+                    await fetch(`http://localhost:3000/products/${carts[i].prod_id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ quantity: quantity, luot_ban: luotBan })
+                    })
+                        .then(async () => {
+                            await getDetail(carts[i].prod_id)
+                        })
+                }
+            }
+            handleOrderDetails(orderId, carts)
+        }
+
+        const handleOrderDetails = async (orderId, carts) => {
+            carts.forEach(async (item) => {
+                const detail = await getDetail(item.prod_id)
+                const order_details = await getOrderDetails('order-details')
+                const newOrderDetails = {
+                    order_id: orderId,
+                    prod_id: item.prod_id,
+                    product_name: detail.name,
+                    img_url: item.img_url,
+                    product_price: item.price,
+                    product_quantity: item.quantity,
+                    size: item.size ? item.size : '',
+                    color: item.color ? item.color : '',
+                    subtotal: item.quantity * item.price
+                }
+                await fetch(`http://localhost:3000/order-details`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newOrderDetails)
+                })
+                .then(() => {
+                    orderSuccessConfirm()
+                })
+            })
+        }
         getAPI()
         return () => {
             isMounted = false;
@@ -329,7 +424,7 @@ const Checkout = () => {
                 <div className={styles.order_successful}>
                     <div className={styles.order_successful_content}>
                         <div className={styles.order_successful_box}>
-                            <img src="../../img/monfee-logo.png" width="200px"/>
+                            <img src="../../img/monfee-logo.png" width="200px" />
                             <div className={styles.bread_crumb}>
                                 <a href="/">Home</a>
                                 <span>/</span>
@@ -340,23 +435,30 @@ const Checkout = () => {
                                     shopping_bag
                                 </span>
                                 <div className={styles.success_img}>
-                                    <img src="../../img/success.png" width="60px"/>
+                                    <img src="../../img/success.png" width="60px" />
                                 </div>
                             </div>
                             <div class={styles.modal_content}>
                                 <h2>Mua hàng thành công</h2>
-                                <p className={styles.orderId}></p>
                             </div>
                         </div>
                         <div className={styles.main_order_successful}>
                             <h3>Cảm ơn bạn đã mua sắm tại Monfee</h3>
                             <span>Bạn đã đặt hàng thành công. Để kiểm tra tất cả chi tiết về đơn hàng,
-                                vui lòng chọn "Theo dõi đơn hàng của bạn" hoặc tiếp tục khám phá thêm 
+                                vui lòng chọn "Theo dõi đơn hàng của bạn" hoặc tiếp tục khám phá thêm
                                 nhiều sản phẩm khác.
-                            </span> 
+                            </span>
                             <div className={styles.order_countdown}></div>
                         </div>
-                     </div>
+                        <div className={styles.order_successful_actions}>
+                            <div>
+                                <button className={styles.order_tracking}>THEO DÕI ĐƠN HÀNG</button>
+                            </div>
+                            <a href="/shop">
+                                <button className={styles.continue_shopping}>TIẾP TỤC MUA SẮM</button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </>
         </>

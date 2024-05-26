@@ -320,7 +320,7 @@ const Home = ({ authenticated }) => {
             addToCartBtn.textContent = "ADD TO CART";
             quickViewAction.appendChild(addToCartBtn);
 
-            let sizeChoosed = ''
+            let sizeChoosed = item.sizes[0]
             item.sizes.forEach((val) => {
               const size = document.createElement("button");
               size.textContent = val;

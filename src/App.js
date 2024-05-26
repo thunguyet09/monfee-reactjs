@@ -106,6 +106,7 @@ const CartPage = () => (
     <Header />
     <div className={styles.homePage}>
       <Cart />
+      <MiniCart />
       <Footer />
     </div>
   </div>

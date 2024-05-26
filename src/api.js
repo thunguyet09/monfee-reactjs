@@ -84,9 +84,13 @@ export const getOrders = async (val) => {
     const res = await fetch(url + val)
     const data = await res.json()
     return data
+}
+
+export const getOrderDetails = async (val) => {
+    const res = await fetch(url + val)
+    const data = await res.json()
+    return data
  }
-
-
 
 
 

@@ -718,7 +718,7 @@ const Detail = () => {
                 }
                 const myCart = cart.filter((item) => item.user_id == userId)
                 const product = await getDetail(productId.toString())
-                const products_by_categoryId = await getProductsByCategoryId(product.cat_id)
+                const products_by_categoryId = await getProductsByCategoryId(product.cat_id.toString())
                 data.forEach(async (item) => {
                     imgCart.innerHTML = ''
                     cartInfo.innerHTML = ''
@@ -762,7 +762,7 @@ const Detail = () => {
 
                     let total = 0
                     for (const res of myCart) {
-                        const product = await getDetail(res.prod_id);
+                        const product = await getDetail(res.prod_id.toString());
                         const sizeIndex = product.sizes.indexOf(res.size)
                         const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
                         total += itemTotal;

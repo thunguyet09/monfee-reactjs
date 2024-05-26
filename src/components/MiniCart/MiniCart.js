@@ -39,7 +39,7 @@ const MiniCart = () => {
             product_cart.innerHTML = ''
             filteredCarts.forEach(async (item) => {
                 let subtotal = 0;
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 const minicart_item = document.createElement('div')
                 minicart_item.className = styles.minicart_item
@@ -80,7 +80,8 @@ const MiniCart = () => {
                 product_attribute.className = styles.product_attribute
                 product_mini_row1.appendChild(product_attribute)
                 if(item.color){
-                    product_attribute.innerHTML = `${item.size} / ${item.color}`
+                    product_attribute.innerHTML = `${item.size} / <button style="background-color: ${item.color}; width: 15px;
+                    height: 15px; border: none; outline: none; border-radius: 50%"></button>`
                     
                 }else{
                     product_attribute.innerHTML = `${item.size}`
