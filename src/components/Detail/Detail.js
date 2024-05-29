@@ -207,7 +207,7 @@ const Detail = () => {
             const count_down = document.createElement('div')
             count_down.className = styles.count_down
             main_detail.appendChild(count_down)
-            const original_quantity = detail.sales + detail.quantity
+            const original_quantity = detail.sales + detail.quantity.reduce((sum, q) => sum + q, 0);
             const max_quantity = Math.max(...detail.quantity)
             const count_down_text = document.createElement('h3')
             count_down_text.innerHTML = `HURRY! ONLY <b>${max_quantity}</b> LEFT IN STOCK`
@@ -1021,7 +1021,6 @@ const Detail = () => {
                             <div className={styles.img_prev}>
 
                             </div>
-
                         </div>
                         <div className={styles.next_prod}>
                             <div className={styles.next_prod_btn}>
@@ -1047,7 +1046,7 @@ const Detail = () => {
                         </div>
                     </div>
                     <div className={styles.detail_content}>
-                        <div class={styles.product_title}>
+                        <div className={styles.product_title}>
                             <h1></h1>
                             <div className={styles.top_product}></div>
                             <div className={styles.wishlist_icon}>

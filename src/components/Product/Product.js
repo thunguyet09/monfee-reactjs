@@ -425,7 +425,7 @@ const Product = () => {
                 const product_icon_action = document.createElement('ul')
                 product_icon_action.className = styles.product_icon_action
                 img_product.appendChild(product_icon_action)
-                if (item.colors) {
+                if (item.colors.length > 0) {
                     const select_option = document.createElement('button')
                     select_option.className = styles.select_option
                     select_option.innerHTML = `<span class="material-symbols-outlined">more_horiz</span>`
@@ -658,7 +658,6 @@ const Product = () => {
             prev_page.style.display = 'flex'
         }
         const pages = async (totalPages) => {
-            const pagination = document.querySelector(`.${styles.pagination}`)
             const last_page = document.querySelector(`.${styles.last_page}`)
             const next_page = document.querySelector(`.${styles.next_page}`)
             const first_page = document.querySelector(`.${styles.first_page}`)
