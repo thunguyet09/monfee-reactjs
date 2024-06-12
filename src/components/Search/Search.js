@@ -8,7 +8,7 @@ const Search = () => {
     const { open, setSearchOpen } = useSearch()
     useEffect(() => {
         const handleSearch = async () => {
-            const products = await getAllProducts()
+            const products = await getAllProducts('products')
             const search_input = document.querySelector(`.${styles.search_input}`)
             const search_eveland = document.querySelector(`.${styles.search_eveland}`)
             if(open === true){

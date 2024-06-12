@@ -1,0 +1,512 @@
+.account {
+    margin: 130px 120px 40px 120px;
+  }
+  
+  .avatar > img {
+    border-radius: 50%;
+  }
+  
+  .avatar {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin-top: 18px;
+  }
+  
+  .avatar > div > h5 {
+    margin: 0;
+    font-size: 15px;
+    font-family: "Inter", sans-serif;
+    margin-left: 8px;
+  }
+  
+  .avatar > div {
+    margin-top: 5px;
+  }
+  
+  .changeInfoBtn {
+    border: none;
+    outline: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: 'Mulish', sans-serif;
+    background-color: white;
+    gap: 5px;
+    height: 30px;
+    color: rgb(96, 96, 96);
+    cursor: pointer;
+  }
+  
+  .changeInfoBtn > span:first-child {
+    font-size: 18px;
+  }
+  
+  .changeInfoBtn > span:last-child {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .listBox {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 55px;
+    text-align: left;
+  }
+  
+  .listBox > div > p, .sub-list > p {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    margin-bottom: 10px;
+  }
+  
+  .listBox > div > p {
+    font-size: 15px;
+  }
+  .userCicleIcon {
+    font-size: 21px;
+    color: rgb(199, 161, 122);
+  }
+  
+  .listBox > div > p {
+    font-weight: 600;
+  }
+  
+  .clipboardList {
+    font-size: 21px;
+    color: rgb(199, 161, 122);
+  }
+  
+  .sub-list > p {
+    font-size: 14px;
+    color: rgb(96, 96, 96);
+  }
+  
+  .sub_list {
+    margin-left: 3px;
+  }
+  
+  .bills {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .bills > p {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    transition: .3s ease;
+  }
+  
+  .bills > p:hover {
+    color:#EE7214;
+    cursor: pointer;
+  }
+  .account-list {
+    margin-left: 10px;
+    width: 20%;
+  }
+  
+  .account {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+  }
+  
+  .accountBox {
+    background-color: rgb(255, 253, 243);
+    padding: 0px 30px 15px 30px;
+    width: 80%;
+    border: 1px solid rgb(226, 226, 226);
+  }
+  
+  .account_title > h3, .account_title > p {
+    margin: 0;
+    font-family: 'Mulish', sans-serif;
+    margin: 5px 0px;
+  }
+  
+  .account_title > h3 {
+    font-weight: 600;
+  }
+  
+  .account_title > p {
+    font-size: 14px;
+  }
+  
+  .account_title {
+    border-bottom: .0625rem solid #efefef;
+    padding: 15px 0px;
+    text-align: left;
+  }
+  
+  .account_row {
+    padding: 20px 60px;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .infos {
+    width: 65%;
+    padding-right: 50px;
+  }
+  
+  .change_avatar {
+    width: 35%;
+  }
+  
+  .group_control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .group_control > label {
+    width: 20%;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    color: rgb(61, 61, 61);
+    text-align: right;
+    font-weight: 500;
+  }
+  
+  .group_control > div {
+    width: 80%;
+  }
+  
+  .group_control > div > input {
+    padding: 10px 8px;
+    width: 400px;
+    border-radius: 5px;
+    border: 1px solid rgb(213, 213, 213);
+    outline: none;
+    font-size: 15px;
+  }
+  
+  .gender_box {
+    display: flex;
+    flex-direction: row;
+    font-family: 'Mulish', sans-serif;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .gender_box > div > input {
+    border: 1px solid rgb(189, 189, 189);
+    width: 15px;
+    height: 15px;
+  }
+  
+  .gender_box > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+  }
+  
+  .gender_box > div > label {
+    font-size: 16px;
+  }
+  #phone_input {
+    padding: 8px 5px;
+    width: 200px;
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+    background-color: rgba(6, 6, 6, 0);
+    margin-right: 15px;
+  }
+  
+  .change_phone, .change_email {
+    font-family: 'Mulish', sans-serif;
+    padding: 8px 14px;
+    border: none;
+    outline: none;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: .3s ease;
+    background-color: rgb(237, 237, 237);
+  }
+  
+  #email {
+    margin-right: 20px;
+  }
+  
+  .change_phone:hover, .change_email:hover {
+    color: #74b42a;
+    cursor: pointer;
+  }
+  
+  .save_info {
+    display: flex;
+    justify-content: center;
+  }
+  
+  #email {
+    font-family: 'Mulish', sans-serif;
+  }
+  .save_info > button {
+    font-family: 'Mulish', sans-serif;
+    background-color: rgb(229, 154, 80);
+    padding: 12px 33px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    color: white;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: .3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .save_info > button:hover {
+    opacity: 0.8;
+  }
+  
+  .chooseImgBtn {
+    font-family: "Inter", sans-serif;
+    padding: 12px 20px;
+    font-size: 14px;
+    border:none;
+    outline: none;
+    border: 1px solid rgb(221, 221, 221);
+    background-color: white;
+    color: rgb(45, 45, 45);
+    cursor: pointer;
+    transition: .3s ease;
+  }
+  
+  .chooseImgBtn:hover {
+    background-color: rgb(239, 239, 239);
+  }
+  .choose_img {
+    position: relative;
+  }
+  
+  .avatarFile {
+    position: absolute;
+    top: 15px;
+    left: 0px;
+  }
+  
+  .avatarFile {
+    color: transparent;
+    text-indent: -9999px;
+  }
+  
+  .currentImg {
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+  
+  .change_avatar_box {
+    border-left:  1px solid rgb(221, 221, 221);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 140px;
+    padding-top: 30px;
+    padding-bottom: 60px;
+  }
+  
+  
+  #dialog_content {
+    position: fixed;
+    z-index: 9999;
+    bottom: 20px;
+    right: 10px;
+    width: 320px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  #dialog_content>p {
+    margin: 0;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  #dialog_content > span > span {
+    margin-top: 5px;
+    font-size: 23px;
+  }
+  
+  #active-list {
+    color: #EE7214;
+  }
+  
+  .sub-list > p {
+    cursor: pointer;
+  }
+  
+  .account_row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .authenticateBox, .authenticateOTP {
+    width: 450px;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .authenticateBox > h4 {
+    font-weight: 400;
+    font-size: 17px;
+  }
+  
+  .authenticateBox > button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: none;
+    outline: none;
+    border: 1px solid rgb(231, 231, 231);
+    padding: 10px 30px;
+    background-color: white;
+    transition: .2s ease;
+  }
+  
+  .authenticateBox > button > h4 {
+    font-weight: 600;
+    font-family: 'Mulish', sans-serif;
+    font-size: 15px;
+    margin: 0;
+  }
+  
+  .authenticateBox > button:hover {
+    opacity: 0.8;
+    cursor: pointer;
+  }
+  
+  .authenticateInput {
+    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid grey;
+    outline: none;
+    width: 200px;
+  }
+  
+  .continueBtn {
+    margin: 20px 0px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 40px;
+    width: 400px;
+    background-color: #EE7214;
+    color: white;
+    border: none;
+    outline: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s ease;
+  }
+  
+  .continueBtn:hover {
+    opacity: 0.8;
+  }
+  .authenticateTitle {
+    margin: 0;
+    margin-top: 20px;
+    font-weight: 500;
+  }
+  
+  .sendBackOTP {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+  }
+  
+  .sendBackOTP > button {
+    border: none;
+    outline: none;
+    color:#EE7214;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 15px;
+    transition: .3s ease;
+  }
+  
+  .sendBackOTP > button:hover {
+    cursor: pointer;
+    border-bottom: 1px solid #EE7214;
+  }
+  
+  .groupControl {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0px;
+  }
+  
+  .resetPassBox {
+    width: 500px;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .groupControl > label {
+    width: 40%;
+    text-align: right;
+    color: rgb(54, 54, 54);
+  }
+  
+  .groupControl > input {
+    width: 60%;
+    padding: 9px 5px;
+    width: 300px;
+    border-radius: 3px;
+    border: 1px solid rgb(213, 213, 213);
+    outline: none;
+  }
+  
+  .informedPassBtn  {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+  }
+  
+  .informedPassBtn > button {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    background-color: #EE7214;
+    font-size: 16px;
+    padding: 13px 25px;
+    border: none;
+    outline: none;
+    border-radius: 3px;
+    margin-top: 15px;
+    transition: .3s ease;
+    cursor: pointer;
+  }
+  
+  .informedPassBtn > button:hover {
+    opacity: 0.8;
+  }
+  

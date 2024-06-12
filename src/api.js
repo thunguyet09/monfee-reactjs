@@ -90,7 +90,16 @@ export const getOrderDetails = async (val) => {
     const res = await fetch(url + val)
     const data = await res.json()
     return data
- }
+}
+
+export const removeCart = async (val, id) => {
+    const res = await fetch(url + `${val}/${id}`, {
+        method: 'DELETE'
+    })
+    const data = await res.json()
+    return data
+}
+
 
 
 

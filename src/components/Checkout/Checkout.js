@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getCarts, getDetail, getDetailVoucher, getOrderDetails, getOrders, getUser } from '../../api'
+import { getCarts, getDetail, getDetailVoucher, getOrders, getUser, removeCart } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
@@ -65,7 +65,6 @@ const Checkout = () => {
         }
 
         const calc_total = async (data) => {
-            console.log(data)
             let total_quantity = 0;
             const promises = data.map(async (item) => {
                 total_quantity += item.quantity;
@@ -99,9 +98,13 @@ const Checkout = () => {
             const email = document.querySelector(`.${styles.email}`)
             const phone = document.querySelector(`.${styles.phone}`)
             const user = await getUser(userId)
-           
-            if(user.order_info){
-
+            const order_info_user = user.order_info
+            if(order_info_user){
+                full_name.value = order_info_user.full_name
+                email.value = order_info_user.email 
+                phone.value = order_info_user.phone
+                address.value = order_info_user.address
+                city.value = order_info_user.city 
             }
             user.vouchers.forEach(async (voucherItem) => {
                 const voucher = await getDetailVoucher(`vouchers/${voucherItem}`)
@@ -175,7 +178,7 @@ const Checkout = () => {
                     if (full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== '') {
                         flag = true;
                     } else {
-                        dialog_text.innerHTML = 'Vui lòng nhập đầy đủ thông tin.'
+                        dialog_text.innerHTML = 'Please fill out the form.'
                         dialog_icon.innerHTML = `<span class="material-symbols-outlined">close</span>`
                         dialog_content.style.display = 'flex'
                         dialog_content.style.backgroundColor = '#C5041B'
@@ -211,34 +214,9 @@ const Checkout = () => {
                             body: JSON.stringify(order)
                         })
                             .then(async () => {
-                                data.forEach(async (item) => {
-                                    const detail = await getDetail(item.prod_id)
-                                    const order_details = await getOrderDetails('order-details')
-                                    const order_detail_id = order_details.length > 0 ? order_details[order_details.length - 1].order_detail_id + 1 : 0
-                                    const newOrderDetails = {
-                                        order_detail_id: order_detail_id,
-                                        order_id: order.order_id,
-                                        prod_id: item.prod_id,
-                                        product_name: detail.name,
-                                        img_url: item.img_url,
-                                        product_price: item.price,
-                                        product_quantity: item.quantity,
-                                        size: item.size ? item.size : '',
-                                        color: item.color ? item.color : '',
-                                        subtotal: item.quantity * item.price
-                                    }
-                                    await fetch(`http://localhost:3000/order-details`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify(newOrderDetails)
-                                    })
-                                })
+                                handleOrderDetails(order.order_id, data) 
                             })
-                            .then(() => {
-                                handleProductQuantity(order.order_id, data)
-                            })
+                        handleProductQuantity(data) 
                     }
 
                     const orderInfo = {
@@ -288,7 +266,7 @@ const Checkout = () => {
                 let now = new Date().getTime();
                 let distance = countdownDate - now;
                 let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                countdown.innerHTML = `Website sẽ tự quay về lại trang chủ sau ${seconds}s`
+                countdown.innerHTML = `The website will automatically redirect back to the home page after ${seconds}s`
                 if (distance < 0) {
                     clearInterval(x);
                     document.location.href = '/'
@@ -296,32 +274,33 @@ const Checkout = () => {
             }, 1000);
         }
 
-        const handleProductQuantity = async (orderId, carts) => {
+        const handleProductQuantity = async (carts) => {
             for (let i = 0; i < carts.length; i++) {
                 const product = await getDetail(carts[i].prod_id)
                 const sizeIndex = product.sizes.indexOf(carts[i].size)
+                console.log(sizeIndex)
+                let quantityArr = product.quantity
                 if (carts[i].prod_id == product.id) {
-                    const luotBan = parseInt(product.luot_ban) + parseInt(carts[i].quantity)
+                    const luotBan = parseInt(product.sales) + parseInt(carts[i].quantity)
                     const quantity = parseInt(product.quantity[sizeIndex]) - parseInt(carts[i].quantity)
+                    quantityArr[sizeIndex] = quantity
                     await fetch(`http://localhost:3000/products/${carts[i].prod_id}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ quantity: quantity, luot_ban: luotBan })
+                        body: JSON.stringify({ quantity: quantityArr, sales: luotBan })
                     })
                         .then(async () => {
                             await getDetail(carts[i].prod_id)
                         })
                 }
             }
-            handleOrderDetails(orderId, carts)
         }
 
         const handleOrderDetails = async (orderId, carts) => {
             carts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id)
-                const order_details = await getOrderDetails('order-details')
                 const newOrderDetails = {
                     order_id: orderId,
                     prod_id: item.prod_id,
@@ -341,6 +320,9 @@ const Checkout = () => {
                     body: JSON.stringify(newOrderDetails)
                 })
                 .then(() => {
+                    carts.forEach(async (item) => {
+                        await removeCart('cart', item.id)
+                    })
                     orderSuccessConfirm()
                 })
             })
@@ -443,19 +425,16 @@ const Checkout = () => {
                             </div>
                         </div>
                         <div className={styles.main_order_successful}>
-                            <h3>Cảm ơn bạn đã mua sắm tại Monfee</h3>
-                            <span>Bạn đã đặt hàng thành công. Để kiểm tra tất cả chi tiết về đơn hàng,
-                                vui lòng chọn "Theo dõi đơn hàng của bạn" hoặc tiếp tục khám phá thêm
-                                nhiều sản phẩm khác.
-                            </span>
+                            <h3>Thank you for shopping with Monfee</h3>
+                            <span>Your order has been placed successfully. To check all the details of your order, please select "Track your order" or continue exploring more products.</span>
                             <div className={styles.order_countdown}></div>
                         </div>
                         <div className={styles.order_successful_actions}>
                             <div>
-                                <button className={styles.order_tracking}>THEO DÕI ĐƠN HÀNG</button>
+                                <button className={styles.order_tracking}>TRACK YOUR ORDER</button>
                             </div>
                             <a href="/shop">
-                                <button className={styles.continue_shopping}>TIẾP TỤC MUA SẮM</button>
+                                <button className={styles.continue_shopping}>CONTINUE SHOPPING</button>
                             </a>
                         </div>
                     </div>

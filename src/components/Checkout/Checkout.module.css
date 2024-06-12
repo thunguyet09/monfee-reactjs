@@ -383,14 +383,14 @@
 #dialog_content {
     position: fixed;
     z-index: 9999;
-    bottom: 20px;
+    top: 120px;
     right: 10px;
-    padding: 12px 15px;
+    padding: 8px 15px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     display: none;
     flex-direction: row;
-    gap: 10px;
+    gap: 7px;
     color: white;
 }
 
@@ -400,13 +400,13 @@
     align-items: center;
     justify-content: center;
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-family: "Nunito", sans-serif;
 }
 
 #dialog_content>span>span {
     margin-top: 5px;
-    font-size: 24px;
+    font-size: 22px;
 }
 
 .order_successful {

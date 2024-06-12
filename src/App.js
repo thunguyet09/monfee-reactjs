@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import styles from './App.module.css';
-import React, {Suspense} from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Switch, Navigate } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
@@ -19,6 +19,7 @@ import Cart from './components/Cart/Cart';
 import Dashboard from './admin/Dashboard/Dashboard';
 import { useState, useEffect } from 'react';
 import Checkout from './components/Checkout/Checkout';
+import Orders from './components/Orders/Orders';
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
@@ -46,7 +47,7 @@ const ProtectedRoute = ({ path, element: Element }) => {
     return false;
   };
   const isAuthenticated = checkTokenValidity();
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -79,7 +80,7 @@ const ProtectedRoute = ({ path, element: Element }) => {
 //       },
 //       body: JSON.stringify({ token }),
 //     });
-   
+
 //     const data = await response.json();
 //     return data.isValid;
 //   };
@@ -225,6 +226,19 @@ function App() {
                   <div className={styles.homePage}>
                     <Checkout />
                     <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
+            />
+
+            <Route
+              path="/orders"
+              element={
+                <div className={styles.main}>
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Orders />
                     <Footer />
                   </div>
                 </div>
