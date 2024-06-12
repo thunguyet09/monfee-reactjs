@@ -22,7 +22,7 @@ import Checkout from './components/Checkout/Checkout';
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
-    return localStorage.getItem('token');
+    return localStorage.getItem('access_token');
   };
   const verifyTokenOnServer = async (token) => {
     return fetch('http://localhost:3000/users/verifyToken', {
@@ -54,50 +54,50 @@ const ProtectedRoute = ({ path, element: Element }) => {
   return <Route path={path} element={<Element />} />;
 };
 
-const UserRoute = ({ element: Element }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const token = localStorage.getItem('token');
+// const UserRoute = ({ element: Element }) => {
+//   const [isAuthenticated, setIsAuthenticated] = useState(null);
+//   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const checkTokenValidity = async () => {
-      if (token) {
-        const isValid = await verifyUserTokenOnServer(token);
-        setIsAuthenticated(isValid);
-      } else {
-        setIsAuthenticated(false);
-      }
-    };
+//   useEffect(() => {
+//     const checkTokenValidity = async () => {
+//       if (token) {
+//         const isValid = await verifyUserTokenOnServer(token);
+//         setIsAuthenticated(isValid);
+//       } else {
+//         setIsAuthenticated(false);
+//       }
+//     };
 
-    checkTokenValidity();
-  }, []);
+//     checkTokenValidity();
+//   }, []);
 
-  const verifyUserTokenOnServer = async (token) => {
-    const response = await fetch('http://localhost:3000/users/verifyUserToken', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ token }),
-    });
+//   const verifyUserTokenOnServer = async (token) => {
+//     const response = await fetch('http://localhost:3000/users/verifyUserToken', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ token }),
+//     });
    
-    const data = await response.json();
-    return data.isValid;
-  };
+//     const data = await response.json();
+//     return data.isValid;
+//   };
 
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>;
-  }
+//   if (isAuthenticated === null) {
+//     return <div>Loading...</div>;
+//   }
 
-  return (
-    <>
-      {isAuthenticated ? (
-        <Element authenticated="true"/>
-      ) : (
-        <Navigate to="/login" replace />
-      )}
-    </>
-  );
-};
+//   return (
+//     <>
+//       {isAuthenticated ? (
+//         <Element authenticated="true"/>
+//       ) : (
+//         <Navigate to="/login" replace />
+//       )}
+//     </>
+//   );
+// };
 
 
 const CartPage = () => (
@@ -202,7 +202,17 @@ function App() {
 
             <Route
               path="/cart"
-              element={<UserRoute element={CartPage} />}
+              element={
+                <div className={styles.main}>
+                  <Search />
+                  <Header />
+                  <div className={styles.homePage}>
+                    <Cart />
+                    <MiniCart />
+                    <Footer />
+                  </div>
+                </div>
+              }
             />
 
             <Route

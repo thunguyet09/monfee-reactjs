@@ -54,7 +54,7 @@ const Home = ({ authenticated }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access_token");
     const userId = localStorage.getItem("userId");
     let selectedColorIndex = '';
     const fetchData = async () => {
@@ -253,6 +253,7 @@ const Home = ({ authenticated }) => {
 
             let colorChoosed = ''
             if (item.colors.length > 0) {
+              colorChoosed = item.colors[0]
               const colors = document.createElement("div");
               colors.className = styles.colorBox;
               quickViewInfo.appendChild(colors);
@@ -388,102 +389,117 @@ const Home = ({ authenticated }) => {
                 }
               }
 
-              let checked = true;
-              if (sizeChoosed == '') {
-                sizeBtn.style.color = 'red'
-                checked = false;
-              }
-              if (item.colors.length > 0 && colorChoosed == '') {
-                colorBtn.style.color = 'red'
-                checked = false;
-              }
               if (token) {
-                if (checked) {
-                  if (existingCart.length > 0) {
-                    existingCart.forEach(async (val) => {
-                      const new_quantity = val.quantity + parseInt(quantity.value);
-                      if (val.size) {
-                        if (val.color) {
-                          await fetch(`http://localhost:3000/cart`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
+                if (existingCart.length > 0) {
+                  existingCart.forEach(async (val) => {
+                    const new_quantity = val.quantity + parseInt(quantity.value);
+                    if (val.size) {
+                      if (val.color) {
+                        await fetch(`http://localhost:3000/cart`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size, color: val.color })
+                        })
+                          .then(() => {
+                            localStorage.setItem('product_id', val.prod_id)
+                            setTimeout(() => {
+                              cartModal.style.display = 'block'
+                              handleCartModal2(colorChoosed, sizeChoosed)
+                              numsInCart()
+                            }, 2000)
                           })
-                            .then(() => {
-                              localStorage.setItem('product_id', val.prod_id)
-                              setTimeout(() => {
-                                cartModal.style.display = 'block'
-                                handleCartModal2(colorChoosed, sizeChoosed)
-                                numsInCart()
-                              }, 2000)
-                            })
-                        } else {
-                          await fetch(`http://localhost:3000/cart`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
-                          })
-                            .then(() => {
-                              localStorage.setItem('product_id', val.prod_id)
-                              setTimeout(() => {
-                                cartModal.style.display = 'block'
-                                handleCartModal2(colorChoosed, sizeChoosed)
-                                numsInCart()
-                              }, 2000)
-                            })
-                        }
                       } else {
-                        if (val.color) {
-                          await fetch(`http://localhost:3000/cart`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
+                        await fetch(`http://localhost:3000/cart`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, size: val.size })
+                        })
+                          .then(() => {
+                            localStorage.setItem('product_id', val.prod_id)
+                            setTimeout(() => {
+                              cartModal.style.display = 'block'
+                              handleCartModal2(colorChoosed, sizeChoosed)
+                              numsInCart()
+                            }, 2000)
                           })
-                            .then(() => {
-                              localStorage.setItem('product_id', val.prod_id)
-                              setTimeout(() => {
-                                cartModal.style.display = 'block'
-                                handleCartModal2(colorChoosed, sizeChoosed)
-                                numsInCart()
-                              }, 2000)
-                            })
-                        } else {
-                          await fetch(`http://localhost:3000/cart`, {
-                            method: 'PUT',
-                            headers: {
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
+                      }
+                    } else {
+                      if (val.color) {
+                        await fetch(`http://localhost:3000/cart`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId, color: val.color })
+                        })
+                          .then(() => {
+                            localStorage.setItem('product_id', val.prod_id)
+                            setTimeout(() => {
+                              cartModal.style.display = 'block'
+                              handleCartModal2(colorChoosed, sizeChoosed)
+                              numsInCart()
+                            }, 2000)
                           })
-                            .then(() => {
-                              localStorage.setItem('product_id', val.prod_id)
-                              setTimeout(() => {
-                                cartModal.style.display = 'block'
-                                handleCartModal2(colorChoosed, sizeChoosed)
-                                numsInCart()
-                              }, 2000)
-                            })
-                        }
+                      } else {
+                        await fetch(`http://localhost:3000/cart`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({ quantity: new_quantity, prod_id: val.prod_id, user_id: userId })
+                        })
+                          .then(() => {
+                            localStorage.setItem('product_id', val.prod_id)
+                            setTimeout(() => {
+                              cartModal.style.display = 'block'
+                              handleCartModal2(colorChoosed, sizeChoosed)
+                              numsInCart()
+                            }, 2000)
+                          })
                       }
-                    })
-                  } else {
-                    if (item.colors && item.colors.length > 0) {
-                      const cart = {
-                        id: cartId,
-                        prod_id: item.id,
-                        quantity: quantity.value,
-                        size: sizeChoosed,
-                        color: colorChoosed,
-                        img_url: item.img_url[selectedColorIndex],
-                        user_id: localStorage.getItem('userId')
-                      }
+                    }
+                  })
+                } else {
+                  if (item.colors && item.colors.length > 0) {
+                    const cart = {
+                      id: cartId,
+                      prod_id: item.id,
+                      quantity: quantity.value,
+                      size: sizeChoosed,
+                      color: colorChoosed,
+                      img_url: item.img_url[selectedColorIndex],
+                      user_id: localStorage.getItem('userId')
+                    }
 
+                    await fetch(`http://localhost:3000/cart`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(cart)
+                    })
+                      .then(() => {
+                        localStorage.setItem('product_id', item.id)
+                        setTimeout(() => {
+                          cartModal.style.display = 'block'
+                          handleCartModal2(colorChoosed, sizeChoosed)
+                          numsInCart()
+                        }, 2000)
+                      })
+                  } else {
+                    const cart = {
+                      id: cartId,
+                      prod_id: item.id,
+                      quantity: parseInt(quantity.value),
+                      size: sizeChoosed,
+                      img_url: selectedColorIndex ? item.img_url[selectedColorIndex] : item.img_url[0],
+                      user_id: localStorage.getItem('userId')
+                    }
+                    try {
                       await fetch(`http://localhost:3000/cart`, {
                         method: 'POST',
                         headers: {
@@ -495,42 +511,14 @@ const Home = ({ authenticated }) => {
                           localStorage.setItem('product_id', item.id)
                           setTimeout(() => {
                             cartModal.style.display = 'block'
-                            handleCartModal2(colorChoosed, sizeChoosed)
+                            handleCartModal2('', sizeChoosed)
                             numsInCart()
                           }, 2000)
                         })
-                    } else {
-                      const cart = {
-                        id: cartId,
-                        prod_id: item.id,
-                        quantity: parseInt(quantity.value),
-                        size: sizeChoosed,
-                        img_url: selectedColorIndex ? item.img_url[selectedColorIndex] : item.img_url[0],
-                        user_id: localStorage.getItem('userId')
-                      }
-                      try {
-                        await fetch(`http://localhost:3000/cart`, {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json'
-                          },
-                          body: JSON.stringify(cart)
-                        })
-                          .then(() => {
-                            localStorage.setItem('product_id', item.id)
-                            setTimeout(() => {
-                              cartModal.style.display = 'block'
-                              handleCartModal2('', sizeChoosed)
-                              numsInCart()
-                            }, 2000)
-                          })
-                      } catch (err) {
-                        console.error(err)
-                      }
+                    } catch (err) {
+                      console.error(err)
                     }
                   }
-                } else {
-
                 }
               } else {
                 document.location.href = '/login'
@@ -1321,19 +1309,16 @@ const Home = ({ authenticated }) => {
         if (slideIndex == 0) {
           slideIndex = 2;
           const slideWidth = sliderContainer.clientWidth;
-          sliderContainer.style.transform = `translateX(-${slideIndex * slideWidth
-            }px)`;
+          sliderContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
         } else {
           slideIndex =
-            (slideIndex - 1 + sliderContainer.children.length) %
-            sliderContainer.children.length;
+            (slideIndex - 1 + sliderContainer.children.length) % sliderContainer.children.length;
           updateSliderPosition();
         }
       });
 
       nextButton.addEventListener("click", () => {
         slideIndex = (slideIndex + 1) % sliderContainer.children.length;
-
         if (slideIndex > 2) {
           slideIndex = 0;
           sliderContainer.style.transform = `translateX(0px)`;

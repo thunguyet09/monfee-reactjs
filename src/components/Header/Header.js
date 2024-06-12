@@ -106,7 +106,7 @@ const Header = () => {
         shoppingIcon.style.color = 'black'
       }
 
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       const userChecked = document.querySelector(`.${styles.userChecked}`)
       const userIcon = document.querySelector(`.${styles.user}`)
       const subAvatar = document.querySelector(`.${styles.subAvatar}`)
@@ -217,7 +217,7 @@ const Header = () => {
           </span>
         </span>
         <span className={styles.bag}>
-          <span class="material-symbols-outlined">
+          <span className="material-symbols-outlined">
             shopping_bag
           </span>
           <p className={styles.numsInCart}></p>

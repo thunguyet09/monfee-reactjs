@@ -6,6 +6,8 @@ function Register() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isValid, setIsValid] = useState(true)
+
     const handleSubmit = async (e) => {
         const dialogContent = document.querySelector(`#${styles.dialogContent}`)
         const dialogIcon = document.querySelector(`#${styles.dialogContent} > span`)
@@ -14,7 +16,7 @@ function Register() {
         if(username == '' || email == '' || password == ''){
             dialogContent.style.backgroundColor = '#B70328'
             dialogContent.style.display = 'flex'
-            dialogText.innerHTML = 'Vui lòng nhập đầy đủ thông tin'
+            dialogText.innerHTML = 'Please fill out the form.'
             dialogIcon.innerHTML = `<span class="material-symbols-outlined">error</span>`
             setTimeout(() => {
                 dialogContent.style.display = 'none'
@@ -52,7 +54,7 @@ function Register() {
             .then(() => {
                 dialogContent.style.backgroundColor = '#6B8A47'
                 dialogContent.style.display = 'flex'
-                dialogText.innerHTML = 'Đăng ký thành công'
+                dialogText.innerHTML = 'Register successful'
                 dialogIcon.innerHTML = `<span class="material-symbols-outlined">done</span>`
                 setTimeout(() => {
                     dialogContent.style.display = 'none'
@@ -60,6 +62,12 @@ function Register() {
             })
         }
 
+    }
+
+    const handleEmailChange = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        console.log(emailRegex.test(email))
+        setIsValid(emailRegex.test(email))
     }
 
     useEffect(() => {
@@ -96,10 +104,16 @@ function Register() {
                         <div className={styles.groupControl}>
                             <label htmlFor="email">Email address</label>
                             <input type="email" id={styles.email} name="email" key="email" placeholder='Email address'
-                                onChange={(e) => setEmail(e.target.value)}/>
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    handleEmailChange(e.target.value);
+                                }} />
                             <span className={styles.envelopeIcon}>
                                 <FontAwesomeIcon icon={faEnvelope} />   
                             </span>
+                            {
+                                isValid == false ? (<p className={styles.email_error}>Email is not valid</p>) : (<></>)
+                            }
                         </div>
 
                         <div className={styles.groupControl}>

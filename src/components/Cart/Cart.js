@@ -18,19 +18,20 @@ const Cart = () => {
         const getAPI = async () => {
             const carts = await getCarts("cart")
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
-            calc_total(filteredCarts)
             filteredCarts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 let price = detail.promo_price && detail.promo_price[0] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                 updateQuantity(item.id, item.quantity, price)
             })
+            calc_total(filteredCarts)
         }
 
         const renderCart = async () => {
             const carts = await getCarts("cart")
             if(isMounted){
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
+                calc_total(filteredCarts)
                 cartTable(filteredCarts)
             }
         }
@@ -41,8 +42,11 @@ const Cart = () => {
             data.forEach((item) => {
                 let subtotal = item.quantity * item.price
                 total += subtotal
-                cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
+                if(total && total > 0){
+                    cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
+                }
             })
+            console.log(total)
 
             const apply_voucher = document.querySelector(`.${styles.apply_btn}`)
             const voucher_code = document.querySelector(`.${styles.voucher_box} > input`)
@@ -222,12 +226,15 @@ const Cart = () => {
                 const quantity_input = document.createElement('input')
                 quantity_input.value = item.quantity
                 quantity_input.addEventListener('change', async () => {
-                    quantity_value = parseInt(quantity_input.value);
                     if (isNaN(quantity_value)) {
                         quantity_value = 0;
                     }
+                    if(quantity_input.value <= 1){
+                        quantity_input.value = 1
+                    }
+                    quantity_value = parseInt(quantity_input.value)
                     updateSubtotal();
-                    let price = detail.promo_price && sizeIndex == 0 ? detail.promo_price : detail.price[sizeIndex]
+                    let price = detail.promo_price.length > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     await fetch('http://localhost:3000/cart/quantity', {
                         method: 'PUT',
                         headers: {
@@ -251,8 +258,13 @@ const Cart = () => {
                 const increase = document.createElement('button')
 
                 increase.addEventListener('click', async () => {
-                    quantity_input.value++;
+                    if(quantity_input.value >= detail.quantity[sizeIndex]){
+                        quantity_input.value = detail.quantity[sizeIndex]
+                    }else{
+                        quantity_input.value++;
+                    }
                     quantity_value = quantity_input.value
+
                     updateSubtotal()
                     let price = detail.promo_price && detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
                     await fetch('http://localhost:3000/cart/quantity', {
@@ -275,7 +287,11 @@ const Cart = () => {
                 quantity_btns.appendChild(increase)
                 const decrease = document.createElement('button')
                 decrease.addEventListener('click', async () => {
-                    quantity_input.value--;
+                    if(quantity_input.value <= 1){
+                        quantity_input.value = 1
+                    }else{
+                        quantity_input.value--;
+                    }
                     quantity_value = quantity_input.value
                     updateSubtotal()
                     let price = detail.promo_price && detail.promo_price[sizeIndex] > 0 ? detail.promo_price[sizeIndex] : detail.price[sizeIndex]
@@ -327,7 +343,6 @@ const Cart = () => {
             })
         }
 
-        getAPI()
         renderCart()
         return () => {
             isMounted = false;

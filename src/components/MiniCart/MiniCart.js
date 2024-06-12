@@ -117,7 +117,7 @@ const MiniCart = () => {
                     <div className={styles.mini_content}>
                         <div className={styles.mini_cart_head}>
                             <a className={styles.mini_cart_close}>
-                                <span class="material-symbols-outlined">close</span>
+                                <span className="material-symbols-outlined">close</span>
                             </a>
                             <h3 className={styles.title}>Shopping Cart</h3>
                             <div className={styles.mini_cart_counter}>
