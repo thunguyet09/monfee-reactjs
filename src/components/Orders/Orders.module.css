@@ -1,0 +1,53 @@
+.orders {
+    margin: 130px 120px 40px 120px;
+}
+
+.bread_crumb {
+    text-align: left;
+    font-family: "Nunito", sans-serif;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.bread_crumb > span {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.bread_crumb > a {
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+}
+
+.bread_crumb > a:last-child {
+    color: #EE7214;
+}
+
+.heading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 40px;
+    font-family: "Nunito", sans-serif;
+}
+
+.title {
+    text-align: left;
+}
+
+.title > h2 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.title > span {
+    font-weight: 600;
+    color: grey;
+}
+
+.spending > h2 {
+    font-size: 20px;
+}

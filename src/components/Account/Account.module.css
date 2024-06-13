@@ -33,7 +33,7 @@
     font-family: 'Mulish', sans-serif;
     background-color: white;
     gap: 5px;
-    height: 30px;
+    height: 35px;
     color: rgb(96, 96, 96);
     cursor: pointer;
   }
@@ -128,6 +128,7 @@
   .account_title > h3, .account_title > p {
     margin: 0;
     font-family: 'Mulish', sans-serif;
+    font-weight: 600;
     margin: 5px 0px;
   }
   
@@ -181,6 +182,12 @@
     width: 80%;
   }
   
+  .emailBox, .phoneBox {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+  }
   .group_control > div > input {
     padding: 10px 8px;
     width: 400px;
@@ -510,3 +517,4 @@
     opacity: 0.8;
   }
   
+
