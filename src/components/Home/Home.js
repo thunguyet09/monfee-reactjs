@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./Home.module.css";
 import {
-  getAllProducts,
-  getCarts,
-  getChosedVoucher,
-  getNewsApproved,
+  getData,
   getDetail,
   getProductsByCategoryId,
 } from "../../api.js";
@@ -59,7 +56,7 @@ const Home = ({ authenticated }) => {
     let selectedColorIndex = '';
     const fetchData = async () => {
       try {
-        const products = await getAllProducts("products");
+        const products = await getData("products");
         const newProducts = products.sort((b, a) => {
           return new Date(a.createdAt) - new Date(b.createdAt);
         });
@@ -373,7 +370,7 @@ const Home = ({ authenticated }) => {
 
             addToCartBtn.addEventListener('click', async () => {
               let existingCart = []
-              const carts = await getCarts("cart")
+              const carts = await getData("cart")
               const cartId = carts[carts.length - 1].id + 1
               if (colorChoosed) {
                 if (sizeChoosed) {
@@ -592,7 +589,7 @@ const Home = ({ authenticated }) => {
     };
 
     const handleCountDown = async () => {
-      const voucher = await getChosedVoucher("vouchers/chosed");
+      const voucher = await getData("vouchers/chosed");
       const currentDate = new Date();
       const expiredDate = new Date(voucher.expiredDate);
       let times = expiredDate - currentDate;
@@ -666,7 +663,7 @@ const Home = ({ authenticated }) => {
 
     const productsSale = async () => {
       try {
-        const products = await getAllProducts("products");
+        const products = await getData("products");
         const salesData = products
           .filter((item) => {
             return (
@@ -711,7 +708,7 @@ const Home = ({ authenticated }) => {
 
           cart.addEventListener("click", async () => {
             if (token) {
-              const carts = await getCarts("cart");
+              const carts = await getData("cart");
               let id = 0;
               if (carts.length > 0) {
                 id = carts[carts.length - 1].id + 1;
@@ -974,7 +971,7 @@ const Home = ({ authenticated }) => {
 
             addToCartBtn.addEventListener('click', async () => {
               let existingCart = []
-              const carts = await getCarts("cart")
+              const carts = await getData("cart")
               const cartId = carts[carts.length - 1].id + 1
               if (colorChoosed) {
                 if (sizeChoosed) {
@@ -1224,7 +1221,7 @@ const Home = ({ authenticated }) => {
     };
 
     const showNews = async () => {
-      const news = await getNewsApproved("news");
+      const news = await getData("news");
       const news_data = news
         .sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt);
@@ -1355,7 +1352,7 @@ const Home = ({ authenticated }) => {
       const productId = localStorage.getItem("product_id");
       const product = await getDetail(productId);
       if (product) {
-        const cart = await getCarts("cart");
+        const cart = await getData("cart");
         const data = cart.filter(
           (item) => item.prod_id == productId && item.user_id == userId
         );
@@ -1614,7 +1611,7 @@ const Home = ({ authenticated }) => {
       const productId = localStorage.getItem('product_id')
       const product = await getDetail(productId)
       if (product) {
-        const cart = await getCarts("cart")
+        const cart = await getData("cart")
         let data = '';
         if (colorItem !== '') {
           if (sizeItem !== '') {

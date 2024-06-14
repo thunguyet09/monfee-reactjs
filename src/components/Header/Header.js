@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faInfoCircle, faLock, faTimesCircle, faUser, faSearch, faHeart, faUserCheck } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
-import { getCarts } from '../../api';
+import { getData } from '../../api';
 import Search from '../Search/Search';
 import { SearchContext, useSearch } from '../../contexts/SearchContext/SearchContext';
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
-  const carts = await getCarts('cart')
+  const carts = await getData('cart')
   const numsInCart = document.querySelector(`.${styles.numsInCart}`)
   const filteredCarts = carts.filter(((item) => item.user_id == userId))
   numsInCart.innerHTML = `${filteredCarts.length}`

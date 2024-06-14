@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import orders from './Orders.module.css'
 const Orders = () => {
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+    if(isMounted){
+
+    }
+    return() => {
+      setIsMounted(false)
+    }
+  }, [isMounted])
   return (
     <div id={orders.orders}>
       <div className={orders.orders}>
         <div className={orders.bread_crumb}>
             <a href="/">Home</a>
-            <span class="material-symbols-outlined">chevron_right</span>
+            <span className="material-symbols-outlined">chevron_right</span>
             <a href="/account">User Profile</a>
-            <span class="material-symbols-outlined">chevron_right</span>
+            <span className="material-symbols-outlined">chevron_right</span>
             <a>Orders</a>
         </div>
         <div className={orders.heading}>

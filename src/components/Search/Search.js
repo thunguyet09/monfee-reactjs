@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import styles from './Search.module.css'
-import { getAllProducts } from '../../api'
+import { getData } from '../../api'
 import { useSearch } from '../../contexts/SearchContext/SearchContext'
 
 
@@ -8,7 +8,7 @@ const Search = () => {
     const { open, setSearchOpen } = useSearch()
     useEffect(() => {
         const handleSearch = async () => {
-            const products = await getAllProducts('products')
+            const products = await getData('products')
             const search_input = document.querySelector(`.${styles.search_input}`)
             const search_eveland = document.querySelector(`.${styles.search_eveland}`)
             if(open === true){

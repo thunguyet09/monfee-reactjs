@@ -19,7 +19,7 @@ const Detail = () => {
         let selectedColorIndex = '';
         const fetchData = async () => {
             const detail = await getDetail(id.toString());
-            const products = await getAllProducts('products')
+            const products = await getData('products')
             const user = userId ? await getUser(userId) : ''
             const lastId = products[products.length - 1].id
             let prev_prod;
@@ -387,7 +387,7 @@ const Detail = () => {
             })
             addToCart.addEventListener('click', async () => {
                 let existingCart = []
-                const carts = await getCarts("cart")
+                const carts = await getData("cart")
                 const cartId = carts[carts.length - 1].id + 1
                 if (colorItem) {
                     if (sizeItem) {
@@ -701,7 +701,7 @@ const Detail = () => {
         const handleCartModal = async (colorItem, sizeItem) => {
             const productId = localStorage.getItem('product_id')
             if (productId) {
-                const cart = await getCarts("cart")
+                const cart = await getData("cart")
                 let data = '';
                 if (colorItem) {
                     if (sizeItem) {

@@ -1,54 +1,21 @@
 const url = 'http://localhost:3000/'
-export const getAllProducts = async (val) => {
-    if(val){
+export const getData = async (val) => {
+    if (val) {
         const res = await fetch(url + val)
         const data = await res.json()
         return data
     }
 }
 
-export const getChosedVoucher = async (val) => {
-    if(val){
-        const res = await fetch(url + val)
-        const data = await res.json()
-        return data
-    }
+export const getOrderDetails = async (val) => {
+    const res = await fetch(url + val)
+    const data = await res.json()
+    return data
 }
 
-export const getAllVouchers = async (val) => {
-    if(val){
-        const res = await fetch(url + val)
-        const data = await res.json()
-        return data
-    }
-}
-
-export const getDetailVoucher = async (val) => {
-    if(val){
-        const res = await fetch(url + val)
-        const data = await res.json()
-        return data
-    }
-}
-
-export const getNewsApproved = async (val) => {
-    if(val){
-        const res = await fetch(url + val)
-        const data = await res.json()
-        return data
-    }
-}
-
-export const getCarts = async (val) => {
-    if(val){
-        const res = await fetch(url + val)
-        const data = await res.json()
-        return data
-    }
-}
 
 export const getDetail = async (id) => {
-    if(id){
+    if (id) {
         const res = await fetch(`http://localhost:3000/products/${id}`)
         const data = await res.json()
         return data
@@ -56,7 +23,7 @@ export const getDetail = async (id) => {
 }
 
 export const getProductsByCategoryId = async (id) => {
-    if(id){
+    if (id) {
         const res = await fetch(`http://localhost:3000/products/category/${id}`)
         const data = await res.json()
         return data
@@ -65,31 +32,31 @@ export const getProductsByCategoryId = async (id) => {
 
 
 export const product_pagination = async (page, limit) => {
-   if(page && limit){
-    const res = await fetch(`http://localhost:3000/products/${page}/${limit}`)
-    const data = await res.json()
-    return data
-   }
+    if (page && limit) {
+        const res = await fetch(`http://localhost:3000/products/${page}/${limit}`)
+        const data = await res.json()
+        return data
+    }
 }
 
 export const getUser = async (id) => {
-   if(id){
-    const res = await fetch(`http://localhost:3000/users/${id}`)
-    const data = await res.json()
-    return data
-   }
+    if (id) {
+        const res = await fetch(`http://localhost:3000/users/${id}`)
+        const data = await res.json()
+        return data
+    }
 }
 
-export const getOrders = async (val) => {
-    const res = await fetch(url + val)
-    const data = await res.json()
-    return data
-}
-
-export const getOrderDetails = async (val) => {
-    const res = await fetch(url + val)
-    const data = await res.json()
-    return data
+export const updateUser = async (id, userData) => {
+    if (id) {
+        const res = await fetch(`http://localhost:3000/users/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+    }
 }
 
 export const removeCart = async (val, id) => {
@@ -99,7 +66,4 @@ export const removeCart = async (val, id) => {
     const data = await res.json()
     return data
 }
-
-
-
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 import styles from './Product.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
-import { getAllProducts, product_pagination } from '../../api';
+import { getData, product_pagination } from '../../api';
 
 const Product = () => {
     useEffect(() => {
@@ -96,7 +96,7 @@ const Product = () => {
         const items_per_page = localStorage.getItem('items_per_page')
         let page = 1;
         const colors = async () => {
-            const products = await getAllProducts("products")
+            const products = await getData("products")
             const uniqueColors = products.reduce((colorSet, item) => {
                 item.colors.forEach(color => colorSet.add(color));
                 return colorSet;
@@ -255,7 +255,7 @@ const Product = () => {
 
         const priceFilter = async () => {
             try {
-                const products = await getAllProducts('products');
+                const products = await getData('products');
                 const filter = document.querySelector(`.${styles.col_content} > .${styles.filter_price}`);
 
                 const minPrice = products.reduce((min, product) => {
@@ -882,7 +882,7 @@ const Product = () => {
             const dropdown = document.querySelectorAll(`.${styles.dropdown} > li`)
             dropdown.forEach((item) => {
                 item.addEventListener('click', async () => {
-                    const products = await getAllProducts()
+                    const products = await getData('products')
                     if (item.value == '1') {
                         const sorted = products.sort((a, b) => b.sales - a.sales)
                         const data = await product_pagination(page, items_per_page)

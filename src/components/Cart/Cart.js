@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import styles from './Cart.module.css'
-import { getAllVouchers, getCarts, getDetail, getUser } from '../../api'
+import { getDetail, getData } from '../../api'
 import { numsInCart } from '../Header/Header'
 const Cart = () => {
     useEffect(() => {
@@ -16,7 +16,7 @@ const Cart = () => {
             document.location.href = '/checkout'
         })
         const getAPI = async () => {
-            const carts = await getCarts("cart")
+            const carts = await getData("cart")
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
             filteredCarts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
@@ -28,7 +28,7 @@ const Cart = () => {
         }
 
         const renderCart = async () => {
-            const carts = await getCarts("cart")
+            const carts = await getData("cart")
             if(isMounted){
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 calc_total(filteredCarts)
@@ -67,7 +67,7 @@ const Cart = () => {
             } else {
                 formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
             }
-            const vouchers = await getAllVouchers('vouchers')
+            const vouchers = await getData('vouchers')
             const userId = localStorage.getItem('userId')
             const user = await getUser(userId)
             if(user.vouchers.length > 0){

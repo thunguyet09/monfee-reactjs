@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getCarts, getDetail, getDetailVoucher, getOrders, getUser, removeCart } from '../../api'
+import { getData, getUser, getDetail, removeCart } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
         const products_info = document.querySelector(`.${styles.products_info}`)
         const userId = localStorage.getItem('userId')
         const getAPI = async () => {
-            const carts = await getCarts("cart")
+            const carts = await getData("cart")
             if (isMounted) {
                 const filteredCarts = carts.filter(((item) => item.user_id == userId))
                 showProducts(filteredCarts)
@@ -169,7 +169,7 @@ const Checkout = () => {
                 } else {
                     formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
                 }
-                const orders = await getOrders('orders')
+                const orders = await getData('orders')
                 const dialog_content = document.querySelector(`#${styles.dialog_content}`)
                 const dialog_icon = document.querySelector(`#${styles.dialog_content} > span`)
                 const dialog_text = document.querySelector(`.${styles.dialog_text}`)

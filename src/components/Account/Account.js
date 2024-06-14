@@ -2,58 +2,133 @@ import React, { useEffect, useState } from 'react'
 import account from './Account.module.css'
 import { faUserCircle,faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getUser } from '../../api';
+import { getUser, updateUser } from '../../api';
+import axios from 'axios';
 const Account = () => {
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
-    const [phone, setPhone] = useState()
-    const [gender, setGender] = useState()
+    const [phone, setPhone] = useState(null)
+    const [gender, setGender] = useState('')
     const [address, setAddress] = useState('')
+    const [avatar, setAvatar] = useState('')
+    const [male, setMale] = useState(false)
+    const [female, setFemale] = useState(false)
+    const [other, setOther] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
     useEffect(() => {
-        let isMounted = true;
-        const userId = localStorage.getItem('userId')
-        const handleUserInfo = async () => {
-            const userData = await getUser(userId)
-            if(isMounted){
-                setFullName(userData.full_name)
-                setEmail(userData.email)
-                setPhone(userData.phone)
-                setGender(userData.gender)
-                setAddress(userData.address)
-                const avatar = document.querySelector(`.${account.avatar}`)
-                const img = document.createElement('img')
-                img.width = '60'
-                img.height = '60'
-                img.src = `../../img/${userData.avatar}`
-                avatar.appendChild(img)
-                const nameBox = document.createElement('div')
-                avatar.appendChild(nameBox)
-                const fullName = document.createElement('h5')
-                fullName.textContent = userData.full_name 
-                nameBox.appendChild(fullName)
-                const edit_profile = document.createElement('button')
-                edit_profile.className = account.changeInfoBtn
-                edit_profile.innerHTML = `
-                <span class="material-symbols-outlined">edit</span> 
-                <span>Edit profile</span>`
-                nameBox.appendChild(edit_profile)
-            }
-        }
-
         handleUserInfo()
-        
         return() => {
-            isMounted = false;
+            setIsMounted(false)
         }
-    }, [])
+    }, [isMounted])
 
-    const handleAvatar = (e) => {
-        const currentImg = document.querySelector(`.${account.currentImg}`)
-        currentImg.src = `../../img/${e.target.files[0].name}`
+    const handleUserInfo = async () => {
+        setIsMounted(true)
+        if(isMounted){
+            const avatar = document.querySelector(`.${account.avatar}`)
+            const userId = localStorage.getItem('userId')
+            const userData = await getUser(userId)
+            if(userData.gender == 'male'){
+                setMale(true)
+            }else if(userData.gender == 'female'){
+                setFemale(true)
+            }else{
+                setOther(true)
+            }
+            setFullName(userData.full_name)
+            setEmail(userData.email)
+            setPhone(userData.phone)
+            setGender(userData.gender)
+            setAddress(userData.address)
+            setAvatar(userData.avatar)
+            const img = document.createElement('img')
+            img.width = '60'
+            img.height = '60'
+            img.src = `http://localhost:3000/images/${userData.avatar}`
+            avatar.appendChild(img)
+            const nameBox = document.createElement('div')
+            avatar.appendChild(nameBox)
+            const fullName = document.createElement('h5')
+            fullName.textContent = userData.full_name 
+            nameBox.appendChild(fullName)
+            const edit_profile = document.createElement('button')
+            edit_profile.className = account.changeInfoBtn
+            edit_profile.innerHTML = `
+            <span class="material-symbols-outlined">edit</span> 
+            <span>Edit profile</span>`
+            nameBox.appendChild(edit_profile)
+        }
+    }
+
+    const handleAvatar = async (e) => {
+        setAvatar(e.target.files[0].name)
+    
+        const formData = new FormData();
+        formData.append('avatar', e.target.files[0]);
+        console.log(formData)
+        try {
+            const response = await fetch('http://localhost:3000/users/uploadImg', {
+              method: 'POST',
+              body: formData,
+            });
+          
+            if (!response.ok) {
+              const errorData = await response.json();
+              console.error('Error response:', errorData);
+            } else {
+              console.log(await response.json());
+              const currentImg = document.querySelector(`.${account.currentImg}`)
+              currentImg.src = `http://localhost:3000/images/${e.target.files[0].name}`
+            }
+          } catch (error) {
+            console.error('Fetch error:', error);
+          }
     }
 
     const navigateToOrderHistory = () => {
         document.location.href = '/orders'
+    }
+
+    const handleSave = async () => {
+        const dialogContent = document.querySelector(`#${account.dialogContent}`)
+        const dialogIcon = document.querySelector(`#${account.dialogContent} > span`)
+        const dialogText = document.querySelector(`.${account.dialogText}`)
+        const userId = localStorage.getItem('userId')
+
+        const updateUserInfo = {
+            full_name: fullName.trim(),
+            gender: gender,
+            avatar: avatar,
+            address: address
+        }
+        try {
+            await updateUser(userId, updateUserInfo)
+            dialogContent.style.display = 'flex';
+            dialogContent.style.backgroundColor = '#6B8A47';
+            dialogContent.style.color = 'white';
+            dialogText.textContent = 'Information has been updated.';
+            dialogIcon.innerHTML = '<span class="material-symbols-outlined">check</span>';
+            const avatar = document.querySelector(`.${account.avatar}`)
+            avatar.innerHTML = ''
+            await handleUserInfo()
+            setTimeout(() => {
+              dialogContent.style.display = 'none';
+            }, 2000);
+          } catch (error) {
+            console.error('Error updating user information:', error);
+          }
+    }
+
+    const handleGender = (e) => {
+        setMale(false)
+        setFemale(false)
+        setOther(false)
+        const checkBoxes = document.querySelectorAll(`.${account.gender_box} > div > input`)
+        checkBoxes.forEach((input) => {
+            input.checked = false;
+        })
+        e.target.checked = true;
+        setGender(e.target.value)
     }
     return (
         <>
@@ -85,7 +160,7 @@ const Account = () => {
                             <h3>My Profile</h3>
                             <p>Profile information management for account security.</p>
                         </div>
-                        <div className={account.account_row}>
+                        <div className={account.account_row} >
                             <div className={account.infos}>
                                 <div className={account.group_control}>
                                     <label>Full name</label>
@@ -111,15 +186,27 @@ const Account = () => {
                                     <label>Gender</label>
                                     <div className={account.gender_box}>
                                         <div>
-                                            <input type="checkbox" className={account.gender} value="male" onChange={(e) => setGender(e.target.value)} />
+                                            {
+                                                male ? 
+                                                <input type="checkbox" className={account.gender} checked value="male" onChange={(e) => [setGender(e.target.value), handleGender(e)]} /> : 
+                                                <input type="checkbox" className={account.gender} value="male" onChange={(e) => [setGender(e.target.value), handleGender(e)]} />
+                                            }
                                             <label>Male</label>
                                         </div>
                                         <div>
-                                            <input type="checkbox" className={account.gender} value="female" onChange={(e) => setGender(e.target.value)} />
+                                            {
+                                                female ? 
+                                                <input type="checkbox" className={account.gender} checked value="female" onChange={(e) => [setGender(e.target.value), handleGender(e)]} /> : 
+                                                <input type="checkbox" className={account.gender} value="female" onChange={(e) => [setGender(e.target.value), handleGender(e)]} />
+                                            }
                                             <label>Female</label>
                                         </div>
                                         <div>
-                                            <input type="checkbox" className={account.gender} value="other" onChange={(e) => setGender(e.target.value)} />
+                                            {
+                                                other ? 
+                                                <input type="checkbox" className={account.gender} checked value="other" onChange={(e) => [setGender(e.target.value), handleGender(e)]} /> : 
+                                                <input type="checkbox" className={account.gender} value="other" onChange={(e) => [setGender(e.target.value), handleGender(e)]} />
+                                            }
                                             <label>Other</label>
                                         </div>
                                     </div>
@@ -131,7 +218,7 @@ const Account = () => {
                                     </div>
                                 </div>
                                 <div className={account.save_info}>
-                                    <button>SAVE</button>
+                                    <button onClick={handleSave}>SAVE</button>
                                 </div>
                             </div>
                             <div className={account.change_avatar}>
@@ -139,12 +226,17 @@ const Account = () => {
                                     <img className={account.currentImg} />
                                     <div className={account.choose_img}>
                                         <button className={account.chooseImgBtn}>Choose image</button>
-                                        <input type="file" name="img" onChange={(e) => handleAvatar(e)} className={account.avatarFile} />
+                                        <input type="file" name="avatar" onChange={(e) => handleAvatar(e)} className={account.avatarFile} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div id={account.dialogContent}>
+                    <span></span>
+                    <p className={account.dialogText}></p>
                 </div>
             </div>
         </>

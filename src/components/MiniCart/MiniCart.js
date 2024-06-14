@@ -2,13 +2,13 @@ import React from 'react'
 import { useEffect } from 'react'
 import styles from './MiniCart.module.css'
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext'
-import { getCarts, getDetail } from '../../api'
+import { getData, getDetail } from '../../api'
 const MiniCart = () => {
     const {openMiniCart, setMiniCartOpen} = useMiniCart()
     const userId = localStorage.getItem('userId')
     useEffect(() => {
         const numsInCart = async () => {
-            const carts = await getCarts("cart")
+            const carts = await getData("cart")
             const numsInCart = document.querySelector(`.${styles.mini_cart_counter} > span`)
             const filteredCarts = carts.filter(((item) => item.user_id == userId))
             numsInCart.innerHTML = `${filteredCarts.length}`

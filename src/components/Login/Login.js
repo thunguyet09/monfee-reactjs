@@ -69,7 +69,7 @@ const Login = () => {
                 dialogText.textContent = 'Password is incorrect';
                 dialogIcon.innerHTML = `<span class="material-symbols-outlined">close</span>`;
             }else {
-                throw new Error('Đăng nhập thất bại');
+                throw new Error('Login failed.');
             }
 
             setTimeout(() => {

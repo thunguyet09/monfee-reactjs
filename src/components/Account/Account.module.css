@@ -517,4 +517,33 @@
     opacity: 0.8;
   }
   
+  #dialogContent {
+    position: fixed;
+    z-index: 9999;
+    top: 140px;
+    right: 10px;
+    padding: 10px 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
 
+.dialogText {
+    width: 100%;
+}
+
+#dialogContent >p {
+    margin: 0;
+    font-size: 17px;
+    font-family: 'Roboto', sans-serif;
+}
+
+#dialogContent > span > span{
+    margin-top: 3px;
+    font-size: 24px;
+}
