@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import styles from './Cart.module.css'
-import { getDetail, getData } from '../../api'
+import { getDetail, getData, getUser } from '../../api'
 import { numsInCart } from '../Header/Header'
 const Cart = () => {
     useEffect(() => {
@@ -39,14 +39,15 @@ const Cart = () => {
         const calc_total = async (data) => {
             let total = 0;
             const cart_amount = document.querySelector(`.${styles.cart_amount}`)
-            data.forEach((item) => {
-                let subtotal = item.quantity * item.price
+            data.forEach(async (item) => {
+                const detail = await getDetail(item.prod_id)
+                const sizeIndex = detail.sizes.indexOf(item.size)
+                let subtotal = item.quantity * detail.price[sizeIndex]
                 total += subtotal
                 if(total && total > 0){
                     cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`
                 }
             })
-            console.log(total)
 
             const apply_voucher = document.querySelector(`.${styles.apply_btn}`)
             const voucher_code = document.querySelector(`.${styles.voucher_box} > input`)
@@ -358,7 +359,7 @@ const Cart = () => {
                             <h1>Cart</h1>
                             <div>
                                 <a>Home</a>
-                                <span class="material-symbols-outlined">
+                                <span className="material-symbols-outlined">
                                     chevron_right
                                 </span>
                                 <a>Your Shopping Cart</a>

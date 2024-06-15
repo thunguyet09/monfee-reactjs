@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getData, getUser, getDetail, removeCart } from '../../api'
+import { getData, getUser, getDetail, removeCart, getDetailVoucher } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
@@ -18,6 +18,8 @@ const Checkout = () => {
         const showProducts = (data) => {
             data.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
+                const sizeIndex = detail.sizes.indexOf(item.size)
+                console.log(sizeIndex)
                 const product_frame = document.createElement('div')
                 product_frame.className = styles.product_frame
                 products_info.appendChild(product_frame)
@@ -25,7 +27,7 @@ const Checkout = () => {
                 img_box.className = styles.img_box
                 product_frame.appendChild(img_box)
                 const img = document.createElement('img')
-                img.src = `../../img/${item.img_url}`
+                img.src = `../../img/${detail.img_url[sizeIndex]}`
                 img.width = 70
                 img_box.appendChild(img)
                 const quantity = document.createElement('button')
@@ -53,7 +55,6 @@ const Checkout = () => {
                 const product_item_col2 = document.createElement('div')
                 product_item_col2.className = styles.product_item_col2
                 product_item.appendChild(product_item_col2)
-                const sizeIndex = detail.sizes.indexOf(item.size)
                 if (detail.promo_price && detail.promo_price[0] > 0) {
                     let itemSubtotal = item.quantity * detail.promo_price[sizeIndex]
                     product_item_col2.innerHTML = `${itemSubtotal.toLocaleString()}&#8363;`
@@ -107,7 +108,7 @@ const Checkout = () => {
                 city.value = order_info_user.city 
             }
             user.vouchers.forEach(async (voucherItem) => {
-                const voucher = await getDetailVoucher(`vouchers/${voucherItem}`)
+                const voucher = await getDetailVoucher(voucherItem)
                 const discount_box = document.createElement('div')
                 discount_box.className = styles.discount_box
                 products_info.appendChild(discount_box)
@@ -301,6 +302,7 @@ const Checkout = () => {
         const handleOrderDetails = async (orderId, carts) => {
             carts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id)
+                const sizeIndex = detail.sizes.indexOf(item.size)
                 const newOrderDetails = {
                     order_id: orderId,
                     prod_id: item.prod_id,
@@ -310,7 +312,7 @@ const Checkout = () => {
                     product_quantity: item.quantity,
                     size: item.size ? item.size : '',
                     color: item.color ? item.color : '',
-                    subtotal: item.quantity * item.price
+                    subtotal: detail.promo_price[sizeIndex] > 0 ? item.quantity * detail.promo_price[sizeIndex] : item.quantity * detail.price[sizeIndex]
                 }
                 await fetch(`http://localhost:3000/order-details`, {
                     method: 'POST',
@@ -420,7 +422,7 @@ const Checkout = () => {
                                     <img src="../../img/success.png" width="60px" />
                                 </div>
                             </div>
-                            <div class={styles.modal_content}>
+                            <div className={styles.modal_content}>
                                 <h2>Mua hàng thành công</h2>
                             </div>
                         </div>

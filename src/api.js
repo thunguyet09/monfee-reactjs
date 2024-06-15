@@ -22,6 +22,30 @@ export const getDetail = async (id) => {
     }
 }
 
+export const getOrderStatusById = async (id) => {
+    if (id) {
+        const res = await fetch(`http://localhost:3000/order-status/${id}`)
+        const data = await res.json()
+        return data
+    }
+}
+
+export const getCategoryDetail = async (id) => {
+    if (id) {
+        const res = await fetch(`http://localhost:3000/categories/${id}`)
+        const data = await res.json()
+        return data
+    }
+}
+
+export const getDetailVoucher = async (id) => {
+    if (id) {
+        const res = await fetch(`http://localhost:3000/vouchers/${id}`)
+        const data = await res.json()
+        return data
+    }
+}
+
 export const getProductsByCategoryId = async (id) => {
     if (id) {
         const res = await fetch(`http://localhost:3000/products/category/${id}`)
@@ -67,3 +91,10 @@ export const removeCart = async (val, id) => {
     return data
 }
 
+export const orderDetail = async (id) => {
+    if(id){
+        const res = await fetch(`http://localhost:3000/order-details/${id}`)
+        const data = await res.json()
+        return data
+    }
+}

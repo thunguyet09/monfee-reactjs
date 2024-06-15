@@ -124,7 +124,7 @@ const Header = () => {
           <span class="material-symbols-outlined">
               list_alt
           </span>
-          <p>Order</p>
+          <p>Orders</p>
       </a></li>
       <li class="logout"><a>
           <span class="material-symbols-outlined">
@@ -138,6 +138,9 @@ const Header = () => {
           document.location.href = '/'
         })
 
+        subAvatar.childNodes[3].addEventListener('click', () => {
+          document.location.href = '/orders'
+        })
       } else {
         userChecked.style.display = 'none'
         userIcon.style.display = 'block'

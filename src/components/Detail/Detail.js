@@ -3,11 +3,11 @@ import styles from './Detail.module.css'
 import { getAllProducts, getDetail, getProductsByCategoryId, getUser } from '../../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import { getCarts } from '../../api';
+import { getData } from '../../api';
 import { numsInCart } from '../Header/Header';
 const Detail = () => {
     useEffect(() => {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('access_token')
         const userId = localStorage.getItem('userId')
         const url = new URL(document.location.href);
         const path = url.pathname.split('/').filter(Boolean);
@@ -638,7 +638,7 @@ const Detail = () => {
                 relate_title.className = styles.relate_prod_name
                 relate_title.textContent = item.name
                 relate_item.appendChild(relate_title)
-                if (item.promo_price && item.promo_price[0] > 0) {
+                if (item.promo_price &&  item.promo_price.length > 0 && item.promo_price[0] > 0) {
                     const price_box = document.createElement('div')
                     price_box.className = styles.relate_price_box
                     relate_item.appendChild(price_box)
@@ -724,11 +724,11 @@ const Detail = () => {
                     cartInfo.innerHTML = ''
                     const confirm = document.createElement('h2')
                     confirm.innerHTML = `
-              <span class="material-symbols-outlined">
-                done
-              </span>
-              <span>Added to cart successfully!</span>
-              `
+                        <span class="material-symbols-outlined">
+                            done
+                        </span>
+                        <span>Added to cart successfully!</span>
+                    `
                     imgCart.appendChild(confirm)
                     if (selectedColorIndex == '') {
                         const img = document.createElement('img')
@@ -748,7 +748,8 @@ const Detail = () => {
                     data.forEach((val) => {
                         sizeIndex = product.sizes.indexOf(val.size)
                     })
-                    if (product.promo_price && product.promo_price.length > 0) {
+            
+                    if (product.promo_price && product.promo_price[sizeIndex] > 0 && product.promo_price.length > 0) {
                         const price = document.createElement('h4')
                         price.className = styles.cart_price
                         price.innerHTML = `PRICE: <b>${product.promo_price[sizeIndex].toLocaleString()}&#8363;</b>`
@@ -764,7 +765,7 @@ const Detail = () => {
                     for (const res of myCart) {
                         const product = await getDetail(res.prod_id.toString());
                         const sizeIndex = product.sizes.indexOf(res.size)
-                        const itemTotal = product.promo_price && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
+                        const itemTotal = product.promo_price && product.promo_price[sizeIndex] > 0 && product.promo_price.length > 0 ? res.quantity * product.promo_price[sizeIndex] : res.quantity * product.price[sizeIndex];
                         total += itemTotal;
                     }
                     const quantity = document.createElement('h4')
@@ -773,7 +774,7 @@ const Detail = () => {
                     imgCart.appendChild(quantity)
 
                     let cal_subtotal = 0;
-                    if (product.promo_price && product.promo_price.length > 0) {
+                    if (product.promo_price && product.promo_price[sizeIndex] > 0 && product.promo_price.length > 0) {
                         cal_subtotal = item.quantity * product.promo_price[sizeIndex]
                     } else {
                         cal_subtotal = item.quantity * product.price[sizeIndex]
@@ -888,7 +889,7 @@ const Detail = () => {
                         const name = document.createElement('h4')
                         name.textContent = item.name
                         suggested_prod_box.appendChild(name)
-                        if (item.promo_price && item.promo_price.length > 0) {
+                        if (item.promo_price && item.promo_price[0] > 0 && item.promo_price.length > 0) {
                             const price_box = document.createElement('div')
                             price_box.className = styles.price_box
                             suggested_prod_box.appendChild(price_box)
@@ -1005,7 +1006,7 @@ const Detail = () => {
                 <div className={styles.bread_crumb}>
                     <div className={styles.back_page}>
                         <a href='/'>Home</a>
-                        <span class="material-symbols-outlined">
+                        <span className="material-symbols-outlined">
                             navigate_next
                         </span>
                         <strong className={styles.product_name}></strong>
@@ -1013,7 +1014,7 @@ const Detail = () => {
                     <div className={styles.arrows_product}>
                         <div className={styles.prev_prod}>
                             <div className={styles.prev_prod_btn}>
-                                <span class="material-symbols-outlined">
+                                <span className="material-symbols-outlined">
                                     arrow_back_ios_new
                                 </span>
                                 <h4 >PREV</h4>
@@ -1025,7 +1026,7 @@ const Detail = () => {
                         <div className={styles.next_prod}>
                             <div className={styles.next_prod_btn}>
                                 <h4>NEXT</h4>
-                                <span class="material-symbols-outlined">
+                                <span className="material-symbols-outlined">
                                     navigate_next
                                 </span>
                             </div>

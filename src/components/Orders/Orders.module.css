@@ -40,7 +40,7 @@
 
 .title > h2 {
     margin: 0;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
 }
 
 .title > span {
@@ -50,4 +50,269 @@
 
 .spending > h2 {
     font-size: 20px;
+}
+
+.spending {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.spending > h3 {
+    color:#EE7214;
+}
+
+.container {}
+
+.content {
+    margin-top: 40px;
+}
+
+.orderBox {
+    border: 1px solid rgb(221, 221, 221);
+    margin-bottom: 50px;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+}
+
+.orderBox_title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.orderBox_title_row1 {
+    display: flex;
+    flex-direction: row;
+    gap: 35px;
+    align-items: center;
+    font-family: "Nunito", sans-serif;
+    text-align: left;
+}
+
+.orderBox_title_row1 > div > h4, .orderBox_title_row1 > div > h5 {
+    margin: 0;
+    margin: 5px 0px;
+    font-size: 16px;
+}
+
+.orderBox_title_row1 > div > h5 {
+    color: rgb(88, 88, 88);
+}
+
+.view_order {
+    font-size: 15px;
+    font-family: "Nunito", sans-serif;
+    color: rgb(88, 88, 88);
+    background-color: white;
+    border: 2px dashed #EE7214;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: 700;
+    transition: .3s ease;
+}
+
+.view_order:hover {
+    border: 2px solid #EE7214;
+    cursor: pointer;
+}
+
+.noOrder {
+    font-family: "Nunito", sans-serif;
+    color: red;
+}
+
+.product_info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+}
+
+.orderBox_body {
+    padding: 40px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.orderBox_body_col1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "Nunito", sans-serif;
+}
+
+.prod_img {
+    border-radius: 10px;
+}
+
+.prod_content {
+    text-align: left;
+}
+
+.prod_content > h3 {
+    font-family: "Nunito", sans-serif;
+    color: rgb(62, 62, 62);
+    margin: 0;
+}
+
+.prod_content > h4 {
+    color: grey;
+    margin: 0;
+    font-weight: 600;
+    margin: 10px 0px;
+}
+
+.prod_content > p {
+    margin: 0;
+    margin: 10px 0px;
+    font-weight: 600;
+    color: grey;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 15px;
+}
+
+.prod_content > p > span {
+    color: black;
+}
+
+.colorBtn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-left: 10px;
+    border: 1px solid rgb(217, 217, 217);
+    outline: none;
+}
+
+.subtotal {
+    color: rgb(51, 51, 51);
+    font-weight: 700;
+    font-size: 19px;
+}
+
+.order_status {
+    padding: 10px 15px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    display: flex;
+    justify-content: left;
+}
+
+.orderStatusBox {
+    width: 80%;
+}
+
+.orderBox_body_col2 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 30px 40px;
+}
+
+
+.order_actions {
+    text-align: left;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.mainOrderInfo {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.cancel_order {
+    padding: 10px 0px;
+    font-family: "Nunito", sans-serif;
+    color:#EE7214;
+    font-weight: 650;
+    cursor: pointer;
+    border-bottom: 1px solid #EE7214;
+}
+
+.view_product {
+    margin-top: 20px;
+    text-decoration: none;
+    font-family: "Nunito", sans-serif;
+    color: black;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    width: 100px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+}
+
+.order_features {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.order_features_row1 {
+    background-color: rgba(231, 231, 231, 0.464);
+    padding: 7px 5px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+#active {
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+}
+
+.order_features_row1 > button {
+    font-family: "Nunito", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 7px 30px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.sort_orders > button {
+    padding: 10px;
+    font-family: "Nunito", sans-serif;
+    background-color: white;
+    border: 1px solid black;
+    outline: none;
+    border-radius: 5px;
+    font-weight: 600;
+    text-align: left;
+    width: 200px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.sort_orders {
+    position: relative;
+}
+
+.sort_orders > span {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 20px;
+    font-weight: 700;
 }
