@@ -316,3 +316,49 @@
     font-size: 20px;
     font-weight: 700;
 }
+
+.pagination, .pages {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+}
+
+.pagination > button, .pages > button {
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #EE7214;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .3s ease;
+    outline: none;
+}
+
+.pagination > button > span {
+    color:#EE7214;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.page_number {
+    font-size: 16px;
+    padding: 10px 15px !important;
+    color:#EE7214;
+}
+
+#active_page {
+    background-color: #EE7214;
+    color: white;
+}
+
+.pages > button:hover, .pagination > button:hover {
+    cursor: pointer;
+    background-color: #EE7214;
+    color: white;
+}
+
+.pagination > button:hover > span {
+    color: white;
+}
