@@ -277,7 +277,7 @@ const Checkout = () => {
 
         const handleProductQuantity = async (carts) => {
             for (let i = 0; i < carts.length; i++) {
-                const product = await getDetail(carts[i].prod_id)
+                const product = await getDetail(carts[i].prod_id.toString())
                 const sizeIndex = product.sizes.indexOf(carts[i].size)
                 console.log(sizeIndex)
                 let quantityArr = product.quantity
@@ -301,8 +301,10 @@ const Checkout = () => {
 
         const handleOrderDetails = async (orderId, carts) => {
             carts.forEach(async (item) => {
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
+                console.log(detail)
                 const sizeIndex = detail.sizes.indexOf(item.size)
+                
                 const newOrderDetails = {
                     order_id: orderId,
                     prod_id: item.prod_id,

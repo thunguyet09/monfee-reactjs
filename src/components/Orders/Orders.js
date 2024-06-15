@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import orders from './Orders.module.css'
-import { getCategoryDetail, getData, getDetail, getOrderStatusById, orderDetail } from '../../api';
+import { getCategoryDetail, getData, getDetail, getOrderStatusById, orderDetail, orderPagination } from '../../api';
 const Orders = () => {
   const [isMounted, setIsMounted] = useState(false)
   const [spending, setSpending] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
   useEffect(() => {
     setIsMounted(true)
-    const renderData = async () => {
+    const getAPI = async() => {
       const userId = localStorage.getItem('userId')
+      const orderData = await orderPagination(userId, '1', '2')
+      console.log(orderData)
+      setTotalPages(orderData.totalPages)
+      renderData(orderData.ordersData)
+    }
+    const renderData = async (orderData) => {
       const content = document.querySelector(`.${orders.content}`)
       if (isMounted) {
-        const orderData = await getData('orders')
-        const myOrders = orderData.filter((item) => item.user_id == userId).reverse()
-        if (myOrders.length == 0) {
+        if (orderData.length == 0) {
           content.innerHTML = `<div class='${orders.noOrder}'>You haven't placed any orders yet.</div>`
         }
         let total = 0
-        myOrders.forEach((item) => {
+        orderData.forEach((item) => {
           total += item.total
         })
         setSpending(total)
-        myOrders.forEach(async (item) => {
+        orderData.forEach(async (item) => {
           const orderBox = document.createElement('div')
           orderBox.className = orders.orderBox
           content.appendChild(orderBox)
@@ -58,7 +63,7 @@ const Orders = () => {
           mainOrderInfo.className = orders.mainOrderInfo
           orderBox.appendChild(mainOrderInfo)
           orderDetailData.forEach(async (res) => {
-            const detail = await getDetail(res.prod_id)
+            const detail = await getDetail(res.prod_id.toString())
             const sizeIndex = detail.sizes.indexOf(res.size)
             const categoryDetail = await getCategoryDetail(detail.cat_id)
             const orderBox_body = document.createElement('div')
@@ -145,7 +150,7 @@ const Orders = () => {
       }
     }
 
-    renderData()
+    getAPI()
     return () => {
       setIsMounted(false)
     }
@@ -188,6 +193,19 @@ const Orders = () => {
           </div>
           <div className={orders.content}>
 
+          </div>
+          <div className={orders.pagination}>
+              <button className={orders.prev_page}>
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              {[...Array(totalPages).keys()].map((page) => (
+                <button key={page + 1} className={orders.page_number}>
+                  {page + 1}
+                </button>
+              ))}
+              <button className={orders.next_page}>
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
           </div>
         </div>
       </div>

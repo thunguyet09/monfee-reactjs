@@ -98,3 +98,11 @@ export const orderDetail = async (id) => {
         return data
     }
 }
+
+export const orderPagination = async (userId, page,limit) => {
+    if(page && limit){
+        const res = await fetch(`http://localhost:3000/orders/${userId}/${page}/${limit}`)
+        const data = await res.json()
+        return data
+    }
+}

@@ -40,7 +40,7 @@ const Cart = () => {
             let total = 0;
             const cart_amount = document.querySelector(`.${styles.cart_amount}`)
             data.forEach(async (item) => {
-                const detail = await getDetail(item.prod_id)
+                const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
                 let subtotal = item.quantity * detail.price[sizeIndex]
                 total += subtotal
