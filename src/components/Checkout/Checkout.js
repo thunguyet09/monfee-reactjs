@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getData, getUser, getDetail, removeCart, getDetailVoucher } from '../../api'
+import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
@@ -214,6 +214,9 @@ const Checkout = () => {
                             },
                             body: JSON.stringify(order)
                         })
+                            .then(() => {
+                                handleNotifications(user._id, calc_total, formatDate, user.notifications)
+                            })
                             .then(async () => {
                                 handleOrderDetails(order.order_id, data) 
                             })
@@ -253,6 +256,16 @@ const Checkout = () => {
                     }
                 })
             })
+        }
+
+        const handleNotifications = async (userId, total, orderedDate, notifications) => {
+            const notify = {
+                date: orderedDate,
+                content: `You have placed an order worth ${total}đ`
+            }
+            notifications.push(notify)
+            console.log(notifications)
+            await insertNotifications(userId, notifications)
         }
 
         const orderSuccessConfirm = () => {

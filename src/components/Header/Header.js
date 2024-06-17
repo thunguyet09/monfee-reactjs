@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faInfoCircle, faLock, faTimesCircle, faUser, faSearch, faHeart, faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faSearch, faHeart, faUserCheck, faBell } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
-import { getData } from '../../api';
-import Search from '../Search/Search';
-import { SearchContext, useSearch } from '../../contexts/SearchContext/SearchContext';
+import { getData, getUser } from '../../api';
+import { useSearch } from '../../contexts/SearchContext/SearchContext';
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
@@ -27,8 +26,10 @@ const Header = () => {
     const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
     const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
     const header = document.getElementById(styles.header);
+    const notifyItem = document.querySelector(`.${styles.notifyItem}`)
     const handleScroll = () => {
       if (window.scrollY > 66) {
+        notifyItem.style.backgroundColor = 'rgba(0, 0, 0, 0.195)'
         header.style.animation = 'slideDown 2s linear'
         if (value == '') {
           header.style.backgroundColor = 'rgba(26, 26, 26, 0.9)'
@@ -97,6 +98,8 @@ const Header = () => {
         })
         shoppingIcon.style.color = 'white'
       }else {
+        const notifyItem = document.querySelector(`.${styles.notifyItem}`)
+        notifyItem.style.backgroundColor = 'rgba(0, 0, 0, 0.195)'
         menuItems.forEach((node) => {
           node.style.color = 'black'
         })
@@ -114,25 +117,25 @@ const Header = () => {
         userChecked.style.display = 'block'
         userIcon.style.display = 'none'
         subAvatar.innerHTML = `
-      <li><a href="/account">
-        <span class="material-symbols-outlined">
-            id_card
-        </span>
-        <p>Account</p>
-      </a></li>
-      <li class="order"><a>
-          <span class="material-symbols-outlined">
-              list_alt
-          </span>
-          <p>Orders</p>
-      </a></li>
-      <li class="logout"><a>
-          <span class="material-symbols-outlined">
-              logout
-          </span>
-          <p>Log Out</p>
-      </a></li>
-      `
+          <li><a href="/account">
+            <span class="material-symbols-outlined">
+                id_card
+            </span>
+            <p>Account</p>
+          </a></li>
+          <li class="order"><a>
+              <span class="material-symbols-outlined">
+                  list_alt
+              </span>
+              <p>Orders</p>
+          </a></li>
+          <li class="logout"><a>
+              <span class="material-symbols-outlined">
+                  logout
+              </span>
+              <p>Log Out</p>
+          </a></li>
+        `
         subAvatar.childNodes[5].addEventListener('click', () => {
           localStorage.clear()
           document.location.href = '/'
@@ -148,6 +151,13 @@ const Header = () => {
           document.location.href = '/login'
         })
       }
+      const user = await getUser(userId)
+      const notify_quantity = document.querySelector(`.${styles.notify_quantity}`)
+      if(user.notifications.length > 0){
+        notify_quantity.innerHTML = `${user.notifications.length}`
+        notify_quantity.style.backgroundColor = 'white'
+      }
+
     }
 
     const detail_page = () => {
@@ -205,6 +215,10 @@ const Header = () => {
       </div>
       <div className={styles.rightHeader}>
         <span>
+          <span className={styles.notifyItem}>
+            <FontAwesomeIcon icon={faBell} />
+            <h5 className={styles.notify_quantity}></h5>
+          </span>
           <span className={styles.searchItem}>
             <FontAwesomeIcon icon={faSearch} style={{ fontSize: '24px' }} />
           </span>

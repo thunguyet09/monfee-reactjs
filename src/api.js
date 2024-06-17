@@ -106,3 +106,18 @@ export const orderPagination = async (userId, page,limit) => {
         return data
     }
 }
+
+export const insertNotifications = async (userId, notifications) => {
+    if(userId && notifications){
+        await fetch(`http://localhost:3000/users/notifications/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                notifications: notifications
+            })
+        })
+        
+    }
+}

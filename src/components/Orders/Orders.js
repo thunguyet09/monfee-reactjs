@@ -20,7 +20,7 @@ const Orders = () => {
     const orderData = await orderPagination(userId, page, limit)
     console.log(orderData)
     setTotalPages(orderData.totalPages)
-    renderData(orderData.ordersData)
+    renderData(orderData.ordersData.reverse())
   }
 
   const renderData = async (orderData) => {
@@ -154,7 +154,13 @@ const Orders = () => {
 
         const cancel_order = document.createElement('a')
         cancel_order.className = orders.cancel_order
-        cancel_order.textContent = 'Cancel The Order'
+        if(item.status == 3){
+          cancel_order.textContent = 'Buy Again'
+        }else if(item.status == 4){
+          cancel_order.textContent = 'Cancelled'
+        }else{
+          cancel_order.textContent = 'Cancel The Order'
+        }
         orderBox_body_col2.appendChild(cancel_order)
       })
     }
@@ -163,6 +169,15 @@ const Orders = () => {
     console.log(pageNumber)
     getAPI(pageNumber, 2)
     setPageNumber(pageNumber)
+  }
+
+  const onActiveOrder = (e) => {
+    const order_features = document.querySelectorAll(`.${orders.order_features_row1} > button`)
+    order_features.forEach((item) => {
+      item.removeAttribute('id')
+    })
+    const target = e.target 
+    target.setAttribute('id', `${orders.active}`)
   }
 
   return (
@@ -189,8 +204,8 @@ const Orders = () => {
           <div className={orders.order_features}>
             <div className={orders.order_features_row1}>
               <button id={orders.active}>Orders</button>
-              <button>Not Yet Shipped</button>
-              <button>Cancelled Orders</button>
+              <button onClick={(e) => onActiveOrder(e)}>Not Yet Shipped</button>
+              <button onClick={(e) => onActiveOrder(e)}>Cancelled Orders</button>
             </div>
             <div className={orders.order_features_row2}>
               <div className={orders.sort_orders}>

@@ -176,12 +176,27 @@ const Detail = () => {
             const prices = document.createElement('div')
             prices.className = styles.prices
             main_detail.appendChild(prices)
-            if (detail.promo_price[0] > 0 && detail.promo_price.length > 0) {
-                prices.innerHTML = `<h2>${detail.promo_price[0].toLocaleString()}&#8363;</h2>
-                    <h3><del>${detail.price[0].toLocaleString()}&#8363;</del></h3>`
-            } else {
-                prices.innerHTML = `<h2>${detail.price[0].toLocaleString()}&#8363;</h2>`
+            const promo_price_item = document.createElement('h2')
+            prices.appendChild(promo_price_item)
+            if(detail.promo_price.length > 0){
+                detail.promo_price.forEach((promo_price) => {
+                    if(promo_price > 0){
+                        detail.price.forEach((price) => {
+                            promo_price_item.innerHTML = `<h2>${promo_price.toLocaleString()}&#8363;</h2>
+                            <h3><del>${price.toLocaleString()}&#8363;</del></h3>`
+                        })
+                    }else{
+                        detail.price.forEach((price) => {
+                            prices.innerHTML = `<h2>${price.toLocaleString()}&#8363;</h2>`
+                        })
+                    }
+                })
+            }else{
+                detail.price.forEach((price) => {
+                    prices.innerHTML = `<h2>${price.toLocaleString()}&#8363;</h2>`
+                })
             }
+
 
             //reviews
             const rating = document.createElement('div')
@@ -360,7 +375,7 @@ const Detail = () => {
                 sizeButton.addEventListener('click', () => {
                     const sizeIndex = detail.sizes.indexOf(sizeButton.textContent)
                     sizeItem = sizeButton.textContent
-                    if (detail.promo_price && detail.promo_price.length > 0) {
+                    if (detail.promo_price[sizeIndex] > 0 && detail.promo_price.length > 0) {
                         prices.innerHTML = `
                                 <h2>${detail.promo_price[sizeIndex].toLocaleString()}&#8363;</h2>
                                 <h3><del>${detail.price[sizeIndex].toLocaleString()}&#8363;</del></h3>`

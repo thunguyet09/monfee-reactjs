@@ -944,7 +944,7 @@ const Product = () => {
                         <h1>Products</h1>
                         <div>
                             <h4>Home</h4>
-                            <span class="material-symbols-outlined">chevron_right</span>
+                            <span className="material-symbols-outlined">chevron_right</span>
                             <h4>Products</h4>
                         </div>
                     </div>
@@ -1058,7 +1058,7 @@ const Product = () => {
                                 <div className={styles.featured}>
                                     <button className={styles.featuredBtn}>
                                         <h3>Featured</h3>
-                                        <span class="material-symbols-outlined">arrow_drop_down</span>
+                                        <span className="material-symbols-outlined">arrow_drop_down</span>
                                     </button>
                                     <ul className={styles.dropdown}>
                                         <li value="0">Featured</li>
@@ -1131,23 +1131,23 @@ const Product = () => {
                             <div className={styles.pagi_nav}>
                                 <div className={styles.pagination}>
                                     <a className={styles.first_page}>
-                                        <span class="material-symbols-outlined">
+                                        <span className="material-symbols-outlined">
                                             keyboard_double_arrow_left
                                         </span>
                                     </a>
                                     <a className={styles.prev_page}>
-                                        <span class="material-symbols-outlined">
+                                        <span className="material-symbols-outlined">
                                             arrow_back_ios_new
                                         </span>
                                     </a>
                                     <div className={styles.total_pages}></div>
                                     <a className={styles.next_page}>
-                                        <span class="material-symbols-outlined">
+                                        <span className="material-symbols-outlined">
                                             arrow_forward_ios
                                         </span>
                                     </a>
                                     <a className={styles.last_page}>
-                                        <span class="material-symbols-outlined">
+                                        <span className="material-symbols-outlined">
                                             keyboard_double_arrow_right
                                         </span>
                                     </a>
@@ -1157,7 +1157,7 @@ const Product = () => {
                                     <div className={styles.row_list}>
                                         <button className={styles.row_active}>
                                             <span>12</span>
-                                            <span class="material-symbols-outlined">
+                                            <span className="material-symbols-outlined">
                                                 arrow_drop_down
                                             </span>
                                         </button>
