@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch, faHeart, faUserCheck, faBell } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
@@ -12,16 +12,18 @@ const numsInCart = async () => {
   const filteredCarts = carts.filter(((item) => item.user_id == userId))
   numsInCart.innerHTML = `${filteredCarts.length}`
 }
-
 export {numsInCart}
 const Header = () => {
+  const [isMount, setIsMounting] = useState(false)
   const url = new URL(document.location.href);
   const path = url.pathname.split('/').filter(Boolean);
   const value = path[path.length - 1];
   const detail = path[path.length - 2]
   numsInCart()
   const {openMiniCart, setMiniCartOpen} = useMiniCart()
+  let isOpen = false;
   useEffect(() => {
+    setIsMounting(true)
     const menuItems = document.querySelectorAll(`.${styles.leftHeader} > ul > li > a`)
     const icons = document.querySelectorAll(`.${styles.rightHeader} > span > span`)
     const shoppingIcon = document.querySelector(`.${styles.rightHeader} > span:last-child`)
@@ -153,9 +155,35 @@ const Header = () => {
       }
       const user = await getUser(userId)
       const notify_quantity = document.querySelector(`.${styles.notify_quantity}`)
-      if(user.notifications.length > 0){
+      const notify_container = document.querySelector(`.${styles.notify_container}`)
+      const notifyItems = document.querySelector(`.${styles.notifyItem}`)
+      const notifyBox = document.querySelector(`.${styles.notifyBox}`)
+  
+      notifyItems.addEventListener('click', () => {
+        isOpen = !isOpen;
+        if(isOpen){
+          notifyBox.style.display = 'block'
+        }else{
+          notifyBox.style.display = 'none'
+        }
+      })
+      if(userId && user.notifications.length > 0){
         notify_quantity.innerHTML = `${user.notifications.length}`
         notify_quantity.style.backgroundColor = 'white'
+        const notifications = user.notifications.splice(0,2).reverse()
+        if(isMount){
+          notifications.forEach((item) => {
+            const notify_item = document.createElement('div')
+            notify_item.className = styles.notify_item
+            notify_item.innerHTML = `
+              <div>
+                <span>${item.content}</span>
+                <p>${item.date}</p>
+              </div>
+            `
+            notify_container.appendChild(notify_item)
+          })
+        }
       }
 
     }
@@ -182,7 +210,7 @@ const Header = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [openMiniCart]);
+  }, [openMiniCart, isMount]);
 
 
   const { open, setSearchOpen } = useSearch()
@@ -218,6 +246,14 @@ const Header = () => {
           <span className={styles.notifyItem}>
             <FontAwesomeIcon icon={faBell} />
             <h5 className={styles.notify_quantity}></h5>
+            <div className={styles.notifyBox}>
+              <div className={styles.notify_title}>
+                <h5>Notifications</h5>
+              </div>
+              <div className={styles.notify_container}>
+                
+              </div>
+            </div>
           </span>
           <span className={styles.searchItem}>
             <FontAwesomeIcon icon={faSearch} style={{ fontSize: '24px' }} />

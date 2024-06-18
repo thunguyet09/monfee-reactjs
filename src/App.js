@@ -20,6 +20,7 @@ import Dashboard from './admin/Dashboard/Dashboard';
 import { useState, useEffect } from 'react';
 import Checkout from './components/Checkout/Checkout';
 import Orders from './components/Orders/Orders';
+import ResetPassword from './components/ResetPassword/ResetPassword';
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
@@ -239,6 +240,20 @@ function App() {
                   <Header />
                   <div className={styles.homePage}>
                     <Orders />
+                    <Footer />
+                  </div>
+                </div>
+              }
+            />
+
+            <Route
+              exact
+              path="/reset-password"
+              element={
+                <div className={styles.main}>
+                  <Header />
+                  <div className={styles.homePage}>
+                    <ResetPassword />
                     <Footer />
                   </div>
                 </div>

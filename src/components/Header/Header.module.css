@@ -243,3 +243,53 @@
     width: 20px;
     height: 20px;
 }
+
+.notifyBox {
+    position: absolute;
+    top: 60px;
+    left: -20px;
+    color: black;
+    background-color: white;
+    width: 240px;
+    border-radius: 5px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    display: none;
+}
+
+.notify_title > h5 {
+    margin: 0;
+    text-align: left;
+    padding: 15px 0px;
+    margin-left: 10px;
+}
+
+.notify_title {
+    border-bottom: 1px solid rgb(193, 193, 193);
+}
+
+.notify_container {
+
+}
+
+.notify_item {
+    text-align: left;
+    border-bottom: 1px solid rgb(193, 193, 193);
+}
+
+.notify_item > div > span {
+    font-size: 14px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+}
+
+.notify_item > div {
+    padding: 0px 10px;
+}
+
+.notify_item > div > p {
+    font-size: 13px;
+    font-family: "Nunito", sans-serif;
+    font-weight: 600;
+    color: rgb(91, 91, 91);
+}
+

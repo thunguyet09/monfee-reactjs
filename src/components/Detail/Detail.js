@@ -182,7 +182,7 @@ const Detail = () => {
                 detail.promo_price.forEach((promo_price) => {
                     if(promo_price > 0){
                         detail.price.forEach((price) => {
-                            promo_price_item.innerHTML = `<h2>${promo_price.toLocaleString()}&#8363;</h2>
+                            prices.innerHTML = `<h2>${promo_price.toLocaleString()}&#8363;</h2>
                             <h3><del>${price.toLocaleString()}&#8363;</del></h3>`
                         })
                     }else{

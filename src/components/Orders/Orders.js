@@ -1,26 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import orders from './Orders.module.css'
-import { getCategoryDetail, getData, getDetail, getOrderStatusById, orderDetail, orderPagination } from '../../api';
+import { ascendingOrdersByTotal, descendingOrdersByTotal, changeOrderStatus, getCategoryDetail, getData, getDetail, getOrderStatusById, orderDetail, orderPagination } from '../../api';
 const Orders = () => {
   const [isMounted, setIsMounted] = useState(false)
   const [spending, setSpending] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [pageNumber, setPageNumber] = useState(1)
+  const [orderId, setOrderId] = useState(0)
+  const [userId, setUserId] = useState('')
+  const [activeOrder, setActiveOrder] = useState(0)
+  const [sortValue, setSortValue] = useState(0)
   useEffect(() => {
     setIsMounted(true)
 
-    getAPI('1', '2')
+    getOrdersData('1', '2')
     return () => {
       setIsMounted(false)
     }
   }, [isMounted])
 
-  const getAPI = async(page,limit) => {
+  const getOrdersData = async (page,limit) => {
     const userId = localStorage.getItem('userId')
+    setUserId(userId)
     const orderData = await orderPagination(userId, page, limit)
-    console.log(orderData)
     setTotalPages(orderData.totalPages)
-    renderData(orderData.ordersData.reverse())
+    renderData(orderData.ordersData)
+  }
+
+  const getAPI = async(page, limit, orderData) => {
+    const startIndex = (parseInt(page) - 1) * parseInt(limit);
+    const endIndex = startIndex + parseInt(limit);
+    const sliceOrderData = orderData.slice(startIndex, endIndex)
+    renderData(sliceOrderData)
   }
 
   const renderData = async (orderData) => {
@@ -30,8 +41,11 @@ const Orders = () => {
       if (orderData.length == 0) {
         content.innerHTML = `<div class='${orders.noOrder}'>You haven't placed any orders yet.</div>`
       }
+
+      const ordersData = await getData('orders')
+      const ordersDataFiltered = ordersData.filter((item) => item.status !== 4)
       let total = 0
-      orderData.forEach((item) => {
+      ordersDataFiltered.forEach((item) => {
         total += item.total
       })
       setSpending(total)
@@ -157,31 +171,167 @@ const Orders = () => {
         if(item.status == 3){
           cancel_order.textContent = 'Buy Again'
         }else if(item.status == 4){
+          cancel_order.style.color = 'grey'
           cancel_order.textContent = 'Cancelled'
+          cancel_order.style.borderBottom = '1px solid grey'
         }else{
           cancel_order.textContent = 'Cancel The Order'
+          cancel_order.addEventListener('click', () => {
+            setOrderId(item.order_id)
+            const cancelOrderModal = document.querySelector(`.${orders.cancelOrderModal}`)
+            cancelOrderModal.style.display = 'block'
+          })
         }
         orderBox_body_col2.appendChild(cancel_order)
       })
     }
   }
-  const handlePagination = (pageNumber) => {
-    console.log(pageNumber)
-    getAPI(pageNumber, 2)
+  const handlePagination = async (pageNumber) => {
     setPageNumber(pageNumber)
+
+    const allOrders = await getData('orders')
+    const ordersByUserId = allOrders.filter((item) => item.user_id == userId)
+    if(activeOrder == 2){
+      const nonShippedOrders = ordersByUserId.filter((item) => item.status == 0 || item.status == 1).reverse()
+      getAPI(pageNumber, 2, nonShippedOrders)
+    }else if(activeOrder == 1){
+      getOrdersData(pageNumber, 2)
+    }else if(activeOrder == 3){
+      const canceledOrders = ordersByUserId.filter((item) => item.status == 4).reverse()
+      getAPI(pageNumber, 2, canceledOrders)
+    }
+
+    if(sortValue == 2){
+      const orders = await getAscendingOrdersByTotal()
+      getAPI(pageNumber,2,orders.orders)
+    }else if(sortValue == 3){
+      const orders = await getDescendingOrdersByTotal()
+      getAPI(pageNumber,2,orders.orders)
+    }
   }
 
-  const onActiveOrder = (e) => {
+  const onActiveOrder = async (e) => {
     const order_features = document.querySelectorAll(`.${orders.order_features_row1} > button`)
     order_features.forEach((item) => {
       item.removeAttribute('id')
     })
     const target = e.target 
     target.setAttribute('id', `${orders.active}`)
+    const allOrders = await getData('orders')
+    const ordersByUserId = allOrders.filter((item) => item.user_id == userId)
+    if(target.value == '2'){
+      setActiveOrder(2)
+      const nonShippedOrders = ordersByUserId.filter((item) => item.status == 0 || item.status == 1).reverse()
+      const totalPages = Math.ceil(nonShippedOrders.length / 2)
+      getAPI(1,2,nonShippedOrders.slice(0,2))
+      setTotalPages(totalPages)
+    }else if(target.value == '1'){
+      getOrdersData('1', '2')
+      setActiveOrder(1)
+    }else if(target.value == '3'){
+      setActiveOrder(3)
+      const canceledOrders = ordersByUserId.filter((item) => item.status == 4).reverse()
+      const totalPages = Math.ceil(canceledOrders.length / 2)
+      getAPI(1,2,canceledOrders.slice(0,2))
+      setTotalPages(totalPages)
+    }
+  }
+
+  const closeModal = () => {
+    const cancelOrderModal = document.querySelector(`.${orders.cancelOrderModal}`)
+    cancelOrderModal.style.display = 'none'
+  }
+
+  const handleCancelOrder = async () => {
+    await changeOrderStatus(orderId, '4')
+    .then(() => {
+      closeModal()
+      getAPI(pageNumber, 2)
+    })
+  }
+
+  let isOpen = false;
+  const openSortBox = () => {
+    const sortBox = document.querySelector(`.${orders.sort_box}`)
+    isOpen = !isOpen;
+    if(isOpen){
+      sortBox.style.display = 'block'
+    }else{
+      sortBox.style.display = 'none'
+    }
+  }
+
+  const getAscendingOrdersByTotal = async() => {
+    const orders = await ascendingOrdersByTotal(userId,'1','2')
+    return orders
+  }
+
+  const getDescendingOrdersByTotal = async() => {
+    const orders = await descendingOrdersByTotal(userId,'1','2')
+    return orders
+  }
+  
+  const handleSort = async (e) => {
+    event.stopPropagation();
+    const target = e.target 
+    if(target.value == '2'){
+      setSortValue(2)
+      const orders = await getAscendingOrdersByTotal()
+      renderData(orders.ordersData)
+      setTotalPages(orders.totalPages)
+    }else if(target.value == '3'){
+      setSortValue(3)
+      const orders = await getDescendingOrdersByTotal()
+      renderData(orders.ordersData)
+      setTotalPages(orders.totalPages)
+    }else if(target.value == '4'){
+      setSortValue(4)
+      const orders = await getData('orders')
+      const filteredOrders = orders.filter((item) => item.user_id == userId)
+      const thisMonthOrders = filteredOrders.filter((item) => {
+        const currentDate = new Date()
+        const dateString = item.date
+        const dateObject = new Date(dateString);
+        const month = dateObject.getMonth() + 1;
+        return month === currentDate.getMonth() + 1;
+      })
+      getAPI(1,2,thisMonthOrders)
+      const totalPages = Math.ceil(thisMonthOrders.length / 2);
+      setTotalPages(totalPages)
+    }else if(target.value == '5'){
+      setSortValue(5)
+      const orders = await getData('orders')
+      const filteredOrders = orders.filter((item) => item.user_id == userId)
+      const lastMonthOrders = filteredOrders.filter((item) => {
+        const currentDate = new Date()
+        const dateString = item.date
+        const dateObject = new Date(dateString);
+        const month = dateObject.getMonth();
+        return month === currentDate.getMonth() - 1;
+      })
+      getAPI(1,2,lastMonthOrders)
+      const totalPages = Math.ceil(lastMonthOrders.length / 2);
+      setTotalPages(totalPages)
+    }else if(target.value == '6'){
+      setSortValue(6)
+      const orders = await getData('orders')
+      const filteredOrders = orders.filter((item) => item.user_id == userId)
+      const lastYearOrders = filteredOrders.filter((item) => {
+        const currentDate = new Date()
+        const dateString = item.date
+        const dateObject = new Date(dateString);
+        const year = dateObject.getFullYear();
+        return year === currentDate.getFullYear() - 1;
+      })
+      getAPI(1,2,lastYearOrders)
+      const totalPages = Math.ceil(lastYearOrders.length / 2);
+      setTotalPages(totalPages)
+    }
   }
 
   return (
-    <div id={orders.orders}>
+    <>
+      <div id={orders.orders}>
       <div className={orders.orders}>
         <div className={orders.bread_crumb}>
           <a href="/">Home</a>
@@ -203,16 +353,39 @@ const Orders = () => {
         <div className={orders.container}>
           <div className={orders.order_features}>
             <div className={orders.order_features_row1}>
-              <button id={orders.active}>Orders</button>
-              <button onClick={(e) => onActiveOrder(e)}>Not Yet Shipped</button>
-              <button onClick={(e) => onActiveOrder(e)}>Cancelled Orders</button>
+              <button id={orders.active} onClick={(e) => onActiveOrder(e)} value="1">Orders</button>
+              <button onClick={(e) => onActiveOrder(e)} value="2">Not Yet Shipped</button>
+              <button onClick={(e) => onActiveOrder(e)} value="3">Cancelled Orders</button>
             </div>
             <div className={orders.order_features_row2}>
-              <div className={orders.sort_orders}>
+              <div className={orders.sort_orders} onClick={openSortBox}>
                 <button>All</button>
                 <span className="material-symbols-outlined">
                   keyboard_arrow_down
                 </span>
+
+                <div className={orders.sort_box}>
+                  <ul>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="1">All</button>
+                    </li>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="2">In ascending order: by price</button>
+                    </li>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="3">In descending order: by price</button>
+                    </li>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="4">This month's orders</button>
+                    </li>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="5">Last month's orders</button>
+                    </li>
+                    <li>
+                      <button onClick={(e) => handleSort(e)} value="6">Last year's orders</button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -242,6 +415,24 @@ const Orders = () => {
         </div>
       </div>
     </div>
+
+    <div id={orders.cancelOrderModal} className={orders.cancelOrderModal}>
+      <div className={orders.modal_content}>
+        <div className={orders.modal_title}>
+           <h2>Cancel Order</h2>
+           <span className={orders.closeBtn} onClick={closeModal}>&times;</span>
+        </div>
+        <div className={orders.cancel_order_confirm}>
+          <p>Are you sure you want to cancel this order?</p>
+
+          <div className={orders.btns}>
+            <button className={orders.noBtn} onClick={closeModal}>NO, CANCEL</button>
+            <button className={orders.yesBtn} onClick={handleCancelOrder}>YES, CONTINUE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
   );
 };
 
