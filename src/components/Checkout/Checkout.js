@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Checkout.module.css'
-import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications } from '../../api'
+import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications, triggerEmail } from '../../api'
 const Checkout = () => {
     useEffect(() => {
         let isMounted = true;
@@ -218,7 +218,7 @@ const Checkout = () => {
                                 handleNotifications(user._id, calc_total, formatDate, user.notifications)
                             })
                             .then(async () => {
-                                handleOrderDetails(order.order_id, data) 
+                                handleOrderDetails(email.value, calc_total, order.order_id, data) 
                             })
                         handleProductQuantity(data) 
                     }
@@ -312,7 +312,8 @@ const Checkout = () => {
             }
         }
 
-        const handleOrderDetails = async (orderId, carts) => {
+        let items = []
+        const handleOrderDetails = async (email, total, orderId, carts) => {
             carts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
                 console.log(detail)
@@ -329,6 +330,7 @@ const Checkout = () => {
                     color: item.color ? item.color : '',
                     subtotal: detail.promo_price[sizeIndex] > 0 ? item.quantity * detail.promo_price[sizeIndex] : item.quantity * detail.price[sizeIndex]
                 }
+                items.push(newOrderDetails)
                 await fetch(`http://localhost:3000/order-details`, {
                     method: 'POST',
                     headers: {
@@ -342,13 +344,24 @@ const Checkout = () => {
                     })
                     orderSuccessConfirm()
                 })
+                .then(() => {
+                    sendEmail(email, total, orderId)
+                })
             })
+        }
+
+        const sendEmail = async(email, total, orderId) => {
+            await triggerEmail(items, total, orderId, email)
         }
         getAPI()
         return () => {
             isMounted = false;
         }
     }, [])
+
+    const trackOrder = () => {
+        document.location.href = '/orders'
+    }
     return (
         <>
             <div id={styles.checkout}>
@@ -448,7 +461,7 @@ const Checkout = () => {
                         </div>
                         <div className={styles.order_successful_actions}>
                             <div>
-                                <button className={styles.order_tracking}>TRACK YOUR ORDER</button>
+                                <button className={styles.order_tracking} onClick={trackOrder}>TRACK YOUR ORDER</button>
                             </div>
                             <a href="/shop">
                                 <button className={styles.continue_shopping}>CONTINUE SHOPPING</button>

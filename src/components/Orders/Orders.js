@@ -43,7 +43,7 @@ const Orders = () => {
       }
 
       const ordersData = await getData('orders')
-      const ordersDataFiltered = ordersData.filter((item) => item.status !== 4)
+      const ordersDataFiltered = ordersData.filter((item) => item.user_id == userId && item.status !== 4)
       let total = 0
       ordersDataFiltered.forEach((item) => {
         total += item.total
@@ -82,61 +82,66 @@ const Orders = () => {
         view_order.className = orders.view_order
         view_order.textContent = 'View Order'
         orderBox_title_row2.appendChild(view_order)
-        const orderDetailData = await orderDetail(item.order_id)
+        let orderDetailData = []
+        if(item.order_id){
+          orderDetailData = await orderDetail(item.order_id)
+        }
         const mainOrderInfo = document.createElement('div')
         mainOrderInfo.className = orders.mainOrderInfo
         orderBox.appendChild(mainOrderInfo)
-        orderDetailData.forEach(async (res) => {
-          const detail = await getDetail(res.prod_id.toString())
-          const sizeIndex = detail.sizes.indexOf(res.size)
-          const categoryDetail = await getCategoryDetail(detail.cat_id)
-          const orderBox_body = document.createElement('div')
-          orderBox_body.className = orders.orderBox_body
-          mainOrderInfo.appendChild(orderBox_body)
-          const orderBox_body_col1 = document.createElement('div')
-          orderBox_body_col1.className = orders.orderBox_body_col1
-          orderBox_body.appendChild(orderBox_body_col1)
-          const product_info = document.createElement('div')
-          product_info.className = orders.product_info
-          orderBox_body_col1.appendChild(product_info)
-          const order_actions = document.createElement('div')
-          order_actions.className = orders.order_actions
-          orderBox_body_col1.appendChild(order_actions)
-          const subtotal = document.createElement('div')
-          subtotal.className = orders.subtotal
-          subtotal.innerHTML = `${res.subtotal.toLocaleString()}&#8363;`
-          order_actions.appendChild(subtotal)
-          const view_product = document.createElement('a')
-          view_product.className = orders.view_product
-          view_product.textContent = 'View Product'
-          view_product.href = `/products/${res.prod_id}`
-          order_actions.appendChild(view_product)
-          const prod_img = document.createElement('img')
-          prod_img.className = orders.prod_img
-          prod_img.src = `../../img/${detail.img_url[sizeIndex]}`
-          prod_img.width = '150'
-          product_info.appendChild(prod_img)
-          const prod_content = document.createElement('div')
-          prod_content.className = orders.prod_content
-          product_info.appendChild(prod_content)
-          const prod_name = document.createElement('h3')
-          prod_name.textContent = res.product_name
-          prod_content.appendChild(prod_name)
-          if (categoryDetail) {
-            const catalog = document.createElement('h4')
-            catalog.textContent = categoryDetail.name
-            prod_content.appendChild(catalog)
-          }
-          const quantity = document.createElement('p')
-          quantity.innerHTML = `Qty - ${res.product_quantity}`
-          prod_content.appendChild(quantity)
-          const prod_attribute = document.createElement('p')
-          prod_attribute.innerHTML = `${res.size} ${res.color ? '/' + `<button style="background-color: ${res.color}" class="${orders.colorBtn}"></button>` : ''}`
-          prod_content.appendChild(prod_attribute)
-          const order_detail_id = document.createElement('p')
-          order_detail_id.innerHTML = `Order Id - <span>#${res._id}</span>`
-          prod_content.appendChild(order_detail_id)
-        })
+        if(orderDetailData.length > 0){
+          orderDetailData.forEach(async (res) => {
+            const detail = await getDetail(res.prod_id.toString())
+            const sizeIndex = detail.sizes.indexOf(res.size)
+            const categoryDetail = await getCategoryDetail(detail.cat_id)
+            const orderBox_body = document.createElement('div')
+            orderBox_body.className = orders.orderBox_body
+            mainOrderInfo.appendChild(orderBox_body)
+            const orderBox_body_col1 = document.createElement('div')
+            orderBox_body_col1.className = orders.orderBox_body_col1
+            orderBox_body.appendChild(orderBox_body_col1)
+            const product_info = document.createElement('div')
+            product_info.className = orders.product_info
+            orderBox_body_col1.appendChild(product_info)
+            const order_actions = document.createElement('div')
+            order_actions.className = orders.order_actions
+            orderBox_body_col1.appendChild(order_actions)
+            const subtotal = document.createElement('div')
+            subtotal.className = orders.subtotal
+            subtotal.innerHTML = `${res.subtotal.toLocaleString()}&#8363;`
+            order_actions.appendChild(subtotal)
+            const view_product = document.createElement('a')
+            view_product.className = orders.view_product
+            view_product.textContent = 'View Product'
+            view_product.href = `/products/${res.prod_id}`
+            order_actions.appendChild(view_product)
+            const prod_img = document.createElement('img')
+            prod_img.className = orders.prod_img
+            prod_img.src = `../../img/${detail.img_url[sizeIndex]}`
+            prod_img.width = '150'
+            product_info.appendChild(prod_img)
+            const prod_content = document.createElement('div')
+            prod_content.className = orders.prod_content
+            product_info.appendChild(prod_content)
+            const prod_name = document.createElement('h3')
+            prod_name.textContent = res.product_name
+            prod_content.appendChild(prod_name)
+            if (categoryDetail) {
+              const catalog = document.createElement('h4')
+              catalog.textContent = categoryDetail.name
+              prod_content.appendChild(catalog)
+            }
+            const quantity = document.createElement('p')
+            quantity.innerHTML = `Qty - ${res.product_quantity}`
+            prod_content.appendChild(quantity)
+            const prod_attribute = document.createElement('p')
+            prod_attribute.innerHTML = `${res.size} ${res.color ? '/' + `<button style="background-color: ${res.color}" class="${orders.colorBtn}"></button>` : ''}`
+            prod_content.appendChild(prod_attribute)
+            const order_detail_id = document.createElement('p')
+            order_detail_id.innerHTML = `Order Id - <span>#${res._id}</span>`
+            prod_content.appendChild(order_detail_id)
+          })
+        }
 
         const orderBox_body_col2 = document.createElement('div')
         orderBox_body_col2.className = orders.orderBox_body_col2
@@ -272,7 +277,6 @@ const Orders = () => {
   }
   
   const handleSort = async (e) => {
-    event.stopPropagation();
     const target = e.target 
     if(target.value == '2'){
       setSortValue(2)

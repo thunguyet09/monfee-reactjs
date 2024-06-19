@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import account from './Account.module.css'
 import { faUserCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getUser, sendResetPasswordLink, updateUser } from '../../api';
+import { getUser, sendResetPasswordLink, triggerEmail, updateUser } from '../../api';
 import axios from 'axios';
 const Account = () => {
     const [fullName, setFullName] = useState('')
@@ -217,6 +217,12 @@ const Account = () => {
             })
         })
     }
+
+    const handleEmail = async () => {
+        const res = await triggerEmail()
+        console.log(res)
+    }
+
     return (
         <>
             <div id={account.account}>

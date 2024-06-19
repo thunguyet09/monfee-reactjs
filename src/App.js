@@ -1,7 +1,7 @@
-import logo from './logo.svg';
+
 import styles from './App.module.css';
 import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Route, Routes, Switch, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Home from './components/Home/Home'
@@ -17,7 +17,6 @@ import MiniCart from './components/MiniCart/MiniCart';
 import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContext';
 import Cart from './components/Cart/Cart';
 import Dashboard from './admin/Dashboard/Dashboard';
-import { useState, useEffect } from 'react';
 import Checkout from './components/Checkout/Checkout';
 import Orders from './components/Orders/Orders';
 import ResetPassword from './components/ResetPassword/ResetPassword';
