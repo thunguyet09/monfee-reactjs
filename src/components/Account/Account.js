@@ -202,7 +202,6 @@ const Account = () => {
                 id: userId
             }
 
-            console.log(info)
             await sendResetPasswordLink(info)
             .then(() => {
                 authenticateBtn.innerHTML = `
