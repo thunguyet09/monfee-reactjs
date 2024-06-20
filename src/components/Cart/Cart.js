@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import styles from './Cart.module.css'
 import { getDetail, getData, getUser } from '../../api'
 import { numsInCart } from '../Header/Header'

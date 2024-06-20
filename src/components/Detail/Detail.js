@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styles from './Detail.module.css'
-import { getAllProducts, getDetail, getProductsByCategoryId, getUser } from '../../api';
+import { getDetail, getProductsByCategoryId, getUser } from '../../api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { getData } from '../../api';

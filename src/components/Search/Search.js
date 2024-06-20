@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useEffect } from 'react'
 import styles from './Search.module.css'
 import { getData } from '../../api'
 import { useSearch } from '../../contexts/SearchContext/SearchContext'

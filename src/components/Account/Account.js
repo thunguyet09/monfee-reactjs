@@ -3,7 +3,6 @@ import account from './Account.module.css'
 import { faUserCircle, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getUser, sendResetPasswordLink, triggerEmail, updateUser } from '../../api';
-import axios from 'axios';
 const Account = () => {
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
