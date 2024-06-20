@@ -239,7 +239,7 @@ const Header = () => {
         </ul>
       </div>
       <div className={styles.logo}>
-        <img src="../img/monfee-logo.png" width={250} />
+        <img src="../../img/monfee-logo.png" width={250} />
       </div>
       <div className={styles.rightHeader}>
         <span>
