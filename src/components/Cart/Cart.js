@@ -42,7 +42,7 @@ const Cart = () => {
             data.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
                 const sizeIndex = detail.sizes.indexOf(item.size)
-                let subtotal = item.quantity * detail.price[sizeIndex]
+                let subtotal = detail.promo_price[sizeIndex] && detail.promo_price[sizeIndex] > 0 ? item.quantity * detail.promo_price[sizeIndex] : item.quantity * detail.price[sizeIndex]
                 total += subtotal
                 if(total && total > 0){
                     cart_amount.innerHTML = `${total.toLocaleString()}&#8363;`

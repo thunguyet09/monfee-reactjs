@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './Checkout.module.css'
-import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications, triggerEmail } from '../../api'
+import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications, triggerEmail, userSpending } from '../../api'
 const Checkout = () => {
+    const [isEmail, setEmail] = useState('')
     useEffect(() => {
         let isMounted = true;
         const products_info = document.querySelector(`.${styles.products_info}`)
@@ -100,161 +101,170 @@ const Checkout = () => {
             const phone = document.querySelector(`.${styles.phone}`)
             const user = await getUser(userId)
             const order_info_user = user.order_info
-            if(order_info_user){
+            if (order_info_user) {
                 full_name.value = order_info_user.full_name
-                email.value = order_info_user.email 
+                email.value = order_info_user.email
                 phone.value = order_info_user.phone
                 address.value = order_info_user.address
-                city.value = order_info_user.city 
+                city.value = order_info_user.city
+                setEmail(order_info_user.email)
+            } else {
+                email.value = user.email
+                full_name.value = user.full_name
+                setEmail(user.email)
             }
+            let calc_discount = 0
+            let total_num = subtotal;
+            const noteBox = document.createElement('div')
+            products_info.appendChild(noteBox)
             user.vouchers.forEach(async (voucherItem) => {
                 const voucher = await getDetailVoucher(voucherItem)
                 const discount_box = document.createElement('div')
                 discount_box.className = styles.discount_box
-                products_info.appendChild(discount_box)
+                noteBox.appendChild(discount_box)
                 const discount_content = document.createElement('div')
                 discount_box.appendChild(discount_content)
                 discount_content.innerHTML = `
                     <h3>Discount</h3>
                     <button>${voucher.voucher_code}</button>
                 `
-                let calc_discount = (subtotal * voucher.discount) / 100
+                calc_discount = (subtotal * voucher.discount) / 100
                 const discount = document.createElement('h3')
                 discount.innerHTML = `-${calc_discount.toLocaleString()}&#8363;`
                 discount_box.appendChild(discount)
 
-                let calc_total = subtotal - calc_discount
+                total_num = subtotal - calc_discount
                 const total = document.createElement('div')
                 total.className = styles.total
                 total.innerHTML = `<h3>Total</h3>
-                <h3>${calc_total.toLocaleString()}&#8363;</h3>`
-                products_info.appendChild(total)
+                <h3>${total_num.toLocaleString()}&#8363;</h3>`
+                noteBox.appendChild(total)
+            })
 
-                const order_note = document.createElement('div')
-                order_note.className = styles.order_note
-                products_info.appendChild(order_note)
-                const order_note_text = document.createElement('h3')
-                order_note_text.textContent = 'Notes:'
-                order_note.appendChild(order_note_text)
-                const note_box = document.createElement('textarea')
-                note_box.rows = '7'
-                note_box.cols = '50'
-                order_note.appendChild(note_box)
-                const checkout_actions = document.createElement('div')
-                checkout_actions.className = styles.checkout_actions
-                products_info.appendChild(checkout_actions)
-                const back_to_shop = document.createElement('a')
-                back_to_shop.className = styles.back_to_shop
-                back_to_shop.textContent = 'Back to shop'
-                back_to_shop.href = '/shop'
-                checkout_actions.appendChild(back_to_shop)
-                const place_order = document.createElement('button')
-                place_order.className = styles.place_order
-                place_order.textContent = 'PLACE AN ORDER'
-                checkout_actions.appendChild(place_order)
-                const save_user_info = document.querySelector(`.${styles.save_info} > input`)
-                const emailed_me = document.querySelector(`.${styles.email_checkbox} > input`)
-                const currentDate = new Date()
-                const year = currentDate.getFullYear()
-                const month = currentDate.getMonth() + 1
-                const day = currentDate.getDate()
-                const hour = currentDate.getHours()
-                const minute = currentDate.getMinutes()
-                let formatDate = '';
-                if (minute < 10 && hour < 10) {
-                    formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + "0" + minute
-                } else if (hour < 10) {
-                    formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + minute
-                } else if (minute < 10) {
-                    formatDate = year + '-' + month + '-' + day + " " + hour + ":" + "0" + minute
+            const order_note = document.createElement('div')
+            order_note.className = styles.order_note
+            products_info.appendChild(order_note)
+            const order_note_text = document.createElement('h3')
+            order_note_text.textContent = 'Notes:'
+            order_note.appendChild(order_note_text)
+            const note_box = document.createElement('textarea')
+            note_box.rows = '7'
+            note_box.cols = '50'
+            order_note.appendChild(note_box)
+            const checkout_actions = document.createElement('div')
+            checkout_actions.className = styles.checkout_actions
+            products_info.appendChild(checkout_actions)
+            const back_to_shop = document.createElement('a')
+            back_to_shop.className = styles.back_to_shop
+            back_to_shop.textContent = 'Back to shop'
+            back_to_shop.href = '/shop'
+            checkout_actions.appendChild(back_to_shop)
+            const place_order = document.createElement('button')
+            place_order.className = styles.place_order
+            place_order.textContent = 'PLACE AN ORDER'
+            checkout_actions.appendChild(place_order)
+            const save_user_info = document.querySelector(`.${styles.save_info} > input`)
+            const emailed_me = document.querySelector(`.${styles.email_checkbox} > input`)
+            const currentDate = new Date()
+            const year = currentDate.getFullYear()
+            const month = currentDate.getMonth() + 1
+            const day = currentDate.getDate()
+            const hour = currentDate.getHours()
+            const minute = currentDate.getMinutes()
+            let formatDate = '';
+            if (minute < 10 && hour < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + "0" + minute
+            } else if (hour < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + "0" + hour + ":" + minute
+            } else if (minute < 10) {
+                formatDate = year + '-' + month + '-' + day + " " + hour + ":" + "0" + minute
+            } else {
+                formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
+            }
+            const orders = await getData('orders')
+            const dialog_content = document.querySelector(`#${styles.dialog_content}`)
+            const dialog_icon = document.querySelector(`#${styles.dialog_content} > span`)
+            const dialog_text = document.querySelector(`.${styles.dialog_text}`)
+            let flag = false;
+            place_order.addEventListener('click', async () => {
+                if (full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== '') {
+                    flag = true;
                 } else {
-                    formatDate = year + "-" + month + "-" + day + " " + hour + ":" + minute
+                    dialog_text.innerHTML = 'Please fill out the form.'
+                    dialog_icon.innerHTML = `<span class="material-symbols-outlined">close</span>`
+                    dialog_content.style.display = 'flex'
+                    dialog_content.style.backgroundColor = '#C5041B'
+                    setTimeout(() => {
+                        dialog_content.style.display = 'none'
+                    }, 2000)
                 }
-                const orders = await getData('orders')
-                const dialog_content = document.querySelector(`#${styles.dialog_content}`)
-                const dialog_icon = document.querySelector(`#${styles.dialog_content} > span`)
-                const dialog_text = document.querySelector(`.${styles.dialog_text}`)
-                let flag = false;
-                place_order.addEventListener('click', async () => {
-                    if (full_name.value !== '' && address.value !== '' && city.value !== '' && email.value !== '' && phone.value !== '') {
-                        flag = true;
-                    } else {
-                        dialog_text.innerHTML = 'Please fill out the form.'
-                        dialog_icon.innerHTML = `<span class="material-symbols-outlined">close</span>`
-                        dialog_content.style.display = 'flex'
-                        dialog_content.style.backgroundColor = '#C5041B'
-                        setTimeout(() => {
-                            dialog_content.style.display = 'none'
-                        }, 2000)
-                    }
 
-                    const order = {
-                        date: formatDate,
-                        da_tra: 0,
-                        discount: calc_discount,
-                        user_id: user._id,
-                        full_name: full_name.value,
-                        email: email.value,
-                        phone: phone.value,
-                        address: address.value,
-                        city: city.value,
-                        note: note_box.value,
-                        order_id: orders.length > 0 ? orders[orders.length - 1].order_id + 1 : 0,
-                        payment_method: 'cod',
-                        quantity: total_quantity,
-                        status: 0,
-                        total: calc_total
-                    }
+                const order = {
+                    date: formatDate,
+                    da_tra: 0,
+                    discount: calc_discount,
+                    user_id: user._id,
+                    full_name: full_name.value,
+                    email: email.value,
+                    phone: phone.value,
+                    address: address.value,
+                    city: city.value,
+                    note: note_box.value,
+                    order_id: orders.length > 0 ? orders[orders.length - 1].order_id + 1 : 0,
+                    payment_method: 'cod',
+                    quantity: total_quantity,
+                    status: 0,
+                    total: total_num
+                }
 
-                    if (flag) {
-                        await fetch(`http://localhost:3000/orders`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(order)
+                if (flag) {
+                    await fetch(`http://localhost:3000/orders`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(order)
+                    })
+                        .then(() => {
+                            handleNotifications(user._id, total_num, formatDate, user.notifications)
                         })
-                            .then(() => {
-                                handleNotifications(user._id, calc_total, formatDate, user.notifications)
-                            })
-                            .then(async () => {
-                                handleOrderDetails(email.value, calc_total, order.order_id, data) 
-                            })
-                        handleProductQuantity(data) 
-                    }
-
-                    const orderInfo = {
-                        full_name: full_name.value,
-                        email: email.value,
-                        phone: phone.value,
-                        address: address.value,
-                        city: city.value,
-                    }
-
-                    if (save_user_info.checked && flag) {
-                        await fetch(`http://localhost:3000/users/order-info/${userId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                order_info: orderInfo
-                            })
+                        .then(async () => {
+                            handleOrderDetails(isEmail, total_num, order.order_id, data, full_name.value)
                         })
-                    }
+                    handleProductQuantity(data)
+                }
 
-                    if (emailed_me.checked && flag) {
-                        await fetch(`http://localhost:3000/users/emailed/${userId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                'emailed': true
-                            })
+                const orderInfo = {
+                    full_name: full_name.value,
+                    email: email.value,
+                    phone: phone.value,
+                    address: address.value,
+                    city: city.value,
+                }
+
+                if (save_user_info.checked && flag) {
+                    await fetch(`http://localhost:3000/users/order-info/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_info: orderInfo
                         })
-                    }
-                })
+                    })
+                }
+
+                if (emailed_me.checked && flag) {
+                    await fetch(`http://localhost:3000/users/emailed/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            'emailed': true
+                        })
+                    })
+                }
             })
         }
 
@@ -313,12 +323,11 @@ const Checkout = () => {
         }
 
         let items = []
-        const handleOrderDetails = async (email, total, orderId, carts) => {
+        const handleOrderDetails = async (email, total, orderId, carts, fullName) => {
             carts.forEach(async (item) => {
                 const detail = await getDetail(item.prod_id.toString())
-                console.log(detail)
                 const sizeIndex = detail.sizes.indexOf(item.size)
-                
+
                 const newOrderDetails = {
                     order_id: orderId,
                     prod_id: item.prod_id,
@@ -338,20 +347,21 @@ const Checkout = () => {
                     },
                     body: JSON.stringify(newOrderDetails)
                 })
-                .then(() => {
-                    carts.forEach(async (item) => {
-                        await removeCart('cart', item.id)
+                    .then(() => {
+                        carts.forEach(async (item) => {
+                            await removeCart('cart', item.id)
+                        })
+                        orderSuccessConfirm()
                     })
-                    orderSuccessConfirm()
-                })
-                .then(() => {
-                    sendEmail(email, total, orderId)
-                })
             })
+            await sendEmail(email, total, orderId, fullName)
         }
 
-        const sendEmail = async(email, total, orderId) => {
-            await triggerEmail(items, total, orderId, email)
+        const sendEmail = async (email, total, orderId, fullName) => {
+            await triggerEmail(items, total, orderId, email, fullName)
+                .then(async () => {
+                    await userSpending(userId, total)
+                })
         }
         getAPI()
         return () => {
@@ -361,6 +371,11 @@ const Checkout = () => {
 
     const trackOrder = () => {
         document.location.href = '/orders'
+    }
+
+    const onEmail = (e) => {
+        const target = e.target.value 
+        setEmail(target.value)
     }
     return (
         <>
@@ -372,7 +387,7 @@ const Checkout = () => {
                                 <h2>Contact</h2>
                                 <div className={styles.group_control}>
                                     <h3>Email</h3>
-                                    <input type="email" className={styles.email} />
+                                    <input onChange={(e) => onEmail(e)} type="email" className={styles.email} />
                                 </div>
                                 <div className={styles.email_checkbox}>
                                     <input type="checkbox" />

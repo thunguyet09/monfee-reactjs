@@ -232,8 +232,8 @@ export const changePassword = async(userId, password) => {
     }
 }
 
-export const triggerEmail = async(items, total, orderId, email) => {
-    if(items && total && orderId && email){
+export const triggerEmail = async(items, total, orderId, email, fullName) => {
+    if(items && total && orderId && email && fullName){
         return await fetch(`http://localhost:3000/orders/trigger-email`, {
             method: 'POST', 
             headers: {
@@ -243,7 +243,23 @@ export const triggerEmail = async(items, total, orderId, email) => {
                 items: items,
                 total: total, 
                 orderId: orderId,
-                email: email
+                email: email,
+                username: fullName
+            })
+        }).then((res) => res.json());
+    }
+}
+
+export const userSpending = async(userId, total) => {
+    if(userId, total){
+        return await fetch(`http://localhost:3000/users/spending`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+                total: total
             })
         }).then((res) => res.json());
     }

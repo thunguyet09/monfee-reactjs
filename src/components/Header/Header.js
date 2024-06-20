@@ -170,7 +170,7 @@ const Header = () => {
       if(userId && user.notifications.length > 0){
         notify_quantity.innerHTML = `${user.notifications.length}`
         notify_quantity.style.backgroundColor = 'white'
-        const notifications = user.notifications.splice(0,2).reverse()
+        const notifications = user.notifications.reverse().splice(0,2)
         if(isMount){
           notifications.forEach((item) => {
             const notify_item = document.createElement('div')

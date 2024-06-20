@@ -402,11 +402,12 @@
     margin: 0;
     font-size: 15px;
     font-family: "Nunito", sans-serif;
+    font-weight: 600;
 }
 
 #dialog_content>span>span {
     margin-top: 5px;
-    font-size: 22px;
+    font-size: 21px;
 }
 
 .order_successful {
