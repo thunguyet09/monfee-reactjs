@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import styles from './Checkout.module.css'
 import { getData, getUser, getDetail, removeCart, getDetailVoucher, insertNotifications, triggerEmail, userSpending } from '../../api'
 const Checkout = () => {
-    const [isEmail, setEmail] = useState('')
     useEffect(() => {
         let isMounted = true;
         const products_info = document.querySelector(`.${styles.products_info}`)
@@ -107,11 +106,9 @@ const Checkout = () => {
                 phone.value = order_info_user.phone
                 address.value = order_info_user.address
                 city.value = order_info_user.city
-                setEmail(order_info_user.email)
             } else {
                 email.value = user.email
                 full_name.value = user.full_name
-                setEmail(user.email)
             }
             let calc_discount = 0
             let total_num = subtotal;
@@ -229,7 +226,10 @@ const Checkout = () => {
                             handleNotifications(user._id, total_num, formatDate, user.notifications)
                         })
                         .then(async () => {
-                            handleOrderDetails(isEmail, total_num, order.order_id, data, full_name.value)
+                            handleOrderDetails(email.value, total_num, order.order_id, data, full_name.value)
+                        })
+                        .then(() => {
+                            handleUserSpending(userId, total_num)
                         })
                     handleProductQuantity(data)
                 }
@@ -332,8 +332,8 @@ const Checkout = () => {
                     order_id: orderId,
                     prod_id: item.prod_id,
                     product_name: detail.name,
-                    img_url: item.img_url,
-                    product_price: item.price,
+                    img_url: detail.img_url[sizeIndex],
+                    product_price: detail.price[sizeIndex],
                     product_quantity: item.quantity,
                     size: item.size ? item.size : '',
                     color: item.color ? item.color : '',
@@ -352,16 +352,18 @@ const Checkout = () => {
                             await removeCart('cart', item.id)
                         })
                         orderSuccessConfirm()
+                    }).then(() => {
+                        sendEmail(email, total, orderId, fullName)
                     })
             })
-            await sendEmail(email, total, orderId, fullName)
         }
 
         const sendEmail = async (email, total, orderId, fullName) => {
             await triggerEmail(items, total, orderId, email, fullName)
-                .then(async () => {
-                    await userSpending(userId, total)
-                })
+        }
+
+        const handleUserSpending = async (userId, total) => {
+            await userSpending(userId, total)
         }
         getAPI()
         return () => {
@@ -373,10 +375,6 @@ const Checkout = () => {
         document.location.href = '/orders'
     }
 
-    const onEmail = (e) => {
-        const target = e.target.value 
-        setEmail(target.value)
-    }
     return (
         <>
             <div id={styles.checkout}>
@@ -387,7 +385,7 @@ const Checkout = () => {
                                 <h2>Contact</h2>
                                 <div className={styles.group_control}>
                                     <h3>Email</h3>
-                                    <input onChange={(e) => onEmail(e)} type="email" className={styles.email} />
+                                    <input type="email" className={styles.email} />
                                 </div>
                                 <div className={styles.email_checkbox}>
                                     <input type="checkbox" />

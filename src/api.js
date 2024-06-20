@@ -233,7 +233,7 @@ export const changePassword = async(userId, password) => {
 }
 
 export const triggerEmail = async(items, total, orderId, email, fullName) => {
-    if(items && total && orderId && email && fullName){
+    if(orderId){
         return await fetch(`http://localhost:3000/orders/trigger-email`, {
             method: 'POST', 
             headers: {

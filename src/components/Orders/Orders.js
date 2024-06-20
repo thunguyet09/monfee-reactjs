@@ -25,6 +25,7 @@ const Orders = () => {
     const orderData = await orderPagination(userId, page, limit)
     setTotalPages(orderData.totalPages)
     renderData(orderData.ordersData)
+    handleFunction(orderData.orders_length, 0)
   }
 
   const getAPI = async(page, limit, orderData) => {
@@ -34,14 +35,18 @@ const Orders = () => {
     renderData(sliceOrderData)
   }
 
+  const handleFunction = (orderData, active) => {
+    const content = document.querySelector(`.${orders.content}`)
+    if ((active == 0 || active == 1) && orderData == 0) {
+      content.innerHTML = `<div class='${orders.noOrder}'>You haven't placed any orders yet.</div>`
+    }else if(active == 3 && orderData== 0){
+      content.innerHTML = `<div class='${orders.noOrder}'>You don't have any cancelled orders.</div>`
+    }
+  }
   const renderData = async (orderData) => {
     const content = document.querySelector(`.${orders.content}`)
     content.innerHTML = ''
     if (isMounted) {
-      if (orderData.length == 0) {
-        content.innerHTML = `<div class='${orders.noOrder}'>You haven't placed any orders yet.</div>`
-      }
-
       const ordersData = await getData('orders')
       const ordersDataFiltered = ordersData.filter((item) => item.user_id == userId && item.status !== 4)
       let total = 0
@@ -199,13 +204,14 @@ const Orders = () => {
     if(activeOrder == 2){
       const nonShippedOrders = ordersByUserId.filter((item) => item.status == 0 || item.status == 1).reverse()
       getAPI(pageNumber, 2, nonShippedOrders)
+      handleFunction(nonShippedOrders, 2)
     }else if(activeOrder == 1){
       getOrdersData(pageNumber, 2)
     }else if(activeOrder == 3){
       const canceledOrders = ordersByUserId.filter((item) => item.status == 4).reverse()
       getAPI(pageNumber, 2, canceledOrders)
+      handleFunction(canceledOrders, 3)
     }
-
     if(sortValue == 2){
       const orders = await getAscendingOrdersByTotal()
       getAPI(pageNumber,2,orders.orders)
@@ -230,6 +236,7 @@ const Orders = () => {
       const totalPages = Math.ceil(nonShippedOrders.length / 2)
       getAPI(1,2,nonShippedOrders.slice(0,2))
       setTotalPages(totalPages)
+      handleFunction(nonShippedOrders, 2)
     }else if(target.value == '1'){
       getOrdersData('1', '2')
       setActiveOrder(1)
@@ -239,6 +246,7 @@ const Orders = () => {
       const totalPages = Math.ceil(canceledOrders.length / 2)
       getAPI(1,2,canceledOrders.slice(0,2))
       setTotalPages(totalPages)
+      handleFunction(canceledOrders, 3)
     }
   }
 
@@ -249,9 +257,11 @@ const Orders = () => {
 
   const handleCancelOrder = async () => {
     await changeOrderStatus(orderId, '4')
-    .then(() => {
+    .then(async () => {
       closeModal()
-      getAPI(pageNumber, 2)
+      const allOrders = await getData('orders')
+      const ordersByUserId = allOrders.filter((item) => item.user_id == userId)
+      getAPI(pageNumber, 2, ordersByUserId)
     })
   }
 
@@ -398,22 +408,29 @@ const Orders = () => {
           </div>
           <div className={orders.footer}>
             <div className={orders.pagination}>
-                <button className={orders.prev_page}>
-                  <span className="material-symbols-outlined">chevron_left</span>
-                </button>
-                <div className={orders.pages}>
-                  {[...Array(totalPages).keys()].map((page) => (
-                    <button key={page + 1} className={orders.page_number} 
-                    onClick={() => handlePagination(page + 1)}
-                    id={`${pageNumber === page + 1 ? orders.active_page : ''}`}
-                    >
-                      {page + 1}
+                {
+                  totalPages > 0 ?
+                  <>
+                    <button className={orders.prev_page}>
+                      <span className="material-symbols-outlined">chevron_left</span>
                     </button>
-                  ))}
-                </div>
-                <button className={orders.next_page}>
-                  <span className="material-symbols-outlined">chevron_right</span>
-                </button>
+                    <div className={orders.pages}>
+                      {[...Array(totalPages).keys()].map((page) => (
+                        <button key={page + 1} className={orders.page_number} 
+                        onClick={() => handlePagination(page + 1)}
+                        id={`${pageNumber === page + 1 ? orders.active_page : ''}`}
+                        >
+                          {page + 1}
+                        </button>
+                      ))}
+                    </div>
+                    <button className={orders.next_page}>
+                      <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                  </> : 
+                  <>
+                  </>
+                }
             </div>
           </div>
         </div>
