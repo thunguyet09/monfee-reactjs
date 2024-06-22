@@ -8,9 +8,11 @@ export const getData = async (val) => {
 }
 
 export const getOrderDetails = async (val) => {
-    const res = await fetch(url + val)
-    const data = await res.json()
-    return data
+    if(val){
+        const res = await fetch(url + val)
+        const data = await res.json()
+        return data
+    }
 }
 
 
@@ -262,5 +264,53 @@ export const userSpending = async(userId, total) => {
                 total: total
             })
         }).then((res) => res.json());
+    }
+}
+
+export const automatedMessage = async(senderId, receiverId, message, date, dateWithHours) => {
+    if(senderId && receiverId && date){
+        return await fetch(`http://localhost:3000/messages/automated`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                senderId: senderId,
+                receiverId: receiverId,
+                message: message,
+                date: date,
+                dateWithHours: dateWithHours
+            })
+        }).then((res) => res.json());
+    }
+}
+
+export const getMyConversations = async(id) => {
+    if(id){
+        const res = await fetch(`http://localhost:3000/conversations/${id}`)
+        const data = await res.json()
+        return data
+    }
+}
+
+export const handleLogout = async(id) => {
+    if(id){
+        await fetch(`http://localhost:3000/users/logout/${id}`)
+    }
+}
+
+export const getConversation = async(senderId, receiverId) => {
+    if(senderId && receiverId){
+        const res = await fetch(`http://localhost:3000/conversations/${senderId}/${receiverId}`)
+        const data = await res.json()
+        return data
+    }
+}
+
+export const getMessagesByConversationId = async(conversationId) => {
+    if(conversationId){
+        const res = await fetch(`http://localhost:3000/messages/${conversationId}`)
+        const data = await res.json()
+        return data
     }
 }

@@ -20,6 +20,7 @@ import Dashboard from './admin/Dashboard/Dashboard';
 import Checkout from './components/Checkout/Checkout';
 import Orders from './components/Orders/Orders';
 import ResetPassword from './components/ResetPassword/ResetPassword';
+import Chat from './components/Chat/Chat';
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
@@ -152,6 +153,13 @@ function App() {
                     <Footer />
                   </div>
                 </div>
+              }
+            />
+
+            <Route
+              path="/chat"
+              element={
+                <Chat />
               }
             />
             <Route element={<NotFound />} />

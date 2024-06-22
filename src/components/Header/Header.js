@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faSearch, faHeart, faUserCheck, faBell } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faSearch, faHeart, faUserCheck, faBell, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
-import { getData, getUser } from '../../api';
+import { automatedMessage, getData, getUser, handleLogout } from '../../api';
 import { useSearch } from '../../contexts/SearchContext/SearchContext';
 import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
 const userId = localStorage.getItem('userId')
@@ -138,9 +138,12 @@ const Header = () => {
               <p>Log Out</p>
           </a></li>
         `
-        subAvatar.childNodes[5].addEventListener('click', () => {
-          localStorage.clear()
-          document.location.href = '/'
+        subAvatar.childNodes[5].addEventListener('click', async() => {
+          await handleLogout(userId)
+          .then(() => {
+            localStorage.clear()
+            document.location.href = '/'
+          })
         })
 
         subAvatar.childNodes[3].addEventListener('click', () => {
@@ -167,6 +170,10 @@ const Header = () => {
           notifyBox.style.display = 'none'
         }
       })
+
+      if(userId && user.notifications.length == 0){
+        notify_container.innerHTML = `<p class=${styles.nonNotifications}>You don't have any notifications yet.</p>`
+      }
       if(userId && user.notifications.length > 0){
         notify_quantity.innerHTML = `${user.notifications.length}`
         notify_quantity.style.backgroundColor = 'white'
@@ -226,6 +233,22 @@ const Header = () => {
     };
   }, []);
 
+  const handleMessages = async () => {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    const day = currentDate.getDate();
+    const hours = currentDate.getHours()
+    const minutes = currentDate.getMinutes()
+    const date = year + '/' + month + '/' + day
+    const dateWithHours = year + '/' + month + '/' + day + " " + hours + ':' + minutes
+    const consultant = await getData('users/position/consultant')
+    const consultantId = consultant._id 
+    await automatedMessage(consultantId, userId, '', date, dateWithHours)
+    .then(() => {
+      document.location.href = '/chat'
+    })
+  }
   return (
     <>
       <div id={styles.header}>
@@ -239,10 +262,13 @@ const Header = () => {
         </ul>
       </div>
       <div className={styles.logo}>
-        <img src="../../img/monfee-logo.png" width={250} />
+        <img src="./img/monfee-logo.png" width={250} />
       </div>
       <div className={styles.rightHeader}>
         <span>
+          <span className={styles.messages} onClick={handleMessages}>
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </span>
           <span className={styles.notifyItem}>
             <FontAwesomeIcon icon={faBell} />
             <h5 className={styles.notify_quantity}></h5>

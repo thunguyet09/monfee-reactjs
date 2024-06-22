@@ -10,7 +10,6 @@ import { numsInCart } from "../Header/Header";
 const Home = ({ authenticated }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const slides = [
     {
       imageUrl: "./img/carousel1.webp",
