@@ -314,3 +314,31 @@ export const getMessagesByConversationId = async(conversationId) => {
         return data
     }
 }
+
+export const uploadImgMessage = async(formData) => {
+    if(formData){
+        await fetch(`http://localhost:3000/messages/uploadImg`, {
+            method: 'POST',
+            body: formData
+        })
+    }
+}
+
+export const insertMessage = async(conversationId, senderId, receiverId, message, date, img) => {
+    if(conversationId){
+        await fetch(`http://localhost:3000/messages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                conversationId: conversationId, 
+                senderId: senderId, 
+                receiverId: receiverId, 
+                message: message, 
+                date: date,
+                img: img
+            })
+        })
+    }
+}

@@ -2,13 +2,19 @@ import React, { useEffect, useState } from 'react';
 import chat from './Chat.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId } from '../../api';
+import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId, uploadImgMessage, insertMessage } from '../../api';
 function Chat() {
     const [isMount, setIsMount] = useState(false)
+    const [img, setImg] = useState('')
+    const [message, setMessage] = useState('')
+    const [conversationId, setConversationId] = useState(0)
+    const [userId, setUserId] = useState(0)
+    const [receiverId, setReceiverId] = useState(0)
     useEffect(() => {
         setIsMount(true)
         if(isMount){
             const userId = localStorage.getItem('userId')
+            setUserId(userId)
             handleMyAccount(userId)
             getConversationsAPI(userId)
             getConsultantId(userId)
@@ -81,44 +87,95 @@ function Chat() {
     const getConversationData = async(receiverId, senderId) => {
         const conversation = await getConversation(senderId, receiverId)
         const conversationId = conversation._id
-        console.log(conversationId)
+        setConversationId(conversationId)
         const messages = await getMessagesByConversationId(conversationId)
-        console.log(messages)
         const receiverMessages = messages.filter((item) => item.user.id !== senderId)
         const senderMessages = messages.filter((item) => item.user.id == senderId)
         const chatting_container = document.querySelector(`.${chat.chatting_container}`)
+        chatting_container.innerHTML = ''
         const chatting_person1 = document.createElement('div')
         chatting_person1.className = chat.chatting_person1
+        chatting_container.appendChild(chatting_person1)
         receiverMessages.forEach((res) => {
-            console.log(res)
-            chatting_person1.innerHTML = `
-                <img src="http://localhost:3000/images/${res.user.avatar}" />
-                <div class=${chat.chatting_info_person1}>
-                    <div>${res.message == '' ? `
-                        <h4>Let's start shopping with us!</h4>
-                        <p>Don't forget to explore our product catalog with other wonderful products as well. Wish you a happy shopping!</p>
-                        <p>Working hours are from 08:00 to 17:30 all week. After this time frame, if you have any questions, just leave your information and the shop will respond immediately when online.</p>
-                    ` : ''}</div>
+            const chatting_person1_box = document.createElement('div')
+            chatting_person1_box.className = chat.chatting_person1_box
+            chatting_person1.appendChild(chatting_person1_box)
+            const chatting_person1_img = document.createElement('img')
+            chatting_person1_img.src = `http://localhost:3000/images/${res.user.avatar}`
+            chatting_person1_box.appendChild(chatting_person1_img)
+            const chatting_info_person1 = document.createElement('div')
+            chatting_info_person1.className = chat.chatting_info_person1 
+            chatting_person1_box.appendChild(chatting_info_person1)
+            if(res.img !== '' && res.message !== ''){
+                chatting_info_person1.innerHTML = `
+                    <div>
+                        <img src="http://localhost:3000/images/${res.img}" />
+                        <div>${res.message}</div>
+                    </div>
                     <p>${res.date}</p>
-                </div>
+                `
+            }else if(res.img !== '' && res.message == ''){
+                chatting_info_person1.innerHTML = `
+                    <div>
+                        <img src="http://localhost:3000/images/${res.img}" />
+                    </div>
+                    <p>${res.date}</p>
+                `
+            }else{
+                chatting_info_person1.innerHTML = `
+                    <div>${res.message}</div>
+                    <p>${res.date}</p>
+                `
+            }
+
+            chatting_info_person1.innerHTML = `
+                <div>${res.message == '' ? `
+                    <h4>Let's start shopping with us!</h4>
+                    <p>Don't forget to explore our product catalog with other wonderful products as well. Wish you a happy shopping!</p>
+                    <p>Working hours are from 08:00 to 17:30 all week. After this time frame, if you have any questions, just leave your information and the shop will respond immediately when online.</p>
+                ` : ''}</div>
+                    <p>${res.date}</p>
             `
         })
-        chatting_container.appendChild(chatting_person1)
         const chatting_person2 = document.createElement('div')
         chatting_person2.className = chat.chatting_person2
         chatting_container.appendChild(chatting_person2)
         senderMessages.forEach((res) => {
-            chatting_person2.innerHTML = `
-                <img src="http://localhost:3000/images/${res.user.avatar}" />
-                <div class=${chat.chatting_info_person2}>
+            const chatting_person2_box = document.createElement('div')
+            chatting_person2_box.className = chat.chatting_person2_box
+            chatting_person2.appendChild(chatting_person2_box)
+            const chatting_person2_img = document.createElement('img')
+            chatting_person2_img.src = `http://localhost:3000/images/${res.user.avatar}`
+            chatting_person2_box.appendChild(chatting_person2_img)
+            const chatting_info_person2 = document.createElement('div')
+            chatting_info_person2.className = chat.chatting_info_person2
+            chatting_person2_box.appendChild(chatting_info_person2)
+            console.log(res)
+            if(res.img !== '' && res.message !== ''){
+                chatting_info_person2.innerHTML = `
+                    <div>
+                        <img src="http://localhost:3000/images/${res.img}" />
+                        <div>${res.message}</div>
+                    </div>
+                    <p>${res.date}</p>
+                `
+            }else if(res.img !== '' && res.message == ''){
+                chatting_info_person2.innerHTML = `
+                    <div>
+                        <img src="http://localhost:3000/images/${res.img}" />
+                    </div>
+                    <p>${res.date}</p>
+                `
+            }else{
+                chatting_info_person2.innerHTML = `
                     <div>${res.message}</div>
                     <p>${res.date}</p>
-                </div>
-            `
+                `
+            }
         })
-
     }
     const getReceiverData = async (receiverId) => {
+        setReceiverId(receiverId)
         const receiver = await getUser(receiverId)
         const receiver_title = document.querySelector(`.${chat.receiver_title}`)
         const receiver_title_row1 = document.createElement('div')
@@ -140,6 +197,79 @@ function Chat() {
         report.className = chat.report
         report.innerHTML = `<span class="material-symbols-outlined">report</span>`
         receiver_title.appendChild(report)
+    }
+
+    const handleAvatar = async (e) => {
+        const img_container = document.querySelector(`.${chat.img_container}`)
+        if(!e.target.files[0]){
+            setImg('')
+        }else{
+            setImg(e.target.files[0].name)
+        }
+        const formData = new FormData();
+        formData.append('img', e.target.files[0]);
+        console.log(formData)
+        try {
+            await uploadImgMessage(formData)
+            .then(() => {
+                img_container.innerHTML = `
+                    <div class=${chat.temporImg}>
+                        <img src="http://localhost:3000/images/${e.target.files[0].name}" />
+                        <button class=${chat.removeImg}>
+                            <span class="material-symbols-outlined">
+                                close
+                            </span>
+                        </button>
+                    </div>
+                `
+            })
+
+            if(img_container.childNodes[1].childNodes[3]){
+                img_container.childNodes[1].childNodes[3].addEventListener('click', handleRemoveTemporImg)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
+    }
+
+    const handleRemoveTemporImg = () => {
+        setImg('')
+        const img_container = document.querySelector(`.${chat.img_container}`)
+        img_container.innerHTML = ''
+
+    }
+    const handleSend = async () => {
+        const currentDate = new Date()
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        const day = currentDate.getDate();
+        const hours = currentDate.getHours()
+        const minutes = currentDate.getMinutes()
+        const dateWithHours = year + '/' + month + '/' + day + " " + hours + ':' + minutes
+        if(message !== ''){
+            await insertMessage(conversationId, userId, receiverId, message, dateWithHours, img)
+            .then(() => {
+                getConversationData(receiverId, userId)
+            })
+            .then(() => {
+                const img_container = document.querySelector(`.${chat.img_container}`)
+                const message_input = document.querySelector(`.${chat.message}`)
+                img_container.innerHTML = ''
+                message_input.value = ''
+            })
+        }else if (message == '' && img !== ''){
+            await insertMessage(conversationId, userId, receiverId, '', dateWithHours, img)
+            .then(() => {
+                getConversationData(receiverId, userId)
+                const img_container = document.querySelector(`.${chat.img_container}`)
+                img_container.innerHTML = ''
+            })
+        }
+    }
+
+    const onType = (e) => {
+        const target = e.target 
+        setMessage(target.value)
     }
   return (
     <>
@@ -164,19 +294,20 @@ function Chat() {
                     </div>
 
                     <div className={chat.typing}>
+                        <div className={chat.img_container}></div> 
                         <div className={chat.typing_container}>
                             <div className={chat.avatar_typing}>
 
                             </div>
                             <div className={chat.typingBox}>
-                                <textarea placeholder='Type something...'/>
+                                <textarea onChange={(e) => onType(e)} className={chat.message} placeholder='Type something...'/>
                                 <div className={chat.actions}>
                                     <div className={chat.choose_img}>
-                                        <span class="material-symbols-outlined">photo_library</span>
-                                        <input type="file" className={chat.img_file} />
+                                        <span className="material-symbols-outlined">photo_library</span>
+                                        <input type="file" name="img" onChange={(e) => handleAvatar(e)} className={chat.img_file} />
                                     </div>
 
-                                    <div className={chat.sendBtn}>
+                                    <div className={chat.sendBtn} onClick={handleSend}>
                                         <FontAwesomeIcon icon={faPaperPlane} />
                                     </div>
                                 </div>

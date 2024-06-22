@@ -6,15 +6,18 @@
 
 .chatBox_row1 {
     width: 25%;
-    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .chatBox_row2 {
     width: 75%;
     position: absolute;
-    top: 0;
     right: 0;
-    bottom: 0;
 }
 
 .myAccount {
@@ -204,16 +207,19 @@
 
 .chatting_container {
     padding: 0px 40px;
+    height: 480px;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 
-.chatting_person1, .chatting_person2 {
+.chatting_person1_box, .chatting_person2_box {
     display: flex;
     flex-direction: row;
     gap: 10px;
-    margin: 40px 0px;
+    margin: 20px 0px;
 }
 
-.chatting_person1 > img, .chatting_person2 > img{
+.chatting_person1_box > img, .chatting_person2_box > img{
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -229,7 +235,7 @@
     padding: 10px;
 }
 
-.chatting_info_person1, .chatting_info_person2{
+.chatting_info_person1, .chatting_info_person2_box{
     max-width: 600px;
 }
 
@@ -255,7 +261,7 @@
     font-weight: 550;
 }
 
-.chatting_person2 {
+.chatting_person2_box {
     display: flex;
     justify-content: flex-end;
 }
@@ -265,9 +271,8 @@
     bottom: 0;
     right: 0;
     width: 73%;
-    padding-top: 20px;
+    padding-top: 10px;
     padding-right: 20px;
-    border-top: 1px solid rgb(224, 224, 224);
 }
 
 .avatar_typing  > img{
@@ -281,6 +286,8 @@
     flex-direction: row;
     gap: 20px;
     width: 100%;
+    border-top: 1px solid rgb(224, 224, 224);
+    padding-top: 10px;
 }
 
 .typingBox {
@@ -338,3 +345,47 @@
 .sendBtn:hover {
     opacity: 0.8;
 }
+
+.temporImg> img{
+    width: 120px;
+}
+
+.img_container {
+    text-align: left;
+    background-color: rgba(239, 245, 255, 0.528);
+}
+
+.temporImg {
+    position: relative;
+    width: 120px;
+}
+.removeImg {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.removeImg > span {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.removeImg:hover {
+    background-color: grey;
+}
+
+.chatting_info_person2 > div > img, .chatting_info_person1 > div > img {
+    width: 400px;
+}
+
+.message {}

@@ -217,11 +217,6 @@ const Account = () => {
         })
     }
 
-    const handleEmail = async () => {
-        const res = await triggerEmail()
-        console.log(res)
-    }
-
     return (
         <>
             <div id={account.account}>
