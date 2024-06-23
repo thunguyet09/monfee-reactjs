@@ -683,7 +683,6 @@ const Detail = () => {
                 add_to_cart_box.appendChild(addtocart_tooltip)
 
                 const slider_btns = document.querySelector(`.${styles.slider_btns}`)
-                const relate_container = document.querySelector(`.${styles.relate_container}`)
                 slider_btns.innerHTML = ''
                 const slider_num = Math.ceil(related_products_data.length / 5)
                 for (let i = 1; i <= slider_num; i++) {

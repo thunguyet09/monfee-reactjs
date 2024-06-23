@@ -108,7 +108,7 @@ const Home = ({ authenticated }) => {
           });
           cart.addEventListener("click", async () => {
             if (token) {
-              const carts = await getCarts("cart");
+              const carts = await getData("cart");
               let id = 0;
               if (carts.length > 0) {
                 id = carts[carts.length - 1].id + 1;

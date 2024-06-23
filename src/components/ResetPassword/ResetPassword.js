@@ -14,8 +14,6 @@ function ResetPassword() {
     const [userId, setUserId] = useState('')
     useEffect(() => {
         setMounted(true)
-
-        setUserId(localStorage.getItem('userId'))
     }, [isMounted])
 
     const handlePassword = async (e) => {
@@ -55,9 +53,9 @@ function ResetPassword() {
                                     if(token){
                                         const user = await getUserByToken(token)
                                         if(user.token == token){
-                                            const response = await changePassword(userId, newPassword) 
+                                            const response = await changePassword(user._id, newPassword) 
                                             if(response.message == 'Password is changed successfuly'){
-                                                await removeExpiredToken(userId)
+                                                await removeExpiredToken(user._id)
                                                 dialogContent.style.display = 'flex';
                                                 dialogContent.style.backgroundColor = '#EE7214';
                                                 dialogContent.style.color = 'white';

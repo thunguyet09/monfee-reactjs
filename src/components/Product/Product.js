@@ -5,6 +5,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { getData, product_pagination } from '../../api';
 
 const Product = () => {
+    const [itemsPerPage, setItemsPerPage] = useState(8)
     useEffect(() => {
         const slick_track = document.querySelector(`.${styles.slick_track}`);
         const cate_collection = document.querySelector(`.${styles.cate_collection}`)
@@ -93,7 +94,6 @@ const Product = () => {
 
     useEffect(() => {
         const product_items = document.querySelector(`.${styles.product_grid_parent}`)
-        const items_per_page = localStorage.getItem('items_per_page')
         let page = 1;
         const colors = async () => {
             const products = await getData("products")
@@ -177,7 +177,7 @@ const Product = () => {
             price_list_v2.innerHTML = `<a>${price_v1.toLocaleString()} - ${price_v2.toLocaleString()}</a>`
             filter_price.appendChild(price_list_v2)
             price_list_v2.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
+                let data = await product_pagination(page, itemsPerPage)
                 const filter_products = products.filter((val) => {
                     if (val.promo_price[0] > 0) {
                         return val.promo_price[0] >= price_v1 && val.promo_price[0] <= price_v2;
@@ -197,7 +197,7 @@ const Product = () => {
             price_list_v3.innerHTML = `<a>${price_v2.toLocaleString()} - ${price_v3.toLocaleString()}</a>`
             filter_price.appendChild(price_list_v3)
             price_list_v3.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
+                let data = await product_pagination(page, itemsPerPage)
                 const filter_products = products.filter((val) => {
                     if (val.promo_price[0] > 0) {
                         return val.promo_price[0] >= price_v2 && val.promo_price[0] <= price_v3;
@@ -217,7 +217,7 @@ const Product = () => {
             price_list_v4.innerHTML = `<a>${price_v3.toLocaleString()} - ${price_v4.toLocaleString()}</a>`
             filter_price.appendChild(price_list_v4)
             price_list_v4.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
+                let data = await product_pagination(page, itemsPerPage)
                 const filter_products = products.filter((val) => {
                     if (val.promo_price[0] > 0) {
                         return val.promo_price[0] >= price_v3 && val.promo_price[0] <= price_v4;
@@ -236,7 +236,7 @@ const Product = () => {
             price_list_v5.innerHTML = `<a>Over ${price_v4.toLocaleString()}</a>`
             filter_price.appendChild(price_list_v5)
             price_list_v5.addEventListener('click', async () => {
-                let data = await product_pagination(page, items_per_page)
+                let data = await product_pagination(page, itemsPerPage)
                 const filter_products = products.filter((val) => {
                     if (val.promo_price[0] > 0) {
                         return val.promo_price[0] > price_v4;
@@ -269,7 +269,7 @@ const Product = () => {
 
                 priceRangeNode.addEventListener('click', async () => {
                     try {
-                        const data = await product_pagination(page, items_per_page);
+                        const data = await product_pagination(page, itemsPerPage);
                         const filteredProducts = products.filter((product) => {
                             const price = product.promo_price?.[0] || product.price?.[0];
                             return price >= minPrice && price <= price_v1;
@@ -293,7 +293,7 @@ const Product = () => {
                 price_node_v2.innerHTML = `<a>${price_v1.toLocaleString()} - ${price_v2.toLocaleString()}</a>`
                 filter.appendChild(price_node_v2)
                 price_node_v2.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filter_products = products.filter((val) => {
                         if (val.promo_price[0] > 0) {
                             return val.promo_price[0] >= price_v1 && val.promo_price[0] <= price_v2;
@@ -313,7 +313,7 @@ const Product = () => {
                 price_node_v3.innerHTML = `<a>${price_v2.toLocaleString()} - ${price_v3.toLocaleString()}</a>`
                 filter.appendChild(price_node_v3)
                 price_node_v3.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filter_products = products.filter((val) => {
                         if (val.promo_price[0 > 0]) {
                             return val.promo_price[0] >= price_v2 && val.promo_price[0] <= price_v3;
@@ -332,7 +332,7 @@ const Product = () => {
                 price_node_v4.innerHTML = `<a>${price_v3.toLocaleString()} - ${price_v4.toLocaleString()}</a>`
                 filter.appendChild(price_node_v4)
                 price_node_v4.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filter_products = products.filter((val) => {
                         if (val.promo_price[0] > 0) {
                             return val.promo_price[0] >= price_v3 && val.promo_price[0] <= price_v4;
@@ -351,7 +351,7 @@ const Product = () => {
                 price_node_v5.innerHTML = `<a>Over ${price_v4.toLocaleString()}</a>`
                 filter.appendChild(price_node_v5)
                 price_node_v5.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filter_products = products.filter((val) => {
                         if (val.promo_price[0] > 0) {
                             return val.promo_price[0] > price_v4;
@@ -371,19 +371,16 @@ const Product = () => {
             }
         }
 
-        const getApi = async (page, items_per_page) => {
+        const getApi = async (page, itemsPerPage) => {
             let data;
-            if (localStorage.getItem('items_per_page')) {
-                data = await product_pagination(page, localStorage.getItem('items_per_page'))
-            } else {
-                data = await product_pagination(page, items_per_page)
-            }
+            data = await product_pagination(page, itemsPerPage)
             pages(data.totalPages)
             product_items.innerHTML = ''
             showProductGrid(data.products)
         }
 
         const showProductGrid = async (products) => {
+            product_items.innerHTML = ''
             const prod_per = document.querySelectorAll(`.${styles.prod_per} > button`)
             const product_item_arr = []
             products.forEach((item) => {
@@ -662,15 +659,15 @@ const Product = () => {
             const next_page = document.querySelector(`.${styles.next_page}`)
             const first_page = document.querySelector(`.${styles.first_page}`)
             const prev_page = document.querySelector(`.${styles.prev_page}`)
-            let last_page_data = await product_pagination(totalPages, items_per_page)
-            let first_page_data = await product_pagination(1, items_per_page)
+            let last_page_data = await product_pagination(totalPages, itemsPerPage)
+            let first_page_data = await product_pagination(1, itemsPerPage)
             const total_pages = document.querySelector(`.${styles.total_pages}`)
             total_pages.innerHTML = ''
             const filter_size = document.querySelectorAll(`.${styles.filter_size} > button`)
             const list_size = document.querySelectorAll(`.${styles.list_size} > li > a`)
             filter_size.forEach((item) => {
                 item.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filteredData = data.products.filter((val) => {
                         return val.sizes.includes(item.textContent)
                     })
@@ -683,7 +680,7 @@ const Product = () => {
 
             list_size.forEach((item) => {
                 item.addEventListener('click', async () => {
-                    let data = await product_pagination(page, items_per_page)
+                    let data = await product_pagination(page, itemsPerPage)
                     const filteredData = data.products.filter((val) => {
                         return val.sizes.includes(item.title)
                     })
@@ -708,7 +705,7 @@ const Product = () => {
                     const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == next_page_number);
                     if (currentPage) {
                         currentPage.setAttribute('id', styles.page_active);
-                        let data = await product_pagination(next_page_number, items_per_page)
+                        let data = await product_pagination(next_page_number, itemsPerPage)
                         product_items.innerHTML = ''
                         showProductGrid(data.products)
                     }
@@ -758,7 +755,7 @@ const Product = () => {
                     const currentPage = Array.from(total_pages.childNodes).find((p) => parseInt(p.title) == prev_page_number);
                     if (currentPage) {
                         currentPage.setAttribute('id', styles.page_active);
-                        let data = await product_pagination(prev_page_number, items_per_page)
+                        let data = await product_pagination(prev_page_number, itemsPerPage)
                         product_items.innerHTML = ''
                         showProductGrid(data.products)
                     }
@@ -811,8 +808,8 @@ const Product = () => {
                     }
                     page_link.setAttribute('id', styles.page_active)
                     setTimeout(async () => {
-                        if (items_per_page) {
-                            let data = await product_pagination(i, items_per_page)
+                        if (itemsPerPage) {
+                            let data = await product_pagination(i, itemsPerPage)
                             product_items.innerHTML = ''
                             showProductGrid(data.products)
 
@@ -851,9 +848,7 @@ const Product = () => {
             const rows_icon = document.querySelector(`.${styles.row_active} > span:last-child`)
             const row_list = document.querySelector(`.${styles.row_list} > ul`)
             const rows = document.querySelectorAll(`.${styles.row_list} > ul > li > a`)
-            if (localStorage.getItem('items_per_page')) {
-                active.textContent = localStorage.getItem('items_per_page')
-            }
+            active.textContent = itemsPerPage
             let flag = false;
             row_active.addEventListener('click', () => {
                 flag = !flag;
@@ -869,7 +864,7 @@ const Product = () => {
                 item.addEventListener('click', async () => {
                     active.textContent = item.textContent
                     const items_per_page = item.textContent
-                    localStorage.setItem('items_per_page', items_per_page)
+                    setItemsPerPage(items_per_page)
                     const data = await product_pagination(page, items_per_page)
                     product_items.innerHTML = ''
                     showProductGrid(data.products)
@@ -882,48 +877,36 @@ const Product = () => {
             const dropdown = document.querySelectorAll(`.${styles.dropdown} > li`)
             dropdown.forEach((item) => {
                 item.addEventListener('click', async () => {
+                    const startIndex = (parseInt(page) - 1) * parseInt(itemsPerPage);
+                    const endIndex = startIndex + parseInt(itemsPerPage);
                     const products = await getData('products')
+                    let sortedData = []
                     if (item.value == '1') {
                         const sorted = products.sort((a, b) => b.sales - a.sales)
-                        const data = await product_pagination(page, items_per_page)
-                        data.products = sorted
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products)
+                        sortedData = sorted.slice(startIndex, endIndex)
+                        console.log(endIndex,sortedData)
                     } else if (item.value == '2') {
                         const sorted = products.sort((a, b) => a.name - b.name)
-                        const data = await product_pagination(page, items_per_page)
-                        data.products = sorted
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products)
+                        sortedData = sorted.slice(startIndex, endIndex)
                     } else if (item.value == '3') {
                         const sorted = products.sort((a, b) => b.price[0] - a.price[0]);
-                        const data = await product_pagination(page, items_per_page);
-                        data.products = sorted;
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products);
+                        sortedData = sorted.slice(startIndex, endIndex)
                     } else if (item.value == '4') {
                         const sorted = products.sort((a, b) => a.price[0] - b.price[0]);
-                        const data = await product_pagination(page, items_per_page);
-                        data.products = sorted;
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products);
+                        sortedData = sorted.slice(startIndex, endIndex)
                     } else if (item.value == '5') {
                         const sorted = products.sort((a, b) => {
                             return new Date(b.createdAt) - new Date(a.createdAt)
                         })
-                        const data = await product_pagination(page, items_per_page);
-                        data.products = sorted;
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products);
+                        sortedData = sorted.slice(startIndex, endIndex)
                     } else if (item.value == '6') {
                         const sorted = products.sort((a, b) => {
                             return new Date(a.createdAt) - new Date(b.createdAt)
                         })
-                        const data = await product_pagination(page, items_per_page);
-                        data.products = sorted;
-                        product_items.innerHTML = ''
-                        showProductGrid(data.products);
+                        sortedData = sorted.slice(startIndex, endIndex)
                     }
+
+                    showProductGrid(sortedData)
                 })
             })
         }
@@ -931,7 +914,7 @@ const Product = () => {
         sortProducts()
         rowsPerPage()
         handleData()
-        getApi(1, 12)
+        getApi(1, itemsPerPage)
         colors()
         priceFilter()
     }, [])
@@ -978,8 +961,8 @@ const Product = () => {
                                 <h3>HIGHLIGHT</h3>
                             </div>
                         </div>
-                        <button className={styles.prevBtn}><span class="material-symbols-outlined">arrow_back_ios</span></button>
-                        <button className={styles.nextBtn}><span class="material-symbols-outlined">arrow_forward_ios</span></button>
+                        <button className={styles.prevBtn}><span className="material-symbols-outlined">arrow_back_ios</span></button>
+                        <button className={styles.nextBtn}><span className="material-symbols-outlined">arrow_forward_ios</span></button>
                     </div>
                 </div>
 

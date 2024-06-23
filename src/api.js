@@ -342,3 +342,34 @@ export const insertMessage = async(conversationId, senderId, receiverId, message
         })
     }
 }
+
+export const handleUserSearch = async(searchVal) => {
+    if(searchVal){
+        return await fetch(`http://localhost:3000/users/search`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                searchVal: searchVal
+            })
+        }).then((res) => res.json());
+    }
+}
+
+export const createdConversation = async(receiverId, senderId, date) => {
+    if(receiverId && senderId && date){
+        return await fetch(`http://localhost:3000/conversations`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                receiverId: receiverId,
+                senderId: senderId,
+                date: date
+            })
+        }).then((res) => res.json());
+    }
+}
+

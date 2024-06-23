@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import chat from './Chat.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId, uploadImgMessage, insertMessage } from '../../api';
+import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId, uploadImgMessage, insertMessage, handleUserSearch, createdConversation } from '../../api';
 function Chat() {
     const [isMount, setIsMount] = useState(false)
     const [img, setImg] = useState('')
@@ -10,6 +10,7 @@ function Chat() {
     const [conversationId, setConversationId] = useState(0)
     const [userId, setUserId] = useState(0)
     const [receiverId, setReceiverId] = useState(0)
+    const [searchVal, setSearchVal] = useState('')
     useEffect(() => {
         setIsMount(true)
         if(isMount){
@@ -47,6 +48,7 @@ function Chat() {
     const getConversationsAPI = async(userId) => {
         const conversations = await getMyConversations(userId)
         const conversationsBox = document.querySelector(`.${chat.conversations}`)
+        conversationsBox.innerHTML = ''
         const chatBox_row1 = document.querySelector(`.${chat.chatBox_row1}`)
         if(conversations.length < 5) {
             chatBox_row1.style.position = 'absolute'
@@ -57,6 +59,10 @@ function Chat() {
             const conversationItem = document.createElement('div')
             conversationItem.className = chat.conversationItem
             conversationsBox.appendChild(conversationItem)
+            conversationItem.addEventListener('click', () => {
+                getConversationData(sender._id, userId)
+                getReceiverData(sender._id)
+            })
             const conversationItem_user = document.createElement('div')
             conversationItem_user.className = chat.conversationItem_user
             conversationItem.appendChild(conversationItem_user)
@@ -85,6 +91,7 @@ function Chat() {
     }
 
     const getConversationData = async(receiverId, senderId) => {
+        const receiver = await getUser(receiverId)
         const conversation = await getConversation(senderId, receiverId)
         const conversationId = conversation._id
         setConversationId(conversationId)
@@ -121,6 +128,11 @@ function Chat() {
                     </div>
                     <p>${res.date}</p>
                 `
+            }else if(res.img == '' && res.message !== ''){
+                chatting_info_person1.innerHTML = `
+                    <div>${res.message}</div>
+                    <p>${res.date}</p>
+                `
             }else{
                 chatting_info_person1.innerHTML = `
                     <div>${res.message}</div>
@@ -128,14 +140,16 @@ function Chat() {
                 `
             }
 
-            chatting_info_person1.innerHTML = `
-                <div>${res.message == '' ? `
+            if(res.message == '' && receiver.position == 'Consultant'){
+                chatting_info_person1.innerHTML = `
+                <div>
                     <h4>Let's start shopping with us!</h4>
                     <p>Don't forget to explore our product catalog with other wonderful products as well. Wish you a happy shopping!</p>
                     <p>Working hours are from 08:00 to 17:30 all week. After this time frame, if you have any questions, just leave your information and the shop will respond immediately when online.</p>
-                ` : ''}</div>
-                    <p>${res.date}</p>
+                </div>
+                <p>${res.date}</p>
             `
+            }
         })
         const chatting_person2 = document.createElement('div')
         chatting_person2.className = chat.chatting_person2
@@ -150,7 +164,6 @@ function Chat() {
             const chatting_info_person2 = document.createElement('div')
             chatting_info_person2.className = chat.chatting_info_person2
             chatting_person2_box.appendChild(chatting_info_person2)
-            console.log(res)
             if(res.img !== '' && res.message !== ''){
                 chatting_info_person2.innerHTML = `
                     <div>
@@ -178,6 +191,7 @@ function Chat() {
         setReceiverId(receiverId)
         const receiver = await getUser(receiverId)
         const receiver_title = document.querySelector(`.${chat.receiver_title}`)
+        receiver_title.innerHTML = ''
         const receiver_title_row1 = document.createElement('div')
         receiver_title_row1.className = chat.receiver_title_row1
         receiver_title.appendChild(receiver_title_row1)
@@ -193,10 +207,17 @@ function Chat() {
             <p>${receiver.role == 'Admin' ? 'Usually replies within a few minutes' :
             receiver.active == 1 ? `Online <button class=${chat.online_status} style="background-color: green"></button>` : `Offline <button class=${chat.offline_status} style="background-color: red"></button>`}</p>
         `
+        const title_actions = document.createElement('div')
+        title_actions.className = chat.title_actions
+        receiver_title.appendChild(title_actions)
         const report = document.createElement('div')
         report.className = chat.report
         report.innerHTML = `<span class="material-symbols-outlined">report</span>`
-        receiver_title.appendChild(report)
+        title_actions.appendChild(report)
+        const more_actions = document.createElement('div')
+        more_actions.className = chat.more_actions
+        more_actions.innerHTML = `<span class="material-symbols-outlined">more_vert</span>`
+        title_actions.appendChild(more_actions)
     }
 
     const handleAvatar = async (e) => {
@@ -256,6 +277,7 @@ function Chat() {
                 const message_input = document.querySelector(`.${chat.message}`)
                 img_container.innerHTML = ''
                 message_input.value = ''
+                setImg('')
             })
         }else if (message == '' && img !== ''){
             await insertMessage(conversationId, userId, receiverId, '', dateWithHours, img)
@@ -263,6 +285,7 @@ function Chat() {
                 getConversationData(receiverId, userId)
                 const img_container = document.querySelector(`.${chat.img_container}`)
                 img_container.innerHTML = ''
+                setImg('')
             })
         }
     }
@@ -270,6 +293,48 @@ function Chat() {
     const onType = (e) => {
         const target = e.target 
         setMessage(target.value)
+    }
+
+    const handleSearchUser = (e) => {
+        const target = e.target 
+        setSearchVal(target.value)
+        handleSearchUserValue(target.value)
+    }
+
+    const handleSearchUserValue = async(searchVal) => {
+        const userId = localStorage.getItem('userId')
+        const searchValueBox = document.querySelector(`.${chat.searchValueBox}`)
+        searchValueBox.innerHTML = ''
+        const currentDate = new Date()
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        const day = currentDate.getDate();
+        const date = year + '/' + month + '/' + day 
+        const users = await handleUserSearch(searchVal)
+        if(!users){
+            searchValueBox.style.display = 'none'
+        }
+        if(users){
+            searchValueBox.style.display = 'block'
+            users.forEach((item) => {
+                const searchItem = document.createElement('div')
+                searchValueBox.appendChild(searchItem)
+                searchItem.addEventListener('click', async() => {
+                   await createdConversation(item._id, userId, date)
+                   .then(() => {
+                        searchValueBox.innerHTML = ''
+                        getReceiverData(item._id)
+                        getConversationsAPI(userId)
+                   })
+                })
+                const user_img = document.createElement('img')
+                user_img.src = `http://localhost:3000/images/${item.avatar}`
+                searchItem.appendChild(user_img)
+                const user_name = document.createElement('h4')
+                user_name.innerHTML = item.full_name
+                searchItem.appendChild(user_name)
+            })
+        }
     }
   return (
     <>
@@ -279,7 +344,13 @@ function Chat() {
                     <div className={chat.myAccount}>
                         
                     </div>
-                    <div></div>
+                    <div className={chat.search_users}>
+                        <input type="text" placeholder="Search.." onChange={(e) => handleSearchUser(e)}/>
+                        <span className="material-symbols-outlined">search</span>
+                        <div className={chat.searchValueBox}>
+
+                        </div>
+                    </div>
                     <h4>Messages</h4>
                     <div className={chat.conversations}>
 
@@ -296,9 +367,7 @@ function Chat() {
                     <div className={chat.typing}>
                         <div className={chat.img_container}></div> 
                         <div className={chat.typing_container}>
-                            <div className={chat.avatar_typing}>
-
-                            </div>
+                            <div className={chat.avatar_typing}></div>
                             <div className={chat.typingBox}>
                                 <textarea onChange={(e) => onType(e)} className={chat.message} placeholder='Type something...'/>
                                 <div className={chat.actions}>
