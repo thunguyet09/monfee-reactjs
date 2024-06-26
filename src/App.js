@@ -9,18 +9,20 @@ import Register from './components/Register/Register';
 import NotFound from './components/NotFound/NotFound';
 import Login from './components/Login/Login';
 import Account from './components/Account/Account';
-import { SearchContextProvider } from './contexts/SearchContext/SearchContext';
+import { SearchContextProvider } from './contexts/SearchContext';
 import Search from './components/Search/Search';
 import Product from './components/Product/Product';
 import Detail from './components/Detail/Detail';
 import MiniCart from './components/MiniCart/MiniCart';
-import { MiniCartContextProvider } from './contexts/SearchContext/MiniCartContext';
+import { MiniCartContextProvider } from './contexts/MiniCartContext';
 import Cart from './components/Cart/Cart';
 import Dashboard from './admin/Dashboard/Dashboard';
 import Checkout from './components/Checkout/Checkout';
 import Orders from './components/Orders/Orders';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import Chat from './components/Chat/Chat';
+import { ChatThemeProvider } from './contexts/ChatThemeContext';
+
 
 const ProtectedRoute = ({ path, element: Element }) => {
   const getUserToken = () => {
@@ -56,68 +58,12 @@ const ProtectedRoute = ({ path, element: Element }) => {
   return <Route path={path} element={<Element />} />;
 };
 
-// const UserRoute = ({ element: Element }) => {
-//   const [isAuthenticated, setIsAuthenticated] = useState(null);
-//   const token = localStorage.getItem('token');
-
-//   useEffect(() => {
-//     const checkTokenValidity = async () => {
-//       if (token) {
-//         const isValid = await verifyUserTokenOnServer(token);
-//         setIsAuthenticated(isValid);
-//       } else {
-//         setIsAuthenticated(false);
-//       }
-//     };
-
-//     checkTokenValidity();
-//   }, []);
-
-//   const verifyUserTokenOnServer = async (token) => {
-//     const response = await fetch('http://localhost:3000/users/verifyUserToken', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ token }),
-//     });
-
-//     const data = await response.json();
-//     return data.isValid;
-//   };
-
-//   if (isAuthenticated === null) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <>
-//       {isAuthenticated ? (
-//         <Element authenticated="true"/>
-//       ) : (
-//         <Navigate to="/login" replace />
-//       )}
-//     </>
-//   );
-// };
-
-
-const CartPage = () => (
-  <div className={styles.main}>
-    <Search />
-    <Header />
-    <div className={styles.homePage}>
-      <Cart />
-      <MiniCart />
-      <Footer />
-    </div>
-  </div>
-);
 function App() {
   return (
     <div className={styles.App}>
       <SearchContextProvider>
         <MiniCartContextProvider>
+          <ChatThemeProvider>
           <Routes>
             <Route
               path="/register"
@@ -162,6 +108,7 @@ function App() {
                 <Chat />
               }
             />
+          
             <Route element={<NotFound />} />
             <Route
               exact
@@ -269,6 +216,7 @@ function App() {
 
             <Route path="/admin" element={<ProtectedRoute element={Dashboard} />} />
           </Routes>
+          </ChatThemeProvider>
         </MiniCartContextProvider>
       </SearchContextProvider>
     </div>

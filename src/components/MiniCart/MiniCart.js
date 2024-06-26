@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react'
 import styles from './MiniCart.module.css'
-import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext'
+import { useMiniCart } from '../../contexts/MiniCartContext'
 import { getData, getDetail } from '../../api'
 const MiniCart = () => {
     const {openMiniCart, setMiniCartOpen} = useMiniCart()

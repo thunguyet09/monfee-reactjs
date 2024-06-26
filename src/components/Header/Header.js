@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSearch, faHeart, faUserCheck, faBell, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import styles from './Header.module.css'
 import { automatedMessage, getData, getUser, handleLogout } from '../../api';
-import { useSearch } from '../../contexts/SearchContext/SearchContext';
-import { useMiniCart } from '../../contexts/SearchContext/MiniCartContext';
+import { useSearch } from '../../contexts/SearchContext';
+import { useMiniCart } from '../../contexts/MiniCartContext';
 const userId = localStorage.getItem('userId')
 const numsInCart = async () => {
   const carts = await getData('cart')

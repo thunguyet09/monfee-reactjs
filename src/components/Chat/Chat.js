@@ -3,6 +3,7 @@ import chat from './Chat.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId, uploadImgMessage, insertMessage, handleUserSearch, createdConversation } from '../../api';
+import { ChatThemeContext } from '../../contexts/ChatThemeContext';
 function Chat() {
     const [isMount, setIsMount] = useState(false)
     const [img, setImg] = useState('')
@@ -10,7 +11,7 @@ function Chat() {
     const [conversationId, setConversationId] = useState(0)
     const [userId, setUserId] = useState(0)
     const [receiverId, setReceiverId] = useState(0)
-    const [searchVal, setSearchVal] = useState('')
+    const { darkMode, setDarkMode } = useContext(ChatThemeContext);
     useEffect(() => {
         setIsMount(true)
         if(isMount){
@@ -297,7 +298,6 @@ function Chat() {
 
     const handleSearchUser = (e) => {
         const target = e.target 
-        setSearchVal(target.value)
         handleSearchUserValue(target.value)
     }
 

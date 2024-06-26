@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import styles from './Search.module.css'
 import { getData } from '../../api'
-import { useSearch } from '../../contexts/SearchContext/SearchContext'
+import { useSearch } from '../../contexts/SearchContext'
 
 
 const Search = () => {
