@@ -291,6 +291,10 @@
     padding-top: 10px;
 }
 
+.dark_typing_container {
+    border-top: 1px solid grey;
+}
+
 .typingBox {
     width: 100%;
     display: flex;
@@ -573,7 +577,7 @@
     padding: 10px;
 }
 
-.cancelOrderModal {
+.deleteConversationModal {
     display: none;
     position: fixed;
     z-index: 1;
@@ -588,12 +592,12 @@
 .modal_content {
     background-color: #fefefe;
     margin: 15% auto;
-    border: 1px solid #888;
     width: 30%;
+    border-radius: 5px;
 }
 
 .closeBtn {
-    color: #aaa;
+    color: black;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -617,17 +621,22 @@
     padding: 0px 20px;
 }
 
-.cancel_order_confirm > p {
+.delete_confirm > p {
     font-family: "Nunito", sans-serif;
     margin: 0;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-size: 17px;
 }
 
-.cancel_order_confirm {
-    padding: 20px 0px;
+.delete_confirm {
+    text-align: left;
+    padding: 20px;
 }
 
+.btns {
+    margin-top: 20px;
+    text-align: right;
+}
 .btns > button {
     padding: 12px 20px;
     font-family: "Nunito", sans-serif;
@@ -651,4 +660,11 @@
 .noBtn:hover, .yesBtn:hover {
     opacity: 0.7;
     cursor: pointer;
+}
+
+.greeting {
+    font-family: "Nunito", sans-serif;
+    font-size: 22px;
+    color:#EE7214;
+    width: 70%;
 }

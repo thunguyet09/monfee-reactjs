@@ -11,18 +11,27 @@ function Chat() {
     const [userId, setUserId] = useState(0)
     const [receiverId, setReceiverId] = useState(0)
     const [darkMode, setDarkMode] = useState('')
+    const [choose, setChoose] = useState(false)
+
+    const chatBox_row2 = document.querySelector(`.${chat.chatBox_row2}`)
+    const greeting = document.querySelector(`.${chat.greeting}`)
     useEffect(() => {
         setIsMount(true)
         if(isMount){
+            if(choose){
+                chatBox_row2.style.display = 'block'
+                greeting.style.display = 'none'
+            }else{
+                greeting.style.display = 'block'
+                chatBox_row2.style.display = 'none'
+            }
             const userId = localStorage.getItem('userId')
             setUserId(userId)
             handleMyAccount(userId)
             getConversationsAPI(userId)
-            getConsultantId(userId)
             getModeStatus()
         }
     }, [isMount])
-
     const handleMyAccount = async(userId) => {
         const user = await getUser(userId.toString())
         const myAccount = document.querySelector(`.${chat.myAccount}`)
@@ -56,47 +65,44 @@ function Chat() {
         }
         conversations.forEach(async (item) => {
             const senderId = item.members.filter((val) => val !== userId)
-            const sender = await getUser(senderId)
-            const conversationItem = document.createElement('div')
-            conversationItem.className = chat.conversationItem
-            conversationsBox.appendChild(conversationItem)
-            conversationItem.addEventListener('click', () => {
-                getConversationData(sender._id, userId)
-                getReceiverData(sender._id)
-            })
-            const conversationItem_user = document.createElement('div')
-            conversationItem_user.className = chat.conversationItem_user
-            conversationItem.appendChild(conversationItem_user)
-            conversationItem_user.innerHTML = `
-                ${sender.role == 'Admin' ?
-                    `<img src="./img/logo.png" />` : 
-                    `<img src="http://localhost:3000/images/${sender.avatar}" />`
-                }
-                <div>
-                    <h4>${sender.full_name} ${sender.position ? `(${sender.position})` : ''}</h4>
-                    <p>${sender.active == 1 || sender.position == 'Consultant' ? 'Online' + `<button style="background-color: green" class=${chat.online_status}></button>` : 'Offline' + `<button style="background-color: red" class=${chat.offline_status}></button>`}</p>
-                </div>
-            `
-            const conversationItem_date = document.createElement('div')
-            conversationItem_date.className = chat.conversationItem_date
-            conversationItem_date.innerHTML = item.date
-            conversationItem.appendChild(conversationItem_date)
+            if(senderId.length > 0){
+                const sender = await getUser(senderId)
+                const conversationItem = document.createElement('div')
+                conversationItem.className = chat.conversationItem
+                conversationsBox.appendChild(conversationItem)
+                conversationItem.addEventListener('click', () => {
+                    getConversationData(sender._id, userId)
+                    chatBox_row2.style.display = 'block'
+                    setChoose(true)
+                })
+                const conversationItem_user = document.createElement('div')
+                conversationItem_user.className = chat.conversationItem_user
+                conversationItem.appendChild(conversationItem_user)
+                conversationItem_user.innerHTML = `
+                    ${sender.role == 'Admin' ?
+                        `<img src="./img/logo.png" />` : 
+                        `<img src="http://localhost:3000/images/${sender.avatar}" />`
+                    }
+                    <div>
+                        <h4>${sender.full_name} ${sender.position ? `(${sender.position})` : ''}</h4>
+                        <p>${sender.active == 1 || sender.position == 'Consultant' ? 'Online' + `<button style="background-color: green" class=${chat.online_status}></button>` : 'Offline' + `<button style="background-color: red" class=${chat.offline_status}></button>`}</p>
+                    </div>
+                `
+                const conversationItem_date = document.createElement('div')
+                conversationItem_date.className = chat.conversationItem_date
+                conversationItem_date.innerHTML = item.date
+                conversationItem.appendChild(conversationItem_date)
+            }
         })
     }
 
-    const getConsultantId = async(userId) => {
-        const consultant = await getData('users/position/consultant')
-        const consultantId = consultant._id 
-        getReceiverData(consultantId)
-        getConversationData(consultantId, userId)
-    }
-
-    const getConversationData = async(receiverId, senderId) => {
-        const receiver = await getUser(receiverId)
-        const conversation = await getConversation(senderId, receiverId)
-        const conversationId = conversation._id
-        setConversationId(conversationId)
-        const messages = await getMessagesByConversationId(conversationId)
+    const getConversationData = async(receiver_id, senderId) => {
+        const receiver = await getUser(receiver_id)
+        const conversation = await getConversation(senderId, receiver_id)
+        const conversation_id = conversation._id
+        setConversationId(conversation_id)
+        getReceiverData(receiver_id, conversation_id, senderId)
+        const messages = await getMessagesByConversationId(conversation_id)
         const receiverMessages = messages.filter((item) => item.user.id !== senderId)
         const senderMessages = messages.filter((item) => item.user.id == senderId)
         const chatting_container = document.querySelector(`.${chat.chatting_container}`)
@@ -188,9 +194,9 @@ function Chat() {
             }
         })
     }
-    const getReceiverData = async (receiverId) => {
-        setReceiverId(receiverId)
-        const receiver = await getUser(receiverId)
+    const getReceiverData = async (receiver_id, conversation_id, userId) => {
+        setReceiverId(receiver_id)
+        const receiver = await getUser(receiver_id)
         const receiver_title = document.querySelector(`.${chat.receiver_title}`)
         receiver_title.innerHTML = ''
         const receiver_title_row1 = document.createElement('div')
@@ -238,7 +244,10 @@ function Chat() {
         })
 
         more_actions_dropdown.childNodes[1].addEventListener('click', () => {
-            console.log('delete')
+            const deleteConfirmModal = document.querySelector(`.${chat.deleteConversationModal}`)
+            deleteConfirmModal.style.display = 'block'
+            setConversationId(conversation_id)
+            setUserId(userId)
         })
     }
 
@@ -290,6 +299,7 @@ function Chat() {
         const minutes = currentDate.getMinutes()
         const dateWithHours = year + '/' + month + '/' + day + " " + hours + ':' + minutes
         if(message !== ''){
+            console.log(conversationId, userId, receiverId, message, dateWithHours, img)
             await insertMessage(conversationId, userId, receiverId, message, dateWithHours, img)
             .then(() => {
                 getConversationData(receiverId, userId)
@@ -300,6 +310,7 @@ function Chat() {
                 img_container.innerHTML = ''
                 message_input.value = ''
                 setImg('')
+                setMessage('')
             })
         }else if (message == '' && img !== ''){
             await insertMessage(conversationId, userId, receiverId, '', dateWithHours, img)
@@ -308,6 +319,7 @@ function Chat() {
                 const img_container = document.querySelector(`.${chat.img_container}`)
                 img_container.innerHTML = ''
                 setImg('')
+                setMessage('')
             })
         }
     }
@@ -346,6 +358,8 @@ function Chat() {
                         searchValueBox.innerHTML = ''
                         getReceiverData(item._id)
                         getConversationsAPI(userId)
+                        getConversationData(item._id, userId)
+                        setChoose(true)
                    })
                 })
                 const user_img = document.createElement('img')
@@ -365,13 +379,29 @@ function Chat() {
 
     const handleMode = () => {
         setDarkMode(!darkMode)
-        console.log(darkMode)
     }
 
     const closeModal = () => {
-        const cancelOrderModal = document.querySelector(`.${chat.cancelOrderModal}`)
+        const cancelOrderModal = document.querySelector(`.${chat.deleteConversationModal}`)
         cancelOrderModal.style.display = 'none'
-    }    
+    }  
+    
+    const handleDeleteConversation = async() => {
+        await fetch(`http://localhost:3000/conversations/${conversationId}`, {
+            method: 'DELETE'
+        })
+        .then(async() => {
+            await fetch(`http://localhost:3000/messages/${conversationId}`, {
+                method: 'DELETE'
+            })
+        })
+        .then(() => {
+            getConversationsAPI(userId)
+            closeModal()
+            chatBox_row2.style.display = 'none'
+            greeting.style.display = 'block'
+        })
+    }
   return (
     <>
         <div id={chat.chatBox}>
@@ -391,6 +421,10 @@ function Chat() {
                     <div className={chat.conversations}>
 
                     </div>
+                </div>
+
+                <div className={chat.greeting}>
+                    <h3>Welcome to Monfee!</h3>
                 </div>
                 <div className={`${chat.chatBox_row2} ${darkMode ? chat.dark_layout : chat.light_layout}` }>
                     <div>
@@ -416,7 +450,7 @@ function Chat() {
 
                     <div className={`${chat.typing} ${darkMode ? chat.dark_layout : chat.light_layout}`}>
                         <div className={chat.img_container}></div> 
-                        <div className={chat.typing_container}>
+                        <div className={`${chat.typing_container} ${darkMode ? chat.dark_typing_container : chat.light_typing_container}`}>
                             <div className={chat.avatar_typing}></div>
                             <div className={chat.typingBox}>
                                 <textarea onChange={(e) => onType(e)} className={`${chat.message} ${darkMode ? chat.dark_layout : chat.light_layout} ${darkMode ? chat.dark_text : chat.light_text}` } placeholder='Type something...'/>
@@ -433,23 +467,24 @@ function Chat() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
 
-        <div id={chat.cancelOrderModal} className={chat.cancelOrderModal}>
+        <div id={chat.deleteConversationModal} className={chat.deleteConversationModal}>
             <div className={chat.modal_content}>
                 <div className={chat.modal_title}>
-                <h2>Cancel Order</h2>
-                <span className={chat.closeBtn} onClick={closeModal}>&times;</span>
+                    <h2>Confirm</h2>
+                    <span className={chat.closeBtn} onClick={closeModal}>&times;</span>
                 </div>
-                <div className={chat.cancel_order_confirm}>
-                <p>Are you sure you want to cancel this order?</p>
+                <div className={chat.delete_confirm}>
+                    <p>All chat content will be permanently deleted.</p>
+                    <p>Are you sure you want to delete?</p>
 
-                <div className={chat.btns}>
-                    <button className={chat.noBtn} onClick={closeModal}>NO, CANCEL</button>
-                    <button className={chat.yesBtn}>YES, CONTINUE</button>
-                </div>
+                    <div className={chat.btns}>
+                        <button className={chat.noBtn} onClick={closeModal}>NO, CANCEL</button>
+                        <button className={chat.yesBtn} onClick={handleDeleteConversation}>YES, CONTINUE</button>
+                    </div>
                 </div>
             </div>
         </div>
