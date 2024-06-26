@@ -273,6 +273,7 @@
     width: 73%;
     padding-top: 10px;
     padding-right: 20px;
+    padding-left: 14px;
 }
 
 .avatar_typing  > img{
@@ -466,5 +467,188 @@
 .more_actions > span {
     font-weight: 600;
     color:#b8784e;
+    cursor: pointer;
+}
+
+.modeBtn {
+    border: 1px solid #7d7d7d;
+    width: 60px;
+    margin: 10px 0px 20px 40px;
+    border-radius: 20px;
+    height: 31px;
+    background-color: rgb(212, 212, 212);
+    padding: 0px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modeBtn > button {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background-color: black;
+    cursor: pointer;
+    transition: .3s ease;
+    transform: translateX(-17px);
+}
+
+.lightMode > button {
+   transform: translateX(-17px);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.darkMode > button {
+    transform: translateX(17px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.darkMode > button {
+    background-color: white;
+}
+
+.darkMode > button > span {
+    font-size: 18px;
+    color: #b8784e;
+}
+
+.darkMode {
+    background-color: #b8784e;
+    border: none;
+}
+
+.lightMode > button > span {
+    color: white;
+    font-size: 16px;
+    color: yellow;
+}
+
+.dark_layout {
+    background-color: black;
+}
+
+.light_layout {
+    background-color: white;
+}
+
+.dark_text {
+    color: white;
+}
+
+.light_text {
+    color: black;
+}
+
+.more_actions {
+    position: relative;
+}
+
+.more_actions_dropdown {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    width: 200px;
+    border-radius: 3px;
+    padding: 10px 0px;
+}
+
+.more_actions_dropdown > li {
+    list-style-type: none;
+    font-family: "Nunito", sans-serif;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.more_actions_dropdown > li:hover {
+    color:#b8784e;
+    background-color: #e4e4e4ac;
+    padding: 10px;
+}
+
+.cancelOrderModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal_content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    border: 1px solid #888;
+    width: 30%;
+}
+
+.closeBtn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.closeBtn:hover,
+.closeBtn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(206, 0, 0);
+    color: white;
+    font-family: "Nunito", sans-serif;
+    padding: 0px 20px;
+}
+
+.cancel_order_confirm > p {
+    font-family: "Nunito", sans-serif;
+    margin: 0;
+    margin-bottom: 20px;
+    font-size: 17px;
+}
+
+.cancel_order_confirm {
+    padding: 20px 0px;
+}
+
+.btns > button {
+    padding: 12px 20px;
+    font-family: "Nunito", sans-serif;
+    margin-right: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    transition: .3s ease;
+}
+
+.noBtn {
+    background-color: rgb(206, 206, 206);
+}
+
+.yesBtn {
+    background-color: #EE7214;
+    color: white;
+}
+
+.noBtn:hover, .yesBtn:hover {
+    opacity: 0.7;
     cursor: pointer;
 }

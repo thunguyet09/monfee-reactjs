@@ -21,7 +21,7 @@ import Checkout from './components/Checkout/Checkout';
 import Orders from './components/Orders/Orders';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import Chat from './components/Chat/Chat';
-import { ChatThemeProvider } from './contexts/ChatThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 const ProtectedRoute = ({ path, element: Element }) => {
@@ -63,7 +63,7 @@ function App() {
     <div className={styles.App}>
       <SearchContextProvider>
         <MiniCartContextProvider>
-          <ChatThemeProvider>
+          <ThemeProvider>
           <Routes>
             <Route
               path="/register"
@@ -216,7 +216,7 @@ function App() {
 
             <Route path="/admin" element={<ProtectedRoute element={Dashboard} />} />
           </Routes>
-          </ChatThemeProvider>
+          </ThemeProvider>
         </MiniCartContextProvider>
       </SearchContextProvider>
     </div>

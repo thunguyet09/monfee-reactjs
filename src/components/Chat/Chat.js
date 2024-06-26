@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import chat from './Chat.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { getMyConversations, getUser, getData, getConversation, getMessagesByConversationId, uploadImgMessage, insertMessage, handleUserSearch, createdConversation } from '../../api';
-import { ChatThemeContext } from '../../contexts/ChatThemeContext';
 function Chat() {
     const [isMount, setIsMount] = useState(false)
     const [img, setImg] = useState('')
@@ -11,7 +10,7 @@ function Chat() {
     const [conversationId, setConversationId] = useState(0)
     const [userId, setUserId] = useState(0)
     const [receiverId, setReceiverId] = useState(0)
-    const { darkMode, setDarkMode } = useContext(ChatThemeContext);
+    const [darkMode, setDarkMode] = useState('')
     useEffect(() => {
         setIsMount(true)
         if(isMount){
@@ -20,6 +19,7 @@ function Chat() {
             handleMyAccount(userId)
             getConversationsAPI(userId)
             getConsultantId(userId)
+            getModeStatus()
         }
     }, [isMount])
 
@@ -217,8 +217,29 @@ function Chat() {
         title_actions.appendChild(report)
         const more_actions = document.createElement('div')
         more_actions.className = chat.more_actions
-        more_actions.innerHTML = `<span class="material-symbols-outlined">more_vert</span>`
         title_actions.appendChild(more_actions)
+        const more_actions_icon = document.createElement('span')
+        more_actions_icon.innerHTML = `<span class="material-symbols-outlined">more_vert</span>`
+        more_actions.appendChild(more_actions_icon)
+        const more_actions_dropdown = document.createElement('div')
+        more_actions_dropdown.className = chat.more_actions_dropdown
+        more_actions.appendChild(more_actions_dropdown)
+        more_actions_dropdown.innerHTML = `
+            <li>Delete conversation</li>
+        `
+        let open = false;
+        more_actions_icon.addEventListener('click', () => {
+            open = !open;
+            if(open){
+                more_actions_dropdown.style.display = 'block'
+            }else{
+                more_actions_dropdown.style.display = 'none'
+            }
+        })
+
+        more_actions_dropdown.childNodes[1].addEventListener('click', () => {
+            console.log('delete')
+        })
     }
 
     const handleAvatar = async (e) => {
@@ -336,6 +357,21 @@ function Chat() {
             })
         }
     }
+
+    const getModeStatus = async() => {
+        const chatTheme = await getData('theme/chat')
+        setDarkMode(chatTheme.darkMode)
+    }
+
+    const handleMode = () => {
+        setDarkMode(!darkMode)
+        console.log(darkMode)
+    }
+
+    const closeModal = () => {
+        const cancelOrderModal = document.querySelector(`.${chat.cancelOrderModal}`)
+        cancelOrderModal.style.display = 'none'
+    }    
   return (
     <>
         <div id={chat.chatBox}>
@@ -356,7 +392,21 @@ function Chat() {
 
                     </div>
                 </div>
-                <div className={chat.chatBox_row2}>
+                <div className={`${chat.chatBox_row2} ${darkMode ? chat.dark_layout : chat.light_layout}` }>
+                    <div>
+                        <div className={`${chat.modeBtn} ${darkMode ? chat.darkMode : chat.lightMode}`} 
+                            onClick={handleMode}>
+                            {
+                                darkMode ? 
+                                <button>
+                                    <span className="material-symbols-outlined">dark_mode</span>
+                                </button> : 
+                                <button>
+                                    <span className="material-symbols-outlined">light_mode</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
                     <div className={chat.receiver_title}>
 
                     </div>
@@ -364,14 +414,14 @@ function Chat() {
 
                     </div>
 
-                    <div className={chat.typing}>
+                    <div className={`${chat.typing} ${darkMode ? chat.dark_layout : chat.light_layout}`}>
                         <div className={chat.img_container}></div> 
                         <div className={chat.typing_container}>
                             <div className={chat.avatar_typing}></div>
                             <div className={chat.typingBox}>
-                                <textarea onChange={(e) => onType(e)} className={chat.message} placeholder='Type something...'/>
+                                <textarea onChange={(e) => onType(e)} className={`${chat.message} ${darkMode ? chat.dark_layout : chat.light_layout} ${darkMode ? chat.dark_text : chat.light_text}` } placeholder='Type something...'/>
                                 <div className={chat.actions}>
-                                    <div className={chat.choose_img}>
+                                    <div className={`${chat.choose_img} ${darkMode ? chat.dark_text : chat.light_text}`}>
                                         <span className="material-symbols-outlined">photo_library</span>
                                         <input type="file" name="img" onChange={(e) => handleAvatar(e)} className={chat.img_file} />
                                     </div>
@@ -383,6 +433,23 @@ function Chat() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id={chat.cancelOrderModal} className={chat.cancelOrderModal}>
+            <div className={chat.modal_content}>
+                <div className={chat.modal_title}>
+                <h2>Cancel Order</h2>
+                <span className={chat.closeBtn} onClick={closeModal}>&times;</span>
+                </div>
+                <div className={chat.cancel_order_confirm}>
+                <p>Are you sure you want to cancel this order?</p>
+
+                <div className={chat.btns}>
+                    <button className={chat.noBtn} onClick={closeModal}>NO, CANCEL</button>
+                    <button className={chat.yesBtn}>YES, CONTINUE</button>
+                </div>
                 </div>
             </div>
         </div>
